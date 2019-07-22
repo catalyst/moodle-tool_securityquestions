@@ -36,13 +36,21 @@ class set_questions_form extends moodleform {
         $opts = array(1,2,3,4,5,6,7,8,9,10);
         $mform->addElement('select', 'selectquestion', get_string('formselectquestion', 'tool_securityquestions'),$opts);
 
+        $mform->addElement('text', 'questionentry', get_string('formquestionentry', 'tool_securityquestions'));
+        $table = new html_table();
+        $table->head = array('ID', 'Question', 'Deprecated');
+        $table->colclasses = array('centeralign', 'leftalign', 'centeralign');
+
+        //ADD DATA HERE
+
+        $mform->addElement('html', html_writer::table($table));
+
         $this->add_action_buttons();
     }
 
     public function validation($data, $files) {
 
         $errors = parent::validation($data, $files);
-
         return $errors;
     }
 }

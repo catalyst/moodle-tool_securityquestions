@@ -30,5 +30,6 @@ $string['setsecurityquestionspagestring'] = 'Modify Security Questions';
 
 // Form Strings
 $string['formselectquestion'] = 'Select Question to Modify';
+$string['formquestionentry'] = 'Enter a question to add to the question pool:';
 
 

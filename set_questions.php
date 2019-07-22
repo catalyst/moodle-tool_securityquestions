@@ -39,15 +39,15 @@ if ($form->is_cancelled()) {
     redirect($prevurl);
 
 }
-// @codingStandardsIgnoreStart
+
 else if ($fromform = $form->get_data()) {
-    // Empty, forces form to run validation to update config
+    $fromform->selectquestion;
 }
-// @codingStandardsIgnoreEnd
 
 // Build the page output.
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('setsecurityquestionspagestring', 'tool_securityquestions'));
+echo $OUTPUT->heading("$display");
 
 $form->display();
 
