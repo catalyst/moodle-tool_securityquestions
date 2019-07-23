@@ -41,7 +41,19 @@ if ($form->is_cancelled()) {
 }
 
 else if ($fromform = $form->get_data()) {
-    $fromform->selectquestion;
+    global $DB;
+    $question = $fromform->questionentry;
+
+    //MUST BE SQL INJECTION SAFE
+
+    if ($question != '') {
+        //Check whether record with that question exists
+        $sqlquestion = $DB->sql_compare_text($question, strlen($question));
+
+        if (!($DB->record_exists_sql('SELECT * FROM mdl_tool_securityquestions WHERE content = ?', array($sqlquestion)))) {
+            $return = $DB->insert_record('tool_securityquestions', array('content' => $question, 'deprecated' => 0)); //NOT SURE IF SQL INJECTABLE
+        }
+    }
 }
 
 // Build the page output.

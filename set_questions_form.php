@@ -31,15 +31,25 @@ class set_questions_form extends moodleform {
 
     public function definition() {
 
+        global $DB;
         $mform = $this->_form;
 
-        $opts = array(1,2,3,4,5,6,7,8,9,10);
-        $mform->addElement('select', 'selectquestion', get_string('formselectquestion', 'tool_securityquestions'),$opts);
+        /*$opts = array(1,2,3,4,5,6,7,8,9,10);
+        $mform->addElement('select', 'selectquestion', get_string('formselectquestion', 'tool_securityquestions'),$opts);*/
 
         $mform->addElement('text', 'questionentry', get_string('formquestionentry', 'tool_securityquestions'));
+
+        // Get records from database for populating table
+        $questions = $DB->get_records('tool_securityquestions');
+
         $table = new html_table();
         $table->head = array('ID', 'Question', 'Deprecated');
         $table->colclasses = array('centeralign', 'leftalign', 'centeralign');
+
+        foreach ($questions as $question) {
+            $table->data[] = array($question->id, $question->content, $question->deprecated);
+        }
+
 
         //ADD DATA HERE
 
