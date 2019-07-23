@@ -43,13 +43,18 @@ class set_questions_form extends moodleform {
         $questions = $DB->get_records('tool_securityquestions');
 
         $table = new html_table();
-        $table->head = array('ID', 'Question', 'Deprecated');
+        $table->head = array('ID', 'Question', 'Deprecated',);
         $table->colclasses = array('centeralign', 'leftalign', 'centeralign');
 
         foreach ($questions as $question) {
-            $table->data[] = array($question->id, $question->content, $question->deprecated);
-        }
+            if ($question->deprecated === 1) {
+                $dep = 'Yes';
+            } else {
+                $dep = 'No';
+            }
 
+            $table->data[] = array($question->id, $question->content, $dep);
+        }
 
         //ADD DATA HERE
 

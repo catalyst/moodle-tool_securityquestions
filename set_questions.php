@@ -33,19 +33,15 @@ admin_externalpage_setup('tool_securityquestions_setform');
 $prevurl = ($CFG->wwwroot.'/admin/category.php?category=securityquestions');
 
 $form = new set_questions_form();
-
 if ($form->is_cancelled()) {
 
     redirect($prevurl);
 
-}
-
-else if ($fromform = $form->get_data()) {
+} else if ($fromform = $form->get_data()) {
     global $DB;
     $question = $fromform->questionentry;
 
     //MUST BE SQL INJECTION SAFE
-
     if ($question != '') {
         //Check whether record with that question exists
         $sqlquestion = $DB->sql_compare_text($question, strlen($question));
@@ -59,8 +55,6 @@ else if ($fromform = $form->get_data()) {
 // Build the page output.
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('setsecurityquestionspagestring', 'tool_securityquestions'));
-echo $OUTPUT->heading("$display");
-
 $form->display();
 
 echo $OUTPUT->footer();

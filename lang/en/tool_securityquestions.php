@@ -32,4 +32,8 @@ $string['setsecurityquestionspagestring'] = 'Modify Security Questions';
 $string['formselectquestion'] = 'Select Question to Modify';
 $string['formquestionentry'] = 'Enter a question to add to the question pool:';
 
+// Setting Strings
+$string['settingsminquestions'] = 'Minimum number of active security questions';
+$string['settingsminquestionsdesc'] = 'Enter the minimum nummber of security questions that can be active at a single time. More questions must be added before other questions may be deprecated.';
+
 

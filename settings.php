@@ -42,11 +42,8 @@ if ($hassiteconfig) {
 
     if (!during_initial_install()) {
 
-        /*$configlist = array(1,2,3,4,5,6,7,8,9,10);
+        $settings->add(new admin_setting_configtext('tool_securityquestions/minquestions', get_string('settingsminquestions', 'tool_securityquestions'),
+                    get_string('settingsminquestionsdesc', 'tool_securityquestions'), 10, PARAM_INT));
 
-        $settings->add(new admin_setting_configselect('tool_securityquestions/questionentrybox', get_string('settingsquestionboxname', 'tool_securityquestions'),
-                    get_string('settingsquestionboxdesc', 'tool_securityquestions'), 0, $configlist));
-        $settings->add(new admin_setting_configtextarea('tool_securityquestions/questionentryarea', get_string('settingsquestionentryname', 'tool_securityquestions'),
-                    get_string('settingsquestionentryname', 'tool_securityquestions'), 'blah'));*/
     }
 }
