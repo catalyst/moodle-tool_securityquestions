@@ -14,5 +14,17 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
+    <TABLE NAME="tool_securityquestions_res" COMMENT="Table to store responses to various questions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User ID for response"/>
+        <FIELD NAME="qid" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Question ID for response"/>
+        <FIELD NAME="response" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Response to Question"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="question id" TYPE="foreign" FIELDS="qid" REFTABLE="tool_securityquestions" REFFIELDS="id" COMMENT="ID of question that response corresponds to"/>
+      </KEYS>
+    </TABLE>
   </TABLES>
 </XMLDB>

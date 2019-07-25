@@ -58,3 +58,4 @@ echo $OUTPUT->heading(get_string('setsecurityquestionspagestring', 'tool_securit
 $form->display();
 
 echo $OUTPUT->footer();
+

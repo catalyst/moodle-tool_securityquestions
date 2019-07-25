@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Password Validation Settings form
+ * Security questions response form for users
  *
  * @package     tool_securityquestions
  * @copyright   Peter Burnett <peterburnett@catalyst-au.net>
@@ -27,38 +27,22 @@ defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->libdir/formslib.php");
 
 
-class set_questions_form extends moodleform {
+class set_responses_form extends moodleform {
 
     public function definition() {
 
         global $DB;
         $mform = $this->_form;
 
-        /*$opts = array(1,2,3,4,5,6,7,8,9,10);
-        $mform->addElement('select', 'selectquestion', get_string('formselectquestion', 'tool_securityquestions'),$opts);*/
-
-        $mform->addElement('text', 'questionentry', get_string('formquestionentry', 'tool_securityquestions'));
-
-        // Get records from database for populating table
+        // Generate array for questions
         $questions = $DB->get_records('tool_securityquestions');
-
-        $table = new html_table();
-        $table->head = array('ID', 'Question', 'Deprecated', 'Deprecate');
-        $table->colclasses = array('centeralign', 'leftalign', 'centeralign', 'centeralign');
-
+        $qarray = array();
         foreach ($questions as $question) {
-            if ($question->deprecated === 1) {
-                $dep = 'Yes';
-            } else {
-                $dep = 'No';
-            }
-
-            $table->data[] = array($question->id, $question->content, $dep, 'Deprecate');
+            $qarray[$question->id] = $question->content;
         }
 
-        //ADD DATA HERE
-
-        $mform->addElement('html', html_writer::table($table));
+        $mform->addElement('select', 'questions', get_string('formresponseselectbox', 'tool_securityquestions'), $qarray);
+        $mform->addElement('text', 'response', get_string('formresponseentrybox', 'tool_securityquestions'));
 
         $this->add_action_buttons();
     }
