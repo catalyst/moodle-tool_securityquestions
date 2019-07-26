@@ -21,7 +21,7 @@
  * @copyright   Peter Burnett <peterburnett@catalyst-au.net>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
- 
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
@@ -33,7 +33,6 @@ class set_questions_form extends moodleform {
 
         global $DB;
         $mform = $this->_form;
-
 
         $mform->addElement('text', 'questionentry', get_string('formquestionentry', 'tool_securityquestions'));
 

@@ -16,7 +16,7 @@
 
 /**
  * Page for users to answer the security questions
- * 
+ *
  * @package    tool_passwordvalidator
  * @copyright  2019 Peter Burnett <peterburnett@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -38,7 +38,7 @@ $numquestions = get_config('tool_securityquestions', 'answerquestions');
 $answeredquestions = $DB->get_records('tool_securityquestions_res', array('userid' => $USER->id));
 $pickedkeys = array_rand($answeredquestions, $numquestions);
 
-//Create array to pass questions ids to the form
+// Create array to pass questions ids to the form
 $inputarr = array();
 $i = 1;
 foreach ($pickedkeys as $key) {
@@ -53,13 +53,12 @@ if ($form->is_cancelled()) {
 
 } else if ($fromform = $form->get_data()) {
     // YOU WIN CONGRATS
-    
+
 } else {
+    // Build the page output.
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading(get_string('answerquestionspagestring', 'tool_securityquestions'));
+    $form->display();
 
-// Build the page output.
-echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('answerquestionspagestring', 'tool_securityquestions'));
-$form->display();
-
-echo $OUTPUT->footer();
+    echo $OUTPUT->footer();
 }

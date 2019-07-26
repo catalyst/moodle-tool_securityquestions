@@ -21,7 +21,7 @@
  * @copyright   Peter Burnett <peterburnett@catalyst-au.net>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
- 
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
@@ -39,7 +39,7 @@ class answer_questions_form extends moodleform {
         for ($i = 1; $i <= $numquestions; $i++) {
             // get qid from customdata
             $qid = $this->_customdata[$i];
-            
+
             // Get question content
             $questioncontent = $DB->get_field('tool_securityquestions', 'content', array('id' => $qid));
             // Format and display to the user
@@ -54,8 +54,8 @@ class answer_questions_form extends moodleform {
         $errors = parent::validation($data, $files);
         global $DB;
         global $USER;
-        //CHECK RESPONSES AGAINST DATABASE
         $numquestions = get_config('tool_securityquestions', 'answerquestions');
+
         for ($j = 1; $j <= $numquestions; $j++) {
             // Get question response for database
             $name = 'question'.$j;

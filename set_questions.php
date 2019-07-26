@@ -46,7 +46,7 @@ if ($form->is_cancelled()) {
     // Check if there is a question to be added
     $question = $fromform->questionentry;
     if ($question != '') {
-        //Check whether record with that question exists
+        // Check whether record with that question exists
         $sqlquestion = $DB->sql_compare_text($question, strlen($question));
 
         if (!($DB->record_exists_sql('SELECT * FROM {tool_securityquestions} WHERE content = ?', array($sqlquestion)))) {

@@ -21,8 +21,7 @@
  * @copyright   Peter Burnett <peterburnett@catalyst-au.net>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
- 
-//defined('MOODLE_INTERNAL') || die();
+
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once(__DIR__.'/set_responses_form.php');
@@ -30,18 +29,17 @@ global $CFG;
 
 $form = new set_responses_form();
 if ($form->is_cancelled()) {
-
+    // ADD CANCEL BEHAVIOUR
 } else if ($fromform = $form->get_data()) {
     $qid = $fromform->questions;
     global $USER;
     $response = $fromform->response;
-    //Hash response
+    // Hash response
     $response = hash('sha1', $response);
-    //Validation stops response from being empty
-    //Check if response to question already exists, if so update, else, create record
-    if ($DB->record_exists('tool_securityquestions_res', array('qid'=>$qid, 'userid' => $USER->id))) {
-        //CHECK FOR SQL INJECTION
-        $DB->set_field('tool_securityquestions_res', 'response', $response, array('qid'=>$qid, 'userid' => $USER->id));
+    // Validation stops response from being empty
+    // Check if response to question already exists, if so update, else, create record
+    if ($DB->record_exists('tool_securityquestions_res', array('qid' => $qid, 'userid' => $USER->id))) {
+        $DB->set_field('tool_securityquestions_res', 'response', $response, array('qid' => $qid, 'userid' => $USER->id));
     } else {
         $DB->insert_record('tool_securityquestions_res', array('qid' => $qid, 'userid' => $USER->id, 'response' => $response));
     }
@@ -50,7 +48,6 @@ if ($form->is_cancelled()) {
 // Build the page output.
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('setresponsespagestring', 'tool_securityquestions'));
-//echo $OUTPUT->heading(get_string('setsecurityquestionspagestring', 'tool_securityquestions')); FIX
 $form->display();
 
 echo $OUTPUT->footer();
