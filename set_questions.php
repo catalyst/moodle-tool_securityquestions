@@ -25,6 +25,7 @@
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once(__DIR__.'/set_questions_form.php');
+require_once(__DIR__.'/locallib.php');
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -39,16 +40,22 @@ if ($form->is_cancelled()) {
 
 } else if ($fromform = $form->get_data()) {
     global $DB;
-    $question = $fromform->questionentry;
 
-    //MUST BE SQL INJECTION SAFE
+    // Check if there is a question to be added
+    $question = $fromform->questionentry;
     if ($question != '') {
         //Check whether record with that question exists
         $sqlquestion = $DB->sql_compare_text($question, strlen($question));
 
-        if (!($DB->record_exists_sql('SELECT * FROM mdl_tool_securityquestions WHERE content = ?', array($sqlquestion)))) {
-            $return = $DB->insert_record('tool_securityquestions', array('content' => $question, 'deprecated' => 0)); //NOT SURE IF SQL INJECTABLE
+        if (!($DB->record_exists_sql('SELECT * FROM {tool_securityquestions} WHERE content = ?', array($sqlquestion)))) {
+            $return = $DB->insert_record('tool_securityquestions', array('content' => $question, 'deprecated' => 0));
         }
+    }
+
+    // Check if there is a question to be deprecated
+    $depid = $fromform->deprecate;
+    if ($depid != '') {
+        tool_securityquestions_deprecate_question($depid);
     }
 }
 

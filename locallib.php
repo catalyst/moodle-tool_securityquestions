@@ -30,9 +30,11 @@ function tool_securityquestions_can_deprecate_question($qid) {
     $active = tool_securityquestions_get_active_questions();
 
     if (count($active) >= get_config('tool_securityquestions', 'minquestions')) {
-        $question = get_record('tool_securityquestions', array('id' => qid));
-        if (!empty($question->deprecated)) {
+        $question = $DB->get_record('tool_securityquestions', array('id' => $qid));
+        if (!empty($question)) {
             if ($question->deprecated) {
+                return false;
+            } else {
                 return true;
             }
         }
@@ -51,7 +53,7 @@ function tool_securityquestions_deprecate_question($qid) {
     global $DB;
 
     if (tool_securityquestions_can_deprecate_question($qid)) {
-        $DB->set_field('tool_securityquestions', 'deprecated', 0, array('id' => $qid));
+        $DB->set_field('tool_securityquestions', 'deprecated', 1, array('id' => $qid));
         return true;
     } else {
         return false;
