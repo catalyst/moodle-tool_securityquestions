@@ -35,7 +35,8 @@ if ($form->is_cancelled()) {
     $qid = $fromform->questions;
     global $USER;
     $response = $fromform->response;
-    
+    //Hash response
+    $response = hash('sha1', $response);
     //Validation stops response from being empty
     //Check if response to question already exists, if so update, else, create record
     if ($DB->record_exists('tool_securityquestions_res', array('qid'=>$qid, 'userid' => $USER->id))) {

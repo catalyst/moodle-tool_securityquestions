@@ -57,10 +57,13 @@ class answer_questions_form extends moodleform {
         //CHECK RESPONSES AGAINST DATABASE
         $numquestions = get_config('tool_securityquestions', 'answerquestions');
         for ($j = 1; $j <= $numquestions; $j++) {
+            // Get question response for database
             $name = 'question'.$j;
             $response = $data[$name];
             $qid = $this->_customdata[$j];
             $setresponse = $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => $qid));
+            // Hash response and compare to the database
+            $response = hash('sha1', $response);
             if ($response != $setresponse) {
                 $errors[$name] = 'nomatch';
             }

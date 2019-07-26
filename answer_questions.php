@@ -52,8 +52,9 @@ if ($form->is_cancelled()) {
     redirect($prevurl);
 
 } else if ($fromform = $form->get_data()) {
-    die;
-}
+    // YOU WIN CONGRATS
+    
+} else {
 
 // Build the page output.
 echo $OUTPUT->header();
@@ -61,3 +62,4 @@ echo $OUTPUT->heading(get_string('setsecurityquestionspagestring', 'tool_securit
 $form->display();
 
 echo $OUTPUT->footer();
+}

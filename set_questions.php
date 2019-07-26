@@ -33,6 +33,8 @@ admin_externalpage_setup('tool_securityquestions_setform');
 
 $prevurl = ($CFG->wwwroot.'/admin/category.php?category=securityquestions');
 
+$questions = $DB->get_records('tool_securityquestions');
+
 $form = new set_questions_form();
 if ($form->is_cancelled()) {
 
@@ -62,6 +64,7 @@ if ($form->is_cancelled()) {
 // Build the page output.
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('setsecurityquestionspagestring', 'tool_securityquestions'));
+
 $form->display();
 
 echo $OUTPUT->footer();
