@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Password Validation Settings form
+ * Security questions answer page
  *
  * @package     tool_securityquestions
  * @copyright   Peter Burnett <peterburnett@catalyst-au.net>
@@ -27,42 +27,45 @@ defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->libdir/formslib.php");
 
 
-class set_questions_form extends moodleform {
+class answer_questions_form extends moodleform {
 
     public function definition() {
 
         global $DB;
         $mform = $this->_form;
 
+        $numquestions = get_config('tool_securityquestions', 'answerquestions');
 
-        $mform->addElement('text', 'questionentry', get_string('formquestionentry', 'tool_securityquestions'));
-
-        // Get records from database for populating table
-        $questions = $DB->get_records('tool_securityquestions');
-
-        $table = new html_table();
-        $table->head = array('ID', 'Question', 'Deprecated');
-        $table->colclasses = array('centeralign', 'leftalign', 'centeralign');
-
-        foreach ($questions as $question) {
-            if ($question->deprecated == 1) {
-                $dep = 'Yes';
-            } else {
-                $dep = 'No';
-            }
-
-            $table->data[] = array($question->id, $question->content, $dep);
+        for ($i = 1; $i <= $numquestions; $i++) {
+            // get qid from customdata
+            $qid = $this->_customdata[$i];
+            
+            // Get question content
+            $questioncontent = $DB->get_field('tool_securityquestions', 'content', array('id' => $qid));
+            // Format and display to the user
+            $mform->addElement('html', "<h3>Question $i</h3>");
+            $mform->addElement('text', "question$i", $questioncontent);
         }
-        $mform->addElement('html', html_writer::table($table));
-
-        $mform->addElement('text', 'deprecate', get_string('formdeprecateentry', 'tool_securityquestions'));
 
         $this->add_action_buttons();
     }
 
     public function validation($data, $files) {
-
         $errors = parent::validation($data, $files);
+        global $DB;
+        global $USER;
+        //CHECK RESPONSES AGAINST DATABASE
+        $numquestions = get_config('tool_securityquestions', 'answerquestions');
+        for ($j = 1; $j <= $numquestions; $j++) {
+            $name = 'question'.$j;
+            $response = $data[$name];
+            $qid = $this->_customdata[$j];
+            $setresponse = $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => $qid));
+            if ($response != $setresponse) {
+                $errors[$name] = 'nomatch';
+            }
+        }
+
         return $errors;
     }
 }

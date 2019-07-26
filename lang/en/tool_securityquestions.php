@@ -32,6 +32,8 @@ $string['setsecurityquestionspagestring'] = 'Modify Security Questions';
 $string['formselectquestion'] = 'Select Question to Modify';
 $string['formquestionentry'] = 'Enter a question to add to the question pool:';
 $string['formdeprecateentry'] = 'Enter a question ID to deprecate:';
+$string['formresponseselectbox'] = 'Select Question to respond to:';
+$string['formresponseentrybox'] = 'Enter response to the selected question:';
 
 // Setting Strings
 $string['settingsminquestions'] = 'Minimum number of active security questions';
