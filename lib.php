@@ -24,3 +24,14 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+function tool_securityquestions_after_require_login() {
+    global $USER;
+    global $DB;
+    $requiredquestions = get_config('tool_securityquestions', 'minuserquestions');
+    $answeredquestions = $DB->get_records('tool_securityquestions_res', array('userid'=> $USER->id));
+    $url = '/admin/tool/securityquestions/set_responses.php';
+    if (count($answeredquestions) < $requiredquestions) {
+        redirect($url);
+    }
+}
+
