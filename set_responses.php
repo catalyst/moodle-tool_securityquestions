@@ -49,6 +49,7 @@ if ($form->is_cancelled()) {
 
 // Build the page output.
 echo $OUTPUT->header();
+echo $OUTPUT->heading(get_string('setresponsespagestring', 'tool_securityquestions'));
 //echo $OUTPUT->heading(get_string('setsecurityquestionspagestring', 'tool_securityquestions')); FIX
 $form->display();
 
