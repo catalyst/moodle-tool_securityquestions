@@ -23,7 +23,8 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="question id" TYPE="foreign" FIELDS="qid" REFTABLE="tool_securityquestions" REFFIELDS="id" COMMENT="ID of question that response corresponds to"/>
+        <KEY NAME="qid" TYPE="foreign" FIELDS="qid" REFTABLE="tool_securityquestions" REFFIELDS="id" COMMENT="ID of question that response corresponds to"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELD="id" COMMENT="ID of the user account"/> 
       </KEYS>
     </TABLE>
   </TABLES>
