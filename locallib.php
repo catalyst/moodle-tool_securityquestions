@@ -29,7 +29,7 @@ function tool_securityquestions_can_deprecate_question($qid) {
 
     $active = tool_securityquestions_get_active_questions();
 
-    if (count($active) >= get_config('tool_securityquestions', 'minquestions')) {
+    if (count($active) > get_config('tool_securityquestions', 'minquestions')) {
         $question = $DB->get_record('tool_securityquestions', array('id' => $qid));
         if (!empty($question)) {
             if ($question->deprecated) {

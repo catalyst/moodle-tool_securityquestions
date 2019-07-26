@@ -31,9 +31,10 @@ $string['setsecurityquestionspagestring'] = 'Modify Security Questions';
 // Form Strings
 $string['formselectquestion'] = 'Select Question to Modify';
 $string['formquestionentry'] = 'Enter a question to add to the question pool:';
+$string['formdeprecateentry'] = 'Enter a question ID to deprecate:';
 
 // Setting Strings
 $string['settingsminquestions'] = 'Minimum number of active security questions';
-$string['settingsminquestionsdesc'] = 'Enter the minimum nummber of security questions that can be active at a single time. More questions must be added before other questions may be deprecated.';
-
-
+$string['settingsminquestionsdesc'] = 'Enter the minimum number of security questions that can be active at a single time. More questions must be added before other questions may be deprecated.';
+$string['settingsminuserquestions'] = 'Minimum number of user answered questions';
+$string['settingsminuserquestionsdesc'] = 'Enter the minimum number of active security questions that a user must answer before they are no longer prompted.';

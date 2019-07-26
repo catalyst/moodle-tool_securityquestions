@@ -44,6 +44,9 @@ if ($hassiteconfig) {
 
         $settings->add(new admin_setting_configtext('tool_securityquestions/minquestions', get_string('settingsminquestions', 'tool_securityquestions'),
                     get_string('settingsminquestionsdesc', 'tool_securityquestions'), 10, PARAM_INT));
+        
+        $settings->add(new admin_setting_configtext('tool_securityquestions/minuserquestions', get_string('settingsminuserquestions', 'tool_securityquestions'),
+                    get_string('settingsminuserquestionsdesc', 'tool_securityquestions'), 3, PARAM_INT));
 
     }
 }
