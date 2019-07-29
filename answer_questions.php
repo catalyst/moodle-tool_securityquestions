@@ -30,37 +30,15 @@ require_once(__DIR__.'/locallib.php');
 defined('MOODLE_INTERNAL') || die();
 global $DB;
 global $USER;
-admin_externalpage_setup('tool_securityquestions_setform');
+global $CFG;
+//admin_externalpage_setup('tool_securityquestions_setform');
 
-$prevurl = '';
+$prevurl = $CFG->wwwroot;
+
 
 // ===========================SETUP FORM DATA===================================
-// Get all questions with responses
-$numquestions = get_config('tool_securityquestions', 'answerquestions');
-$answeredquestions = $DB->get_records('tool_securityquestions_res', array('userid' => $USER->id));
 
-// Filter for questions that are currently active
-$answeredactive = array();
-
-$j = 0;
-foreach ($answeredquestions as $question) {
-    $deprecated = $DB->get_field('tool_securityquestions', 'deprecated', array('id' => $question->qid));
-    if ($deprecated == 0) {
-        $answeredactive[$j] = $question;
-        $j++;
-    }
-}
-
-// Randomly pick n questions to be answered
-$pickedkeys = array_rand($answeredactive, $numquestions);
-
-// Create array to pass questions ids to the form
-$inputarr = array();
-$i = 0;
-foreach ($pickedkeys as $key) {
-    $inputarr[$i] = $answeredactive[$key]->qid;
-    $i++;
-}
+$inputarr = pick_questions();
 
 // ========================================FORM BEHAVIOUR==================================
 $form = new answer_questions_form(null, $inputarr);
@@ -70,7 +48,6 @@ if ($form->is_cancelled()) {
 
 } else if ($fromform = $form->get_data()) {
     // SECURITY PASSED HERE
-
 } else {
     // Build the page output.
     echo $OUTPUT->header();
@@ -78,4 +55,38 @@ if ($form->is_cancelled()) {
     $form->display();
 
     echo $OUTPUT->footer();
+}
+
+function pick_questions() {
+    global $DB;
+    global $USER;
+    
+    // Get all questions with responses
+    $numquestions = get_config('tool_securityquestions', 'answerquestions');
+    $answeredquestions = $DB->get_records('tool_securityquestions_res', array('userid' => $USER->id));
+
+    // Filter for questions that are currently active
+    $answeredactive = array();
+
+    $j = 0;
+    foreach ($answeredquestions as $question) {
+        $deprecated = $DB->get_field('tool_securityquestions', 'deprecated', array('id' => $question->qid));
+        if ($deprecated == 0) {
+            $answeredactive[$j] = $question;
+            $j++;
+        }
+    }
+
+    // Randomly pick n questions to be answered
+    $pickedkeys = array_rand($answeredactive, $numquestions);
+
+    // Create array to pass questions ids to the form
+    $inputarr = array();
+    $i = 0;
+    foreach ($pickedkeys as $key) {
+        $inputarr[$i] = $answeredactive[$key]->qid;
+        $i++;
+    }
+
+    return $inputarr;
 }

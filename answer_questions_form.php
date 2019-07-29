@@ -30,9 +30,24 @@ require_once("$CFG->libdir/formslib.php");
 class answer_questions_form extends moodleform {
 
     public function definition() {
-
-        global $DB;
         $mform = $this->_form;
+        
+        $this->display_questions($mform);
+        $this->add_action_buttons();
+    }
+
+    public function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+        $errors = $this->check_responses($errors, $data);
+
+        return $errors;
+    }
+
+    // ===============================VALIDATION AND DISPLAY FUNCTIONS================================================================
+
+    private function display_questions($mform) {
+        global $DB;
+        global $USER;
 
         $numquestions = get_config('tool_securityquestions', 'answerquestions');
 
@@ -41,21 +56,18 @@ class answer_questions_form extends moodleform {
             $qid = $this->_customdata[$i];
 
             // Get question content
-            echo $qid;
             $questioncontent = $DB->get_field('tool_securityquestions', 'content', array('id' => $qid));
             // Format and display to the user
             $questionnum = $i + 1;
             $mform->addElement('html', "<h3>Question $questionnum</h3>");
             $mform->addElement('text', "question$i", $questioncontent);
         }
-
-        $this->add_action_buttons();
     }
 
-    public function validation($data, $files) {
-        $errors = parent::validation($data, $files);
+    private function check_responses($errors, $data) {
         global $DB;
         global $USER;
+        $returnerrors = $errors;
         $numquestions = get_config('tool_securityquestions', 'answerquestions');
 
         // For each question field, check response against database
@@ -72,10 +84,9 @@ class answer_questions_form extends moodleform {
             $response = hash('sha1', $response);
             if ($response != $setresponse) {
                 // ADD LOCKOUT COUNTER HERE
-                $errors[$name] = 'nomatch';
+                $returnerrors[$name] = 'nomatch';
             }
         }
-
-        return $errors;
+        return $returnerrors;
     }
 }
