@@ -57,6 +57,8 @@ if ($form->is_cancelled()) {
     echo $OUTPUT->footer();
 }
 
+// ===============================================FORM SETUP FUNCTIONS=======================================
+
 function pick_questions() {
     global $DB;
     global $USER;

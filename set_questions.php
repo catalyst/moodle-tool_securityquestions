@@ -65,7 +65,33 @@ if ($form->is_cancelled()) {
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('setsecurityquestionspagestring', 'tool_securityquestions'));
 
+generate_table();
+
 $form->display();
 
 echo $OUTPUT->footer();
+
+// =============================================DISPLAY AND VALIDATION FUNCTIONS=========================================
+
+function generate_table() {
+    //Render table
+    global $DB;
+    // Get records from database for populating table
+    $questions = $DB->get_records('tool_securityquestions');
+
+    $table = new html_table();
+    $table->head = array('ID', 'Question', 'Deprecated');
+    $table->colclasses = array('centeralign', 'leftalign', 'centeralign');
+
+    foreach ($questions as $question) {
+        if ($question->deprecated == 1) {
+            $dep = 'Yes';
+        } else {
+            $dep = 'No';
+        }
+
+        $table->data[] = array($question->id, $question->content, $dep);
+    }
+    echo html_writer::table($table);
+}
 

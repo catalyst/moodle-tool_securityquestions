@@ -30,12 +30,23 @@ require_once("$CFG->libdir/formslib.php");
 class set_questions_form extends moodleform {
 
     public function definition() {
-
-        global $DB;
         $mform = $this->_form;
-
         $mform->addElement('text', 'questionentry', get_string('formquestionentry', 'tool_securityquestions'));
+        //$this->definition_after_data();
+        $mform->addElement('text', 'deprecate', get_string('formdeprecateentry', 'tool_securityquestions'));
+        $this->add_action_buttons();
+    }
 
+    public function validation($data, $files) {
+
+        $errors = parent::validation($data, $files);
+        return $errors;
+    }
+
+    // =========================================DISPLAY AND VALIDATION FUNCTIONS=========================================
+
+    private function generate_table($mform) {
+        global $DB;
         // Get records from database for populating table
         $questions = $DB->get_records('tool_securityquestions');
 
@@ -53,15 +64,5 @@ class set_questions_form extends moodleform {
             $table->data[] = array($question->id, $question->content, $dep);
         }
         $mform->addElement('html', html_writer::table($table));
-
-        $mform->addElement('text', 'deprecate', get_string('formdeprecateentry', 'tool_securityquestions'));
-
-        $this->add_action_buttons();
-    }
-
-    public function validation($data, $files) {
-
-        $errors = parent::validation($data, $files);
-        return $errors;
     }
 }
