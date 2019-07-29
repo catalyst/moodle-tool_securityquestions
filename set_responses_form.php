@@ -32,6 +32,7 @@ class set_responses_form extends moodleform {
     public function definition() {
 
         global $DB;
+        global $USER;
         $mform = $this->_form;
 
         // Generate array for questions
@@ -40,7 +41,24 @@ class set_responses_form extends moodleform {
         foreach ($questions as $question) {
             $qarray[$question->id] = $question->content;
         }
+        //Get number of additional responses required
+        $answered = $DB->get_records('tool_securityquestions_res', array('userid' => $USER->id));
 
+        //Check all answered questions for how many are currently valid
+        $active = 0;
+        foreach ($answered as $answer) {
+            //Get field and check if deprecated
+            $deprecated = $DB->get_field('tool_securityquestions', 'deprecated', array('id' => $answer->qid));
+            if ($deprecated == 0) {
+                $active++;
+            }
+        }
+
+        $numrequired = get_config('tool_securityquestions','minuserquestions');
+        $numremaining = $numrequired - $active;
+        $displaystring = get_string('formresponsesremaining','tool_securityquestions', $numremaining);
+        
+        $mform->addElement('html', "<h3>$displaystring</h3>");
         $mform->addElement('select', 'questions', get_string('formresponseselectbox', 'tool_securityquestions'), $qarray);
         $mform->addElement('text', 'response', get_string('formresponseentrybox', 'tool_securityquestions'));
 

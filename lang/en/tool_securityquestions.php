@@ -36,6 +36,7 @@ $string['formquestionentry'] = 'Enter a question to add to the question pool:';
 $string['formdeprecateentry'] = 'Enter a question ID to deprecate:';
 $string['formresponseselectbox'] = 'Select Question to respond to:';
 $string['formresponseentrybox'] = 'Enter response to the selected question:';
+$string['formresponsesremaining'] = '{$a} additional responses remaining.';
 
 // Setting Strings
 $string['settingsminquestions'] = 'Minimum number of active security questions';
