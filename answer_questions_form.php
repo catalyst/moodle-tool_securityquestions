@@ -36,14 +36,16 @@ class answer_questions_form extends moodleform {
 
         $numquestions = get_config('tool_securityquestions', 'answerquestions');
 
-        for ($i = 1; $i <= $numquestions; $i++) {
+        for ($i = 0; $i < $numquestions; $i++) {
             // get qid from customdata
             $qid = $this->_customdata[$i];
 
             // Get question content
+            echo $qid;
             $questioncontent = $DB->get_field('tool_securityquestions', 'content', array('id' => $qid));
             // Format and display to the user
-            $mform->addElement('html', "<h3>Question $i</h3>");
+            $questionnum = $i + 1;
+            $mform->addElement('html', "<h3>Question $questionnum</h3>");
             $mform->addElement('text', "question$i", $questioncontent);
         }
 
@@ -56,15 +58,20 @@ class answer_questions_form extends moodleform {
         global $USER;
         $numquestions = get_config('tool_securityquestions', 'answerquestions');
 
-        for ($j = 1; $j <= $numquestions; $j++) {
+        // For each question field, check response against database
+        for ($j = 0; $j < $numquestions; $j++) {
             // Get question response for database
             $name = 'question'.$j;
             $response = $data[$name];
             $qid = $this->_customdata[$j];
+
+            //Execute DB query with data
             $setresponse = $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => $qid));
+
             // Hash response and compare to the database
             $response = hash('sha1', $response);
             if ($response != $setresponse) {
+                // ADD LOCKOUT COUNTER HERE
                 $errors[$name] = 'nomatch';
             }
         }

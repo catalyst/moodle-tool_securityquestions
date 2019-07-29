@@ -17,7 +17,7 @@
 /**
  * Page for users to answer the security questions
  *
- * @package    tool_passwordvalidator
+ * @package    tool_securityquestions
  * @copyright  2019 Peter Burnett <peterburnett@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -34,25 +34,42 @@ admin_externalpage_setup('tool_securityquestions_setform');
 
 $prevurl = '';
 
+// ===========================SETUP FORM DATA===================================
+// Get all questions with responses
 $numquestions = get_config('tool_securityquestions', 'answerquestions');
 $answeredquestions = $DB->get_records('tool_securityquestions_res', array('userid' => $USER->id));
-$pickedkeys = array_rand($answeredquestions, $numquestions);
+
+// Filter for questions that are currently active
+$answeredactive = array();
+
+$j = 0;
+foreach ($answeredquestions as $question) {
+    $deprecated = $DB->get_field('tool_securityquestions', 'deprecated', array('id' => $question->qid));
+    if ($deprecated == 0) {
+        $answeredactive[$j] = $question;
+        $j++;
+    }
+}
+
+// Randomly pick n questions to be answered
+$pickedkeys = array_rand($answeredactive, $numquestions);
 
 // Create array to pass questions ids to the form
 $inputarr = array();
-$i = 1;
+$i = 0;
 foreach ($pickedkeys as $key) {
-    $inputarr[$i] = $answeredquestions[$key]->qid;
+    $inputarr[$i] = $answeredactive[$key]->qid;
     $i++;
 }
 
+// ========================================FORM BEHAVIOUR==================================
 $form = new answer_questions_form(null, $inputarr);
 if ($form->is_cancelled()) {
 
     redirect($prevurl);
 
 } else if ($fromform = $form->get_data()) {
-    // YOU WIN CONGRATS
+    // SECURITY PASSED HERE
 
 } else {
     // Build the page output.
