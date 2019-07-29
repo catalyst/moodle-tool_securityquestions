@@ -30,17 +30,45 @@ require_once("$CFG->libdir/formslib.php");
 class set_responses_form extends moodleform {
 
     public function definition() {
-
-        global $DB;
-        global $USER;
         $mform = $this->_form;
 
+        $this->generate_header($mform);
+        $this->generate_select($mform);
+        
+        $mform->addElement('text', 'response', get_string('formresponseentrybox', 'tool_securityquestions'));
+
+        $this->add_action_buttons();
+    }
+
+    public function validation($data, $files) {
+
+        $errors = parent::validation($data, $files);
+        if ($data['response'] == '') {
+            $errors['response'] = get_string('formresponseempty','tool_securityquestions');
+        }
+        return $errors;
+    }
+
+    // =============================================DISPLAY AND VALIDATION FUNCTIONS======================================
+    
+    private function generate_select($mform) {
+        global $DB;
+        global $USER;
+
         // Generate array for questions
-        $questions = $DB->get_records('tool_securityquestions');
+        $questions = $DB->get_records('tool_securityquestions', array('deprecated' => 0));
         $qarray = array();
         foreach ($questions as $question) {
             $qarray[$question->id] = $question->content;
         }
+        // Add form element
+        $mform->addElement('select', 'questions', get_string('formresponseselectbox', 'tool_securityquestions'), $qarray);
+    }
+
+    private function generate_header($mform) {
+        global $DB;
+        global $USER;
+
         //Get number of additional responses required
         $answered = $DB->get_records('tool_securityquestions_res', array('userid' => $USER->id));
 
@@ -56,18 +84,12 @@ class set_responses_form extends moodleform {
 
         $numrequired = get_config('tool_securityquestions','minuserquestions');
         $numremaining = $numrequired - $active;
+        if ($numremaining < 0) {
+            $numremaining = 0;
+        }
         $displaystring = get_string('formresponsesremaining','tool_securityquestions', $numremaining);
         
+        // Add display element
         $mform->addElement('html', "<h3>$displaystring</h3>");
-        $mform->addElement('select', 'questions', get_string('formresponseselectbox', 'tool_securityquestions'), $qarray);
-        $mform->addElement('text', 'response', get_string('formresponseentrybox', 'tool_securityquestions'));
-
-        $this->add_action_buttons();
-    }
-
-    public function validation($data, $files) {
-
-        $errors = parent::validation($data, $files);
-        return $errors;
     }
 }

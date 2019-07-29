@@ -26,28 +26,46 @@ require_once(dirname(__FILE__) . '/../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once(__DIR__.'/set_responses_form.php');
 global $CFG;
+global $SESSION;
+
+//TODO
+//PAGE SETUP HERE
+
+$notifysuccess = false;
+$notifycontent = '';
+$prevurl = $SESSION->wantsurl;
 
 $form = new set_responses_form();
 if ($form->is_cancelled()) {
-    // ADD CANCEL BEHAVIOUR
+    redirect($prevurl);
+
 } else if ($fromform = $form->get_data()) {
     $qid = $fromform->questions;
     global $USER;
     $response = $fromform->response;
     // Hash response
     $response = hash('sha1', $response);
-    // Validation stops response from being empty
     // Check if response to question already exists, if so update, else, create record
     if ($DB->record_exists('tool_securityquestions_res', array('qid' => $qid, 'userid' => $USER->id))) {
         $DB->set_field('tool_securityquestions_res', 'response', $response, array('qid' => $qid, 'userid' => $USER->id));
     } else {
         $DB->insert_record('tool_securityquestions_res', array('qid' => $qid, 'userid' => $USER->id, 'response' => $response));
     }
+    
+    //Set flags for display notification
+    $notifysuccess = true;
+    $notifycontent = $DB->get_record('tool_securityquestions', array('id' => $qid))->content;
 }
 
 // Build the page output.
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('setresponsespagestring', 'tool_securityquestions'));
 $form->display();
+
+//Display notification if successful response recorded
+if ($notifysuccess == true) {
+    $notifysuccess == false;
+    echo $OUTPUT->notification(get_string('formresponserecorded', 'tool_securityquestions', $notifycontent), 'notifysuccess');
+}
 
 echo $OUTPUT->footer();
