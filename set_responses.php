@@ -60,6 +60,8 @@ if ($form->is_cancelled()) {
 // Build the page output.
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('setresponsespagestring', 'tool_securityquestions'));
+
+generate_count_header();
 $form->display();
 
 //Display notification if successful response recorded
@@ -69,3 +71,32 @@ if ($notifysuccess == true) {
 }
 
 echo $OUTPUT->footer();
+
+
+function generate_count_header() {
+    global $DB;
+    global $USER;
+
+    //Get number of additional responses required
+    $answered = $DB->get_records('tool_securityquestions_res', array('userid' => $USER->id));
+
+    //Check all answered questions for how many are currently valid
+    $active = 0;
+    foreach ($answered as $answer) {
+        //Get field and check if deprecated
+        $deprecated = $DB->get_field('tool_securityquestions', 'deprecated', array('id' => $answer->qid));
+        if ($deprecated == 0) {
+            $active++;
+        }
+    }
+
+    $numrequired = get_config('tool_securityquestions','minuserquestions');
+    $numremaining = $numrequired - $active;
+    if ($numremaining < 0) {
+        $numremaining = 0;
+    }
+    $displaystring = get_string('formresponsesremaining','tool_securityquestions', $numremaining);
+    
+    // Add display element
+    echo("<h3>$displaystring</h3>");
+}
