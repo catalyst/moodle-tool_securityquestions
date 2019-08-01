@@ -36,12 +36,11 @@ class answer_questions_form extends moodleform {
         $this->add_action_buttons();
     }
 
-    public function validation($data, $files) {
+    /*public function validation($data, $files) {
         $errors = parent::validation($data, $files);
-        $errors = $this->check_responses($errors, $data);
 
         return $errors;
-    }
+    }*/
 
     // ===============================VALIDATION AND DISPLAY FUNCTIONS================================================================
 
@@ -56,37 +55,12 @@ class answer_questions_form extends moodleform {
             $qid = $this->_customdata[$i];
 
             // Get question content
-            $questioncontent = $DB->get_field('tool_securityquestions', 'content', array('id' => $qid));
+            //$questioncontent = $DB->get_field('tool_securityquestions', 'content', array('id' => $qid));
             // Format and display to the user
             $questionnum = $i + 1;
-            $mform->addElement('html', "<h3>Question $questionnum</h3>");
-            $mform->addElement('text', "question$i", $questioncontent);
+            //$mform->addElement('html', "<h3>Question $questionnum</h3>");
+            $mform->addElement('text', "question$i", get_string('formanswerquestion', 'tool_securityquestions', $questionnum));
+            $mform->addElement('hidden',"hiddenq$i", $qid);
         }
-    }
-
-    private function check_responses($errors, $data) {
-        global $DB;
-        global $USER;
-        $returnerrors = $errors;
-        $numquestions = get_config('tool_securityquestions', 'answerquestions');
-
-        // For each question field, check response against database
-        for ($j = 0; $j < $numquestions; $j++) {
-            // Get question response for database
-            $name = 'question'.$j;
-            $response = $data[$name];
-            $qid = $this->_customdata[$j];
-
-            //Execute DB query with data
-            $setresponse = $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => $qid));
-
-            // Hash response and compare to the database
-            $response = hash('sha1', $response);
-            if ($response != $setresponse) {
-                // ADD LOCKOUT COUNTER HERE
-                $returnerrors[$name] = 'nomatch';
-            }
-        }
-        return $returnerrors;
     }
 }

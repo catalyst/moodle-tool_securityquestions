@@ -39,6 +39,7 @@ $string['formresponseentrybox'] = 'Enter response to the selected question:';
 $string['formresponsesremaining'] = '{$a} additional responses required.';
 $string['formresponserecorded'] = 'Response successfully recorded for question: {$a}';
 $string['formresponseempty'] = 'Response cannot be empty.';
+$string['formanswerquestion'] = 'Enter a response to question {$a}:';
 
 // Setting Strings
 $string['settingsminquestions'] = 'Minimum number of active security questions';

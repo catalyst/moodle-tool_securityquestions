@@ -46,16 +46,26 @@ if ($form->is_cancelled()) {
 
     redirect($prevurl);
 
-} else if ($fromform = $form->get_data()) {
-    // SECURITY PASSED HERE
+} else if ($fromform = $form->get_submitted_data()) {
+    $passed = validate_responses($fromform);
+    if ($passed) {
+        echo 'PASSED VALIDATION';
+        die;
+    } else if (!$passed) {
+        echo 'FAILED VALIDATION';
+        die;
+    }
 } else {
     // Build the page output.
     echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('answerquestionspagestring', 'tool_securityquestions'));
+    display_questions($inputarr);
     $form->display();
 
     echo $OUTPUT->footer();
 }
+
+
 
 // ===============================================FORM SETUP FUNCTIONS=======================================
 
@@ -92,3 +102,40 @@ function pick_questions() {
 
     return $inputarr;
 }
+
+function display_questions($inputarr) {
+    global $DB;
+    $i = 1;
+    foreach ($inputarr as $question) {
+        $content = $DB->get_field('tool_securityquestions', 'content', array('id' => $question));
+        echo "<h3>Question $i: $content</h3>";
+        $i++;
+    }
+}
+
+function validate_responses($data) {
+    global $DB;
+    global $USER;
+    $numquestions = get_config('tool_securityquestions', 'answerquestions');
+
+    // For each question field, check response against database
+    for ($i = 0; $i < $numquestions; $i++) {
+        // Get question response for database
+        $name = 'question'.$i;
+        $hiddenname = 'hiddenq'.$i;
+        $response = $data->$name;
+        $qid = $data->$hiddenname;
+
+        $qcontent = $DB->get_record('tool_securityquestions', array('id' => $qid));
+
+        //Execute DB query with data
+        $setresponse = $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => $qid));
+        // Hash response and compare to the database
+        $response = hash('sha1', $response);
+        if ($response != $setresponse) {
+            return false;
+        }
+    }
+    return true;
+}
+
