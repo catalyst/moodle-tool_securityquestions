@@ -29,6 +29,7 @@ $string['securityquestionssettings'] = 'Security Questions Settings';
 $string['setsecurityquestionspagestring'] = 'Modify Security Questions';
 $string['answerquestionspagestring'] = 'Security Question Verification Required';
 $string['setresponsespagestring'] = 'Set Answers to Security Questions';
+$string['setresponsessettingsmenu'] = 'Edit Security Question Responses';
 
 // Form Strings
 $string['formselectquestion'] = 'Select Question to Modify';
@@ -42,6 +43,8 @@ $string['formresponseempty'] = 'Response cannot be empty.';
 $string['formanswerquestion'] = 'Enter a response to question {$a}:';
 
 // Setting Strings
+$string['settingsenablename'] = 'Enable Plugin';
+$string['settingsenabledesc'] = 'Check to enable security question validation';
 $string['settingsminquestions'] = 'Minimum number of active security questions';
 $string['settingsminquestionsdesc'] = 'Enter the minimum number of security questions that can be active at a single time. More questions must be added before other questions may be deprecated.';
 $string['settingsminuserquestions'] = 'Minimum number of user answered questions';

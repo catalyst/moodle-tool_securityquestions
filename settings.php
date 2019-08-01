@@ -41,6 +41,8 @@ if ($hassiteconfig) {
     $ADMIN->add('securityquestions', $settings);
 
     if (!during_initial_install()) {
+        $settings->add(new admin_setting_configcheckbox('tool_securityquestions/enable_plugin', get_string('settingsenablename', 'tool_securityquestions'),
+                    get_string('settingsenabledesc', 'tool_securityquestions'), 0));
 
         $settings->add(new admin_setting_configtext('tool_securityquestions/minquestions', get_string('settingsminquestions', 'tool_securityquestions'),
                     get_string('settingsminquestionsdesc', 'tool_securityquestions'), 10, PARAM_INT));
