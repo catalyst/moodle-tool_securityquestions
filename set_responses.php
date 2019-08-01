@@ -28,8 +28,8 @@ require_once(__DIR__.'/set_responses_form.php');
 global $CFG;
 global $SESSION;
 
-//TODO
-//PAGE SETUP HERE
+// TODO
+// PAGE SETUP HERE
 
 $notifysuccess = false;
 $notifycontent = '';
@@ -51,8 +51,8 @@ if ($form->is_cancelled()) {
     } else {
         $DB->insert_record('tool_securityquestions_res', array('qid' => $qid, 'userid' => $USER->id, 'response' => $response));
     }
-    
-    //Set flags for display notification
+
+    // Set flags for display notification
     $notifysuccess = true;
     $notifycontent = $DB->get_record('tool_securityquestions', array('id' => $qid))->content;
 }
@@ -64,7 +64,7 @@ echo $OUTPUT->heading(get_string('setresponsespagestring', 'tool_securityquestio
 generate_count_header();
 $form->display();
 
-//Display notification if successful response recorded
+// Display notification if successful response recorded
 if ($notifysuccess == true) {
     $notifysuccess == false;
     echo $OUTPUT->notification(get_string('formresponserecorded', 'tool_securityquestions', $notifycontent), 'notifysuccess');
@@ -77,26 +77,26 @@ function generate_count_header() {
     global $DB;
     global $USER;
 
-    //Get number of additional responses required
+    // Get number of additional responses required
     $answered = $DB->get_records('tool_securityquestions_res', array('userid' => $USER->id));
 
-    //Check all answered questions for how many are currently valid
+    // Check all answered questions for how many are currently valid
     $active = 0;
     foreach ($answered as $answer) {
-        //Get field and check if deprecated
+        // Get field and check if deprecated
         $deprecated = $DB->get_field('tool_securityquestions', 'deprecated', array('id' => $answer->qid));
         if ($deprecated == 0) {
             $active++;
         }
     }
 
-    $numrequired = get_config('tool_securityquestions','minuserquestions');
+    $numrequired = get_config('tool_securityquestions', 'minuserquestions');
     $numremaining = $numrequired - $active;
     if ($numremaining < 0) {
         $numremaining = 0;
     }
-    $displaystring = get_string('formresponsesremaining','tool_securityquestions', $numremaining);
-    
+    $displaystring = get_string('formresponsesremaining', 'tool_securityquestions', $numremaining);
+
     // Add display element
     echo("<h3>$displaystring</h3>");
 }

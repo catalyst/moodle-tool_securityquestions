@@ -31,16 +31,10 @@ class answer_questions_form extends moodleform {
 
     public function definition() {
         $mform = $this->_form;
-        
+
         $this->display_questions($mform);
         $this->add_action_buttons();
     }
-
-    /*public function validation($data, $files) {
-        $errors = parent::validation($data, $files);
-
-        return $errors;
-    }*/
 
     // ===============================VALIDATION AND DISPLAY FUNCTIONS================================================================
 
@@ -54,13 +48,10 @@ class answer_questions_form extends moodleform {
             // get qid from customdata
             $qid = $this->_customdata[$i];
 
-            // Get question content
-            //$questioncontent = $DB->get_field('tool_securityquestions', 'content', array('id' => $qid));
             // Format and display to the user
             $questionnum = $i + 1;
-            //$mform->addElement('html', "<h3>Question $questionnum</h3>");
             $mform->addElement('text', "question$i", get_string('formanswerquestion', 'tool_securityquestions', $questionnum));
-            $mform->addElement('hidden',"hiddenq$i", $qid);
+            $mform->addElement('hidden', "hiddenq$i", $qid);
         }
     }
 }

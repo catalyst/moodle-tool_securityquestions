@@ -74,7 +74,7 @@ echo $OUTPUT->footer();
 // =============================================DISPLAY AND VALIDATION FUNCTIONS=========================================
 
 function generate_table() {
-    //Render table
+    // Render table
     global $DB;
     // Get records from database for populating table
     $questions = $DB->get_records('tool_securityquestions');

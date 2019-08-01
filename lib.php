@@ -59,7 +59,7 @@ function tool_securityquestions_extend_navigation_user_settings($navigation, $us
     }
 
     $url = new moodle_url('/admin/tool/securityquestions/set_responses.php');
-    $node = navigation_node::create(get_string('setresponsessettingsmenu', 'tool_securityquestions'), $url, 
+    $node = navigation_node::create(get_string('setresponsessettingsmenu', 'tool_securityquestions'), $url,
             navigation_node::TYPE_SETTING, null, null, null);
     $navigation->add_node($node);
 }

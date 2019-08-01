@@ -32,7 +32,6 @@ class set_questions_form extends moodleform {
     public function definition() {
         $mform = $this->_form;
         $mform->addElement('text', 'questionentry', get_string('formquestionentry', 'tool_securityquestions'));
-        //$this->definition_after_data();
         $mform->addElement('text', 'deprecate', get_string('formdeprecateentry', 'tool_securityquestions'));
         $this->add_action_buttons();
     }

@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die();
 global $DB;
 global $USER;
 global $CFG;
-//admin_externalpage_setup('tool_securityquestions_setform');
+// TODO add page setup here to make it clean
 
 $prevurl = $CFG->wwwroot;
 
@@ -65,14 +65,12 @@ if ($form->is_cancelled()) {
     echo $OUTPUT->footer();
 }
 
-
-
 // ===============================================FORM SETUP FUNCTIONS=======================================
 
 function pick_questions() {
     global $DB;
     global $USER;
-    
+
     // Get all questions with responses
     $numquestions = get_config('tool_securityquestions', 'answerquestions');
     $answeredquestions = $DB->get_records('tool_securityquestions_res', array('userid' => $USER->id));
@@ -128,7 +126,7 @@ function validate_responses($data) {
 
         $qcontent = $DB->get_record('tool_securityquestions', array('id' => $qid));
 
-        //Execute DB query with data
+        // Execute DB query with data
         $setresponse = $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => $qid));
         // Hash response and compare to the database
         $response = hash('sha1', $response);

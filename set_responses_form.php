@@ -33,7 +33,7 @@ class set_responses_form extends moodleform {
         $mform = $this->_form;
 
         $this->generate_select($mform);
-        
+
         $mform->addElement('text', 'response', get_string('formresponseentrybox', 'tool_securityquestions'));
 
         $this->add_action_buttons();
@@ -43,13 +43,13 @@ class set_responses_form extends moodleform {
 
         $errors = parent::validation($data, $files);
         if ($data['response'] == '') {
-            $errors['response'] = get_string('formresponseempty','tool_securityquestions');
+            $errors['response'] = get_string('formresponseempty', 'tool_securityquestions');
         }
         return $errors;
     }
 
     // =============================================DISPLAY AND VALIDATION FUNCTIONS======================================
-    
+
     private function generate_select($mform) {
         global $DB;
         global $USER;
