@@ -44,7 +44,7 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $records = $DB->get_records('tool_securityquestions');
         $this->assertEquals(1, count($records));
     }
-    
+
     public function test_get_active_questions() {
         $this->resetAfterTest(true);
         global $DB;
