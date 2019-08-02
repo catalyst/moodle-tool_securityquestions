@@ -142,7 +142,7 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $active2 = tool_securityquestions_get_active_questions();
         $this->assertEquals(0, count($active2));
 
-        //Check that an already deprecated question cant be deprecated again
+        // Check that an already deprecated question cant be deprecated again
         $worked = tool_securityquestions_deprecate_question(reset($active)->id);
         $this->assertEquals(false, $worked);
         $active3 = tool_securityquestions_get_active_questions();
