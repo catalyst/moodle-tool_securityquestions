@@ -98,7 +98,6 @@ function validate_injected_questions($data, $errors) {
         $qid = $data["$hiddenname"];
 
         $qcontent = $DB->get_record('tool_securityquestions', array('id' => $qid));
-        echo var_dump($qcontent);
         // Execute DB query with data
         $setresponse = $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => $qid));
         // Hash response and compare to the database
