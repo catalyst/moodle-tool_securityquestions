@@ -45,6 +45,8 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertEquals(false, tool_securityquestions_insert_question(''));
         $records = $DB->get_records('tool_securityquestions');
         $this->assertEquals(1, count($records));
+
+        // TODO TEST FOR EMPTY QUESTIONS SUCH AS '     '
     }
 
     public function test_get_active_questions() {
@@ -75,6 +77,47 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $active3 = tool_securityquestions_get_active_questions();
         $this->assertEquals(1, count($active3));
         $this->assertEquals('active3', reset($active3)->content);
+    }
+
+    public function test_can_deprecate_question() {
+        $this->resetAfterTest(true);
+        global $DB;
+        global $CFG;
+
+        // Set minimum number of required questions
+        set_config('minquestions', 3 , 'tool_securityquestions');
+
+        // Add a question, test whether it can be deprecated (checking for active < min questions)
+        tool_securityquestions_insert_question('question1');
+        $records = tool_securityquestions_get_active_questions();
+        $this->assertEquals(false, tool_securityquestions_can_deprecate_question(reset($records->id)));
+
+        // Now set minimum to 0, and test that it can be deprecated
+        set_config('minquestions', 0 , 'tool_securityquestions');
+        $this->assertEquals(true, tool_securityquestions_can_deprecate_question(reset($records->id)));
+
+        //Set min back to 3, and add more questions to be higher than min that isnt 0
+        set_config('minquestions', 3 , 'tool_securityquestions');
+        tool_securityquestions_insert_question('question2');
+        tool_securityquestions_insert_question('question3');
+        tool_securityquestions_insert_question('question4');
+
+        // Test that all these questions can be deprecated
+        $active = tool_securityquestions_get_active_questions();
+        foreach ($active as $question) {
+            $this->assertEquals(true, tool_securityquestions_can_deprecate_question($question->id));
+        }
+
+        // Manually deprecate the first question, and test that the rest cant be deprecated
+        $DB->set_field('tool_securityquestions', 'deprecated', 1, array('id' => reset($records)->id));
+        $active2 = tool_securityquestions_get_active_questions();
+        foreach ($active2 as $question) {
+            $this->assertEquals(true, tool_securityquestions_can_deprecate_question($question->id));
+        }
+
+        //Set min to 0, and test that a deprecated question cannot be deprecated
+        set_config('minquestions', 0 , 'tool_securityquestions');
+        $this->assertEquals(false, tool_securityquestions_can_deprecate_question(reset($records)->id));
     }
 }
 
