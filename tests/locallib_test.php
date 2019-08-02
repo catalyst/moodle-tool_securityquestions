@@ -112,7 +112,7 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $DB->set_field('tool_securityquestions', 'deprecated', 1, array('id' => reset($records)->id));
         $active2 = tool_securityquestions_get_active_questions();
         foreach ($active2 as $question) {
-            $this->assertEquals(true, tool_securityquestions_can_deprecate_question($question->id));
+            $this->assertEquals(false, tool_securityquestions_can_deprecate_question($question->id));
         }
 
         // Set min to 0, and test that a deprecated question cannot be deprecated
