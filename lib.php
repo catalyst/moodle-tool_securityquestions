@@ -25,23 +25,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 function tool_securityquestions_after_require_login() {
-    global $USER;
-    global $DB;
-
-    // Check whether enough questions are set to make the plugin active
-    $setquestions = $DB->get_records('tool_securityquestions', array('deprecated' => 0));
-    $requiredset = get_config('tool_securityquestions', 'minquestions');
-
-    if (count($setquestions) >= $requiredset) {
-
-        // Check whether user has answered enough questions
-        $requiredquestions = get_config('tool_securityquestions', 'minuserquestions');
-        $answeredquestions = $DB->get_records('tool_securityquestions_res', array('userid' => $USER->id));
-        $url = '/admin/tool/securityquestions/set_responses.php';
-        if (count($answeredquestions) < $requiredquestions) {
-            redirect($url);
-        }
-    }
+    require_question_responses();
 }
 
 function tool_securityquestions_extend_navigation_user_settings($navigation, $user, $usercontext, $course, $coursecontext) {
