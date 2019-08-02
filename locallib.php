@@ -160,7 +160,7 @@ function inject_navigation_node($navigation, $user, $usercontext, $course, $cour
 
     $url = new moodle_url('/admin/tool/securityquestions/set_responses.php');
     $node = navigation_node::create(get_string('setresponsessettingsmenu', 'tool_securityquestions'), $url,
-            navigation_node::TYPE_SETTING, null, null, null);
+            navigation_node::TYPE_SETTING);
     $navigation->add_node($node);
 }
 

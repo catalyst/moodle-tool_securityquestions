@@ -23,25 +23,32 @@
  */
 
 require_once(dirname(__FILE__) . '/../../../config.php');
-require_once($CFG->libdir . '/adminlib.php');
+require_once($CFG->libdir . '/navigationlib.php');
+require_once($CFG->dirroot.'/user/editlib.php');
 require_once(__DIR__.'/set_responses_form.php');
-global $CFG;
-global $SESSION;
 
-// TODO
-// PAGE SETUP HERE
+global $CFG, $SESSION, $PAGE, $USER;
+
+$PAGE->set_title('Edit Security Question Responses');
+$PAGE->set_heading(get_string('setresponsespagestring', 'tool_securityquestions'));
+$PAGE->set_context(context_user::instance($USER->id));
 
 $notifysuccess = false;
 $notifycontent = '';
-$prevurl = $SESSION->wantsurl;
+
+if ($SESSION->wantsurl == $PAGE->url) {
+    $prevurl = new moodle_url('/user/preferences.php');
+} else {
+    $prevurl = $SESSION->wantsurl;
+}
 
 $form = new set_responses_form();
+
 if ($form->is_cancelled()) {
     redirect($prevurl);
 
 } else if ($fromform = $form->get_data()) {
     $qid = $fromform->questions;
-    global $USER;
     $response = $fromform->response;
     // Hash response
     $response = hash('sha1', $response);
