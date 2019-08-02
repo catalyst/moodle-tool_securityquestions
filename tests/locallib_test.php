@@ -25,24 +25,24 @@ require_once(__DIR__.'/../locallib.php');
 
 class tool_securityquestions_locallib_testcase extends advanced_testcase {
 
-    public function test_insert_question() {
+    public function test_tool_securityquestions_insert_question() {
         $this->resetAfterTest(true);
         global $DB;
 
         // Try to insert a question into database
-        $this->assertEquals(true, insert_question('does this work?'));
+        $this->assertEquals(true, tool_securityquestions_insert_question('does this work?'));
 
         // Get Questions from the database, and check there is only 1 response
         $records = $DB->get_records('tool_securityquestions');
         $this->assertEquals(1, count($records));
 
         // Try and insert a duplicate record, verify doesn't insert
-        $this->assertEquals(false, insert_question('does this work?'));
+        $this->assertEquals(false, tool_securityquestions_insert_question('does this work?'));
         $records = $DB->get_records('tool_securityquestions');
         $this->assertEquals(1, count($records));
 
         // Try and insert an empty question
-        $this->assertEquals(false, insert_question(''));
+        $this->assertEquals(false, tool_securityquestions_insert_question(''));
         $records = $DB->get_records('tool_securityquestions');
         $this->assertEquals(1, count($records));
     }
@@ -52,11 +52,11 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         global $DB;
 
         // Insert some questions to the database
-        insert_question('active1');
-        insert_question('active2');
+        tool_securityquestions_insert_question('active1');
+        tool_securityquestions_insert_question('active2');
 
         // Test there is the right amount of active questions
-        $active = get_active_questions();
+        $active = tool_securityquestions_get_active_questions();
         $this->assertEquals(2, count($active));
 
         // Manually deprecate both questions
@@ -65,14 +65,14 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         }
 
         // Test for no active questions
-        $active2 = get_active_questions();
+        $active2 = tool_securityquestions_get_active_questions();
         $this->assertEquals(0, count($active2));
 
         // Add one more question
-        insert_question('active3');
+        tool_securityquestions_insert_question('active3');
 
         // Test that the only record returned is 'active3'
-        $active3 = get_active_questions();
+        $active3 = tool_securityquestions_get_active_questions();
         $this->assertEquals(1, count($active3));
         $this->assertEquals('active3', reset($active3)->content);
     }

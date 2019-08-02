@@ -64,7 +64,7 @@ function tool_securityquestions_deprecate_question($qid) {
 
 // ================================================FORM INJECTION FUNCTIONS============================================
 
-function inject_security_questions($mform, $user) {
+function tool_securityquestions_inject_security_questions($mform, $user) {
     global $DB;
 
     $inputarr = pick_questions($user);
@@ -83,7 +83,7 @@ function inject_security_questions($mform, $user) {
     }
 }
 
-function validate_injected_questions($data, $errors, $user) {
+function tool_securityquestions_validate_injected_questions($data, $errors, $user) {
     global $DB;
     $numquestions = get_config('tool_securityquestions', 'answerquestions');
 
@@ -144,7 +144,7 @@ function pick_questions($user) {
 
 // ==========================================NAVIGATION INJECTION====================================================
 
-function inject_navigation_node($navigation, $user, $usercontext, $course, $coursecontext) {
+function tool_securityquestions_inject_navigation_node($navigation, $user, $usercontext, $course, $coursecontext) {
     global $PAGE;
 
     // Only inject if user is on the preferences page
@@ -186,7 +186,7 @@ function require_question_responses() {
 
 // =============================================SET QUESTIONS============================================
 
-function insert_question($question) {
+function tool_securityquestions_insert_question($question) {
     global $DB;
     if ($question != '') {
         $sqlquestion = $DB->sql_compare_text($question, strlen($question));

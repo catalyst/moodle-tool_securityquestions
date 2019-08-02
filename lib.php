@@ -30,17 +30,17 @@ function tool_securityquestions_after_require_login() {
 
 function tool_securityquestions_extend_navigation_user_settings($navigation, $user, $usercontext, $course, $coursecontext) {
     require_once(__DIR__.'/locallib.php');
-    inject_navigation_node($navigation, $user, $usercontext, $course, $coursecontext);
+    tool_securityquestions_inject_navigation_node($navigation, $user, $usercontext, $course, $coursecontext);
 }
 
 function tool_securityquestions_extend_login_form($mform, $user) {
     require_once(__DIR__.'/locallib.php');
-    inject_security_questions($mform, $user);
+    tool_securityquestions_inject_security_questions($mform, $user);
 }
 
 function tool_securityquestions_extend_login_validation($data, $errors, $user) {
     require_once(__DIR__.'/locallib.php');
-    $errors = validate_injected_questions($data, $errors, $user);
+    $errors = tool_securityquestions_validate_injected_questions($data, $errors, $user);
     return $errors;
 }
 
