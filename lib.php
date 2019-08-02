@@ -45,23 +45,8 @@ function tool_securityquestions_after_require_login() {
 }
 
 function tool_securityquestions_extend_navigation_user_settings($navigation, $user, $usercontext, $course, $coursecontext) {
-    global $USER, $PAGE;
-
-    // Only inject if user is on the preferences page
-    $onpreferencepage = $PAGE->url->compare(new moodle_url('/user/preferences.php'), URL_MATCH_BASE);
-    if (!$onpreferencepage) {
-        return null;
-    }
-
-    // Only inject if the plugin is enabled
-    if (!get_config('tool_securityquestions', 'enable_plugin')) {
-        return null;
-    }
-
-    $url = new moodle_url('/admin/tool/securityquestions/set_responses.php');
-    $node = navigation_node::create(get_string('setresponsessettingsmenu', 'tool_securityquestions'), $url,
-            navigation_node::TYPE_SETTING, null, null, null);
-    $navigation->add_node($node);
+    require_once(__DIR__.'/locallib.php');
+    inject_navigation_node($navigation, $user, $usercontext, $course, $coursecontext);
 }
 
 function tool_securityquestions_extend_login_form($mform) {
@@ -70,6 +55,7 @@ function tool_securityquestions_extend_login_form($mform) {
 }
 
 function tool_securityquestions_extend_login_validation($data, $errors) {
+    require_once(__DIR__.'/locallib.php');
     $errors = validate_injected_questions($data, $errors);
     return $errors;
 }
