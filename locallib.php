@@ -85,7 +85,6 @@ function inject_security_questions($mform, $user) {
 
 function validate_injected_questions($data, $errors, $user) {
     global $DB;
-    global $user;
     $numquestions = get_config('tool_securityquestions', 'answerquestions');
 
     // For each question field, check response against database
