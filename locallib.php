@@ -187,6 +187,7 @@ function require_question_responses() {
 // =============================================SET QUESTIONS============================================
 
 function insert_question($question) {
+    global $DB;
     if ($question != '') {
         $sqlquestion = $DB->sql_compare_text($question, strlen($question));
 
