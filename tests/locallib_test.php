@@ -25,7 +25,7 @@ require_once(__DIR__.'/../locallib.php');
 
 class tool_securityquestions_locallib_testcase extends advanced_testcase {
 
-    public function test_tool_securityquestions_insert_question() {
+    public function test_insert_question() {
         $this->resetAfterTest(true);
         global $DB;
 
@@ -118,6 +118,35 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         // Set min to 0, and test that a deprecated question cannot be deprecated
         set_config('minquestions', 0 , 'tool_securityquestions');
         $this->assertEquals(false, tool_securityquestions_can_deprecate_question(reset($records)->id));
+    }
+
+    public function test_deprecate_question() {
+        // This function will not be tested as heavily as can_deprecate_question, as
+        // the functionality is largely based on can_deprecate_question
+        $this->resetAfterTest(true);
+        global $DB;
+        global $CFG;
+
+        // Set minimum questions to 0
+        set_config('minquestions', 0 , 'tool_securityquestions');
+
+        tool_securityquestions_insert_question('question1');
+        
+        // Check it starts not deprecated
+        $active = tool_securityquestions_get_active_questions();
+        $this->assertEquals(1, count($active));
+
+        // Deprecate this question, and check that it succeeded, and there is no active questions
+        $worked = tool_securityquestions_deprecate_question(reset($active)->id);
+        $this->assertEquals(true, $worked);
+        $active2 = tool_securityquestions_get_active_questions();
+        $this->assertEquals(0, count($active2));
+
+        //Check that an already deprecated question cant be deprecated again
+        $worked = tool_securityquestions_deprecate_question(reset($active)->id);
+        $this->assertEquals(false, $worked);
+        $active3 = tool_securityquestions_get_active_questions();
+        $this->assertEquals(0, count($active3));
     }
 }
 
