@@ -43,7 +43,6 @@ if ($SESSION->wantsurl == $PAGE->url) {
 }
 
 $form = new set_responses_form();
-
 if ($form->is_cancelled()) {
     redirect($prevurl);
 

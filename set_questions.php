@@ -47,11 +47,7 @@ if ($form->is_cancelled()) {
     $question = $fromform->questionentry;
     if ($question != '') {
         // Check whether record with that question exists
-        $sqlquestion = $DB->sql_compare_text($question, strlen($question));
-
-        if (!($DB->record_exists_sql('SELECT * FROM {tool_securityquestions} WHERE content = ?', array($sqlquestion)))) {
-            $return = $DB->insert_record('tool_securityquestions', array('content' => $question, 'deprecated' => 0));
-        }
+        insert_question($question);
     }
 
     // Check if there is a question to be deprecated

@@ -183,3 +183,20 @@ function require_question_responses() {
         }
     }
 }
+
+// =============================================SET QUESTIONS============================================
+
+function insert_question($question) {
+    if ($question != '') {
+        $sqlquestion = $DB->sql_compare_text($question, strlen($question));
+
+        if (!($DB->record_exists_sql('SELECT * FROM {tool_securityquestions} WHERE content = ?', array($sqlquestion)))) {
+            return $DB->insert_record('tool_securityquestions', array('content' => $question, 'deprecated' => 0));
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+
+}
