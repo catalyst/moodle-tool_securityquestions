@@ -64,3 +64,13 @@ function tool_securityquestions_extend_navigation_user_settings($navigation, $us
     $navigation->add_node($node);
 }
 
+function tool_securityquestions_extend_login_form($mform) {
+    require_once(__DIR__.'/locallib.php');
+    inject_security_questions($mform);
+}
+
+function tool_securityquestions_extend_login_validation($data, $errors) {
+    $errors = validate_injected_questions($data, $errors);
+    return $errors;
+}
+
