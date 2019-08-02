@@ -64,11 +64,10 @@ function tool_securityquestions_deprecate_question($qid) {
 
 // ================================================FORM INJECTION FUNCTIONS============================================
 
-function inject_security_questions($mform) {
+function inject_security_questions($mform, $user) {
     global $DB;
-    global $USER;
 
-    $inputarr = pick_questions();
+    $inputarr = pick_questions($user);
     $numquestions = get_config('tool_securityquestions', 'answerquestions');
 
     for ($i = 0; $i < $numquestions; $i++) {
@@ -84,9 +83,9 @@ function inject_security_questions($mform) {
     }
 }
 
-function validate_injected_questions($data, $errors) {
+function validate_injected_questions($data, $errors, $user) {
     global $DB;
-    global $USER;
+    global $user;
     $numquestions = get_config('tool_securityquestions', 'answerquestions');
 
     // For each question field, check response against database
@@ -99,7 +98,7 @@ function validate_injected_questions($data, $errors) {
 
         $qcontent = $DB->get_record('tool_securityquestions', array('id' => $qid));
         // Execute DB query with data
-        $setresponse = $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => $qid));
+        $setresponse = $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $user->id, 'qid' => $qid));
         // Hash response and compare to the database
         $response = hash('sha1', $response);
         if ($response != $setresponse) {
@@ -111,13 +110,12 @@ function validate_injected_questions($data, $errors) {
 
 // =============================================QUESTION SETUP=========================================================
 
-function pick_questions() {
+function pick_questions($user) {
     global $DB;
-    global $USER;
 
     // Get all questions with responses
     $numquestions = get_config('tool_securityquestions', 'answerquestions');
-    $answeredquestions = $DB->get_records('tool_securityquestions_res', array('userid' => $USER->id));
+    $answeredquestions = $DB->get_records('tool_securityquestions_res', array('userid' => $user->id));
 
     // Filter for questions that are currently active
     $answeredactive = array();
@@ -148,7 +146,7 @@ function pick_questions() {
 // ==========================================NAVIGATION INJECTION====================================================
 
 function inject_navigation_node($navigation, $user, $usercontext, $course, $coursecontext) {
-    global $USER, $PAGE;
+    global $PAGE;
 
     // Only inject if user is on the preferences page
     $onpreferencepage = $PAGE->url->compare(new moodle_url('/user/preferences.php'), URL_MATCH_BASE);

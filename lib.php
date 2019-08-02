@@ -33,14 +33,14 @@ function tool_securityquestions_extend_navigation_user_settings($navigation, $us
     inject_navigation_node($navigation, $user, $usercontext, $course, $coursecontext);
 }
 
-function tool_securityquestions_extend_login_form($mform) {
+function tool_securityquestions_extend_login_form($mform, $user) {
     require_once(__DIR__.'/locallib.php');
-    inject_security_questions($mform);
+    inject_security_questions($mform, $user);
 }
 
-function tool_securityquestions_extend_login_validation($data, $errors) {
+function tool_securityquestions_extend_login_validation($data, $errors, $user) {
     require_once(__DIR__.'/locallib.php');
-    $errors = validate_injected_questions($data, $errors);
+    $errors = validate_injected_questions($data, $errors, $user);
     return $errors;
 }
 
