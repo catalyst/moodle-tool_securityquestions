@@ -94,17 +94,17 @@ function validate_injected_questions($data, $errors) {
         // Get question response for database
         $name = 'question'.$i;
         $hiddenname = 'hiddenq'.$i;
-        $response = $data->$name;
-        $qid = $data->$hiddenname;
+        $response = $data["$name"];
+        $qid = $data["$hiddenname"];
 
         $qcontent = $DB->get_record('tool_securityquestions', array('id' => $qid));
-
+        echo var_dump($qcontent);
         // Execute DB query with data
         $setresponse = $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => $qid));
         // Hash response and compare to the database
         $response = hash('sha1', $response);
         if ($response != $setresponse) {
-            $errors[$name] = 'wawawaw';
+            $errors[$name] = get_string('formanswerfailed', 'tool_securityquestions');
         }
     }
     return $errors;

@@ -41,6 +41,7 @@ $string['formresponsesremaining'] = '{$a} additional responses required.';
 $string['formresponserecorded'] = 'Response successfully recorded for question: {$a}';
 $string['formresponseempty'] = 'Response cannot be empty.';
 $string['formanswerquestion'] = 'Enter a response to question {$a}:';
+$string['formanswerfailed'] = 'Response does not match recorded response';
 
 // Setting Strings
 $string['settingsenablename'] = 'Enable Plugin';
