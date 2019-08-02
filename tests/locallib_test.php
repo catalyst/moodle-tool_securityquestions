@@ -90,13 +90,13 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         // Add a question, test whether it can be deprecated (checking for active < min questions)
         tool_securityquestions_insert_question('question1');
         $records = tool_securityquestions_get_active_questions();
-        $this->assertEquals(false, tool_securityquestions_can_deprecate_question(reset($records->id)));
+        $this->assertEquals(false, tool_securityquestions_can_deprecate_question(reset($records)->id));
 
         // Now set minimum to 0, and test that it can be deprecated
         set_config('minquestions', 0 , 'tool_securityquestions');
-        $this->assertEquals(true, tool_securityquestions_can_deprecate_question(reset($records->id)));
+        $this->assertEquals(true, tool_securityquestions_can_deprecate_question(reset($records)->id));
 
-        //Set min back to 3, and add more questions to be higher than min that isnt 0
+        // Set min back to 3, and add more questions to be higher than min that isnt 0
         set_config('minquestions', 3 , 'tool_securityquestions');
         tool_securityquestions_insert_question('question2');
         tool_securityquestions_insert_question('question3');
@@ -115,7 +115,7 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
             $this->assertEquals(true, tool_securityquestions_can_deprecate_question($question->id));
         }
 
-        //Set min to 0, and test that a deprecated question cannot be deprecated
+        // Set min to 0, and test that a deprecated question cannot be deprecated
         set_config('minquestions', 0 , 'tool_securityquestions');
         $this->assertEquals(false, tool_securityquestions_can_deprecate_question(reset($records)->id));
     }
