@@ -183,11 +183,37 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         global $USER;
 
         // Add some questions for responses
+        tool_securityquestions_insert_question('question1');
+        tool_securityquestions_insert_question('question2');
+        tool_securityquestions_insert_question('question3');
+
+        // Ensure that there are no responses recorded
+        $count = count($DB->get_records('tool_securityquestions_res', array('userid' => $USER->id)));
+        $this->assertEquals(0, $count);
 
         // Add a response, and check it is hashed and added correctly
-        //tool_securityquestions_add_response()
+        tool_securityquestions_add_response('response1', 1);
+        tool_securityquestions_add_response('response2', 2);
+        tool_securityquestions_add_response('response3', 3);
 
+        $count2 = count($DB->get_records('tool_securityquestions_res', array('userid' => $USER->id)));
+        $this->assertEquals(3, $count2);
 
+        $this->assertEquals(hash('response1'), $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => 1)));
+        $this->assertEquals(hash('response2'), $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => 2)));
+        $this->assertEquals(hash('response3'), $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => 3)));
+
+        // Update response to a question, then check it didnt add another table, and that the entry was updated
+        tool_securityquestions_add_response('response4', 1);
+        $count3 = count($DB->get_records('tool_securityquestions_res', array('userid' => $USER->id)));
+        $this->assertEquals(3, $count3);
+
+        $this->assertEquals(hash('response4'), $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => 1)));
+
+        // Check that nothing happens for QID that doesnt exist
+        tool_securityquestions_add_response('response4', 5);
+        $count4 = count($DB->get_records('tool_securityquestions_res', array('userid' => $USER->id)));
+        $this->assertEquals(3, $count4);
     }
 }
 
