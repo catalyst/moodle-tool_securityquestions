@@ -41,6 +41,17 @@ In the above section [Security Controls](#security-controls), there is a secion 
 
 Installation
 ------------
+**Requirements:** This plugin will work natively with Moodle from version 3.8 onwards, as this is the version that the hooks required for plugin functionality were added into Moodle core, from tracker MDL-66173. If a previous version is used, the commit from MDL-66173 can be backported to a previous installation, and the plugin will be functional.
 
+Another requirement is for MDL-60470 to be included in the Moodle installation, which was added in Moodle version 3.7. If this commit is not present, users will not be prompted to set their security questions when they login after plugin setup.+
+
+**Installation:**
+To install the plugin simply drop it into the /path/to/moodle/admin/tool/securityquestions directory. When moodle is accessed it will prompt for installation of the plugin. Press upgrade database now, and the plugin will be installed.
+
+When the plugin is first installed, it will start disabled. To enable the plugin, setup steps must be performed. First, the admin settings must be configured to, with each [Security Control](#security-controls) set to a value. The defaults generally provide a sane baseline. After this, security questions must be set, for users to respond to. It is highly recommended to create **original questions**, and avoid common security questions such as "What is your mother's maiden name?".
+
+Once enough questions have been set, the admin account will be prompted to set its security questions, which indicates that the plugin is almost active. The last thing to check is to go back to the plugin admin settings, and select all of the pages that users should be prompted security questions on.
+
+For more instructions on installation, visit [the Moodle Plugin Installation Guide](https://docs.moodle.org/37/en/Installing_plugins)
 
 
