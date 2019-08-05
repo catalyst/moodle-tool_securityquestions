@@ -60,6 +60,6 @@ if ($hassiteconfig) {
                         'setpw' => get_string('settingsinjectsetpw', 'tool_securityquestions'));
 
         $settings->add(new admin_setting_configmultiselect('tool_securityquestions/injectpoints', get_string('settingsinjectpoints', 'tool_securityquestions'),
-                    get_string('settingsinjectpointsdesc', 'tool_securityquestions'), null,$forms));
+                    get_string('settingsinjectpointsdesc', 'tool_securityquestions'), null, $forms));
     }
 }
