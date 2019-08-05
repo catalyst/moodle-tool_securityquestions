@@ -51,6 +51,22 @@ function tool_securityquestions_get_active_questions() {
     return $active;
 }
 
+function tool_securityquestions_get_active_user_responses() {
+    global $DB;
+    global $USER;
+    $active = tool_securityquestions_get_active_questions();
+    $questions = array();
+
+    foreach ($active as $question) {
+        $record = $DB->get_record('tool_securityquestions_res', array('userid' => $USER->id, 'qid' => $question->id));
+        if (!empty($record)) {
+            array_push($questions, $record);
+        }
+    }
+
+    return $questions;
+}
+
 function tool_securityquestions_deprecate_question($qid) {
     global $DB;
 
@@ -65,56 +81,67 @@ function tool_securityquestions_deprecate_question($qid) {
 // ================================================FORM INJECTION FUNCTIONS============================================
 
 function tool_securityquestions_inject_security_questions($mform, $user) {
-    global $DB;
-    global $USER;
 
-    $numquestions = get_config('tool_securityquestions', 'answerquestions');
+    // Check that enough questions have been answered by the user to enable securityquestions
+    if (count(tool_securityquestions_get_active_questions()) >= get_config('tool_securityquestions', 'minuserquestions')) {
+        global $DB;
+        global $USER;
 
-    $inputarr = tool_securityquestions_pick_questions($user);
+        $numquestions = get_config('tool_securityquestions', 'answerquestions');
 
-    for ($i = 0; $i < $numquestions; $i++) {
-        // get qid from inputarr
-        $qid = $inputarr[$i];
-        $qcontent = $DB->get_field('tool_securityquestions', 'content', array('id' => $qid));
+        $inputarr = tool_securityquestions_pick_questions($user);
 
-        // Format and display to the user
-        $questionnum = $i + 1;
-        $mform->addElement('html', "<h4>Security Question $questionnum: $qcontent</h4>");
-        $mform->addElement('text', "question$i", get_string('formanswerquestion', 'tool_securityquestions', $questionnum));
-        $mform->addElement('hidden', "hiddenq$i", $qid);
+        for ($i = 0; $i < $numquestions; $i++) {
+            // get qid from inputarr
+            $qid = $inputarr[$i];
+            $qcontent = $DB->get_field('tool_securityquestions', 'content', array('id' => $qid));
+
+            // Format and display to the user
+            $questionnum = $i + 1;
+            $mform->addElement('html', "<h4>Security Question $questionnum: $qcontent</h4>");
+            $mform->addElement('text', "question$i", get_string('formanswerquestion', 'tool_securityquestions', $questionnum));
+            $mform->addElement('hidden', "hiddenq$i", $qid);
+        }
     }
 }
 
 function tool_securityquestions_validate_injected_questions($data, $errors, $user) {
-    global $DB;
-    global $USER;
 
-    $numquestions = get_config('tool_securityquestions', 'answerquestions');
+    // Check that enough questions have been answered by the user to enable securityquestions
+    if (count(tool_securityquestions_get_active_questions()) >= get_config('tool_securityquestions', 'minuserquestions')) {
+        global $DB;
+        global $USER;
 
-    // For each question field, check response against database
-    for ($i = 0; $i < $numquestions; $i++) {
-        // Get question response for database
-        $name = 'question'.$i;
-        $hiddenname = 'hiddenq'.$i;
-        $response = $data["$name"];
-        $qid = $data["$hiddenname"];
+        $numquestions = get_config('tool_securityquestions', 'answerquestions');
 
-        $qcontent = $DB->get_record('tool_securityquestions', array('id' => $qid));
-        // Execute DB query with data
-        $setresponse = $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $user->id, 'qid' => $qid));
-        // Hash response and compare to the database
-        $response = hash('sha1', $response);
-        if ($response != $setresponse) {
-            $errors[$name] = get_string('formanswerfailed', 'tool_securityquestions');
+        // For each question field, check response against database
+        for ($i = 0; $i < $numquestions; $i++) {
+            // Get question response for database
+            $name = 'question'.$i;
+            $hiddenname = 'hiddenq'.$i;
+            $response = $data["$name"];
+            $qid = $data["$hiddenname"];
+
+            $qcontent = $DB->get_record('tool_securityquestions', array('id' => $qid));
+            // Execute DB query with data
+            $setresponse = $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $user->id, 'qid' => $qid));
+            // Hash response and compare to the database
+            $response = hash('sha1', $response);
+            if ($response != $setresponse) {
+                $errors[$name] = get_string('formanswerfailed', 'tool_securityquestions');
+            }
         }
+        return $errors;
+    } else {
+        return $errors;
     }
-    return $errors;
 }
 
 // =============================================QUESTION SETUP=========================================================
 
 function tool_securityquestions_pick_questions($user) {
     global $DB;
+    global $CFG;
 
     $numquestions = get_config('tool_securityquestions', 'answerquestions');
 
@@ -134,7 +161,6 @@ function tool_securityquestions_pick_questions($user) {
 
     // If found, perform data manipulation, if not, pick new questions and store them
     if (count($temparray) >= $numquestions) {
-
         // if questions found, Make sure the length of current array is what you are expecting, if not, get first n of array
         if (count($temparray) > $numquestions) {
             $temparray = array_slice($temparray, 0, $numquestions);
