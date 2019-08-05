@@ -41,27 +41,4 @@ class set_questions_form extends moodleform {
         $errors = parent::validation($data, $files);
         return $errors;
     }
-
-    // =========================================DISPLAY AND VALIDATION FUNCTIONS=========================================
-
-    private function generate_table($mform) {
-        global $DB;
-        // Get records from database for populating table
-        $questions = $DB->get_records('tool_securityquestions');
-
-        $table = new html_table();
-        $table->head = array('ID', 'Question', 'Deprecated');
-        $table->colclasses = array('centeralign', 'leftalign', 'centeralign');
-
-        foreach ($questions as $question) {
-            if ($question->deprecated == 1) {
-                $dep = 'Yes';
-            } else {
-                $dep = 'No';
-            }
-
-            $table->data[] = array($question->id, $question->content, $dep);
-        }
-        $mform->addElement('html', html_writer::table($table));
-    }
 }

@@ -159,8 +159,14 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         // Setup some questions, and some responses
         for ($i = 1; $i < 6; $i++) {
             tool_securityquestions_insert_question("question$i");
-            $response = hash('sha1', "response$i");
-            tool_securityquestions_add_response($response, $i);
+        }
+
+        $j = 1;
+        $active = tool_securityquestions_get_active_questions();
+        foreach ($active as $question) {
+            $response = hash('sha1', "response$j");
+            tool_securityquestions_add_response($response, $question->id);
+            $j++;
         }
 
         // Verify that the table for picked questions is empty
@@ -168,12 +174,26 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertTrue(empty($table));
 
         // Pick some questions, then check table
-        $questions = tool_securityquestions_pick_questions();
+        $questions = tool_securityquestions_pick_questions($USER);
         $table2 = $DB->get_records('tool_securityquestions_ans');
         $this->assertFalse(empty($table2));
 
-        //Now try and get questions again, verify the same
-        $this->assertEquals($questions, tool_securityquestions_pick_questions());
+        // Now try and get questions again, verify the same
+        $this->assertEquals($questions, tool_securityquestions_pick_questions($USER));
+
+        // Set period of questions to 5 seconds.
+        set_config('questionduration', 5, 'tool_securityquestions');
+
+        // wait 5 seconds to ensure fresh question choice
+        sleep(5);
+        $questions2 = tool_securityquestions_pick_questions($USER);
+        $questions3 = tool_securityquestions_pick_questions($USER);
+        $this->assertEquals($questions2, $questions3);
+        sleep(5);
+        // Potentially buggy, if random questions picked = previous choice, not sure
+        $questions4 = tool_securityquestions_pick_questions($USER);
+        $this->assertNotEquals($questions4, $questions2);
+        $this->assertNotEquals($questions4, $questions3);
     }
 
     public function test_add_response() {
@@ -188,30 +208,37 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         tool_securityquestions_insert_question('question3');
 
         // Ensure that there are no responses recorded
-        $count = count($DB->get_records('tool_securityquestions_res', array('userid' => $USER->id)));
+        $questions = $DB->get_records('tool_securityquestions_res', array('userid' => $USER->id));
+        $count = count($questions);
         $this->assertEquals(0, $count);
 
-        // Add a response, and check it is hashed and added correctly
-        tool_securityquestions_add_response('response1', 1);
-        tool_securityquestions_add_response('response2', 2);
-        tool_securityquestions_add_response('response3', 3);
+        // Add responses, and check it is hashed and added correctly
+        $active = tool_securityquestions_get_active_questions();
+        $i = 1;
+        $this->assertEquals(3, count($active));
 
+        foreach ($active as $question) {
+            tool_securityquestions_add_response("response$i", $question->id);
+            $i++;
+        }
         $count2 = count($DB->get_records('tool_securityquestions_res', array('userid' => $USER->id)));
         $this->assertEquals(3, $count2);
 
-        $this->assertEquals(hash('response1'), $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => 1)));
-        $this->assertEquals(hash('response2'), $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => 2)));
-        $this->assertEquals(hash('response3'), $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => 3)));
+        $j = 1;
+        foreach ($active as $question) {
+            $this->assertEquals(hash('sha1', "response$j"), $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => $question->id)));
+            $j++;
+        }
 
         // Update response to a question, then check it didnt add another table, and that the entry was updated
-        tool_securityquestions_add_response('response4', 1);
+        tool_securityquestions_add_response('response4', reset($active)->id);
         $count3 = count($DB->get_records('tool_securityquestions_res', array('userid' => $USER->id)));
         $this->assertEquals(3, $count3);
 
-        $this->assertEquals(hash('response4'), $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => 1)));
+        $this->assertEquals(hash('sha1', 'response4'), $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => reset($active)->id)));
 
         // Check that nothing happens for QID that doesnt exist
-        tool_securityquestions_add_response('response4', 5);
+        $this->assertEquals(false, tool_securityquestions_add_response('response5', 10000));
         $count4 = count($DB->get_records('tool_securityquestions_res', array('userid' => $USER->id)));
         $this->assertEquals(3, $count4);
     }

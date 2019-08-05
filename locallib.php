@@ -47,7 +47,7 @@ function tool_securityquestions_can_deprecate_question($qid) {
 
 function tool_securityquestions_get_active_questions() {
     global $DB;
-    $active = $DB->get_records('tool_securityquestions', array('deprecated' => 0));
+    $active = $DB->get_records('tool_securityquestions', array('deprecated' => 0), 'id ASC');
     return $active;
 }
 
@@ -235,7 +235,7 @@ function require_question_responses() {
     }
 }
 
-// =============================================SET QUESTIONS============================================
+// =============================================SET QUESTIONS AND RESPONSES============================================
 
 function tool_securityquestions_insert_question($question) {
     global $DB;
@@ -256,12 +256,19 @@ function tool_securityquestions_add_response($response, $qid) {
     global $USER;
     global $DB;
 
-    // Hash response
-    $response = hash('sha1', $response);
-    // Check if response to question already exists, if so update, else, create record
-    if ($DB->record_exists('tool_securityquestions_res', array('qid' => $qid, 'userid' => $USER->id))) {
-        $DB->set_field('tool_securityquestions_res', 'response', $response, array('qid' => $qid, 'userid' => $USER->id));
+    // First check if question actually exists to set a response for
+    if ($DB->record_exists('tool_securityquestions', array('id' => $qid))) {
+        // Hash response
+        $response = hash('sha1', $response);
+        // Check if response to question already exists, if so update, else, create record
+        if ($DB->record_exists('tool_securityquestions_res', array('qid' => $qid, 'userid' => $USER->id))) {
+            $DB->set_field('tool_securityquestions_res', 'response', $response, array('qid' => $qid, 'userid' => $USER->id));
+            return true;
+        } else {
+            $DB->insert_record('tool_securityquestions_res', array('qid' => $qid, 'userid' => $USER->id, 'response' => $response));
+            return true;
+        }
     } else {
-        $DB->insert_record('tool_securityquestions_res', array('qid' => $qid, 'userid' => $USER->id, 'response' => $response));
+        return false;
     }
 }

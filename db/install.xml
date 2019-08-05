@@ -18,7 +18,7 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User ID for response"/>
-        <FIELD NAME="qid" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Question ID for response"/>
+        <FIELD NAME="qid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Question ID for response"/>
         <FIELD NAME="response" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Response to Question"/>
       </FIELDS>
       <KEYS>
