@@ -55,5 +55,11 @@ if ($hassiteconfig) {
 
         $settings->add(new admin_setting_configduration('tool_securityquestions/questionduration', get_string('settingsquestionduration', 'tool_securityquestions'),
                     get_string('settingsquestiondurationdesc', 'tool_securityquestions'), 5 * MINSECS, MINSECS));
+
+        $forms = array('changepw' => get_string('settingsinjectchangepw', 'tool_securityquestions'),
+                        'setpw' => get_string('settingsinjectsetpw', 'tool_securityquestions'));
+
+        $settings->add(new admin_setting_configmultiselect('tool_securityquestions/injectpoints', get_string('settingsinjectpoints', 'tool_securityquestions'),
+                    get_string('settingsinjectpointsdesc', 'tool_securityquestions'), null,$forms));
     }
 }

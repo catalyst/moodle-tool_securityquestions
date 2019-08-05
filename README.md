@@ -1,10 +1,14 @@
+<a href="https://travis-ci.org/Peterburnett/moodle-tool_securityquestions">
+<img src="https://travis-ci.org/Peterburnett/moodle-tool_securityquestions.svg?branch=master">
+</a>
+
 # Security Questions 2FA
 
 This plugin adds a framework for adding and enforcing security questions for users to perform certain account security actions, such as changing or recovering passwords.
 
 * [Security Controls](#security-controls)
-* [Setting Questions](#setting-questions)
-* [Setting Responses](#setting-reponses)
+* [Setting Questions](#modify-security-questions)
+* [Setting Responses](#setting-question-reponses)
 * [Installation](#installation)
 
 Security Controls
@@ -15,6 +19,10 @@ Security Controls
 
 **Questions Required for Verification:** This control is the minimum number of questions that users must answer when they attempt to perform security related account actions, such as changing or recovering a password. Users must answer these questions correctly in the same session. E.g. users will be presented with *n* security questions that they have provided responses to. They must answer both correctly on the same page, and submit at the same time, to proceed to account security controls. If a user fails the security questions, they will be presented with another set of questions, until they succeed, or fail 3 times, at which point they will be unable to perform any account based actions that require higher security verification. Users most contact an Administrator to unlock their questions.
 
+**Question Duration** When users are presented with questions that need to be answered for verification, they will be active for a certain period of time. This control specifies the duration of the active period. When a user first visits a page that requires verification, the questions will be generated, and presented to the user. This is the start point of the period. If users reload the page, or visit other pages that require verification, they will be presented the same question, until the end of the period. Once the period has passed, and a user visits a page that requires verification, they will be presented with fresh questions.
+
+**Injection Points for Security Questions** This control allows administrators to set all of the forms that they wish the security questions plugin to inject into. These forms will require answering of security questions before the form can validate, and the action can be completed. Without any forms being selected here, the plugin will not inject into any points, and will not be enabled, so it is critical that desired forms are selected here.
+
 Modify Security Questions
 -------------------------
 This page allows an admin to set the security questions for use in the Moodle instance. Entering a question at the top, and clicking Submit Question, will add this questions to the active question pool. Questions by default start not deprecated, until the questions are manually deprecated by an Admin. The plugin will not be enabled until the number of active security questions is equal to or higher than the number set in the 'Minimum number of active security questions' security control.
@@ -24,4 +32,15 @@ At the bottom of this page, there is a field for entering question ID's. When th
 Setting Question Responses
 --------------------------
 When a user first logs in after the plugin installation, if the plugin is active, with enough questions being set, users will be prompted to set responses to the security questions. They must set enough responses set to satisfy the security control 'Minimum number of User Answered Questions'. Once enough questions have been set, users may navigate away from the page, however if enough questions are not responded to, users will be directed back to the page to answer additional responses.
+
+After initial responses are set, if users wish to add additional responses, or change current responses, they may do so by visiting User Preferences->Edit Security Question Responses, which will lead them back to the set_responses page.
+
+When Questions are Presented
+----------------------------
+In the above section [Security Controls](#security-controls), there is a secion of controls ***Active Callbacks*** that has a list of callbacks that the plugin should inject verification into. Any section that is enabled in this control will have security questions injected into the form definition for these functions. If no forms are selected, users will be prompted to set their questions, and will be able to modify them, but they will never be required to answer questions. Therefore it is essential that forms are selected to be injected into.
+
+Installation
+------------
+
+
 

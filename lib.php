@@ -38,8 +38,21 @@ function tool_securityquestions_extend_navigation_user_settings($navigation, $us
 
 function tool_securityquestions_extend_login_form($mform, $user) {
     if (get_config('tool_securityquestions', 'enable_plugin')) {
-        require_once(__DIR__.'/locallib.php');
-        tool_securityquestions_inject_security_questions($mform, $user);
+        // Check if injection point is enabled
+        global $PAGE;
+
+        // Change Password form
+        if ((strpos($PAGE->url, 'change_password.php') !== false) &&
+        (strpos(get_config('tool_securityquestions', 'injectpoints'), 'changepw')!== false)) {
+            require_once(__DIR__.'/locallib.php');
+            tool_securityquestions_inject_security_questions($mform, $user);
+
+        // Set Pasword form
+        } else if ((strpos($PAGE->url, 'set_password.php') !== false) &&
+        (strpos(get_config('tool_securityquestions', 'injectpoints'), 'setpw')!== false)) {
+            require_once(__DIR__.'/locallib.php');
+            tool_securityquestions_inject_security_questions($mform, $user);
+        }
     }
 }
 

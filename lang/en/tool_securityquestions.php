@@ -54,4 +54,7 @@ $string['settingsanswerquestions'] = 'Questions required for verification';
 $string['settingsanswerquestionsdesc'] = 'The number of questions required for users to verify themselves to perform account security actions.';
 $string['settingsquestionduration'] = 'Question Duration';
 $string['settingsquestiondurationdesc'] = 'The duration that questions are active when selected on a high-security page. After this period, new questions will be selected.';
-
+$string['settingsinjectpoints'] = 'Injection Points for Security Questions';
+$string['settingsinjectpointsdesc'] = 'Select all forms that the security questions should be injected into.';
+$string['settingsinjectchangepw'] = 'Change Password Form.';
+$string['settingsinjectsetpw'] = 'Set Password Form.';
