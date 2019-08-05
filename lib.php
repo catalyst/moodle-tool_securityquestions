@@ -29,18 +29,24 @@ function tool_securityquestions_after_require_login() {
 }
 
 function tool_securityquestions_extend_navigation_user_settings($navigation, $user, $usercontext, $course, $coursecontext) {
-    require_once(__DIR__.'/locallib.php');
-    tool_securityquestions_inject_navigation_node($navigation, $user, $usercontext, $course, $coursecontext);
+    if (get_config('tool_securityquestions', 'enable_plugin')) {
+        require_once(__DIR__.'/locallib.php');
+        tool_securityquestions_inject_navigation_node($navigation, $user, $usercontext, $course, $coursecontext);
+    }
 }
 
 function tool_securityquestions_extend_login_form($mform, $user) {
-    require_once(__DIR__.'/locallib.php');
-    tool_securityquestions_inject_security_questions($mform, $user);
+    if (get_config('tool_securityquestions', 'enable_plugin')) {
+        require_once(__DIR__.'/locallib.php');
+        tool_securityquestions_inject_security_questions($mform, $user);
+    }
 }
 
 function tool_securityquestions_extend_login_validation($data, $errors, $user) {
-    require_once(__DIR__.'/locallib.php');
-    $errors = tool_securityquestions_validate_injected_questions($data, $errors, $user);
-    return $errors;
+    if (get_config('tool_securityquestions', 'enable_plugin')) {
+        require_once(__DIR__.'/locallib.php');
+        $errors = tool_securityquestions_validate_injected_questions($data, $errors, $user);
+        return $errors;
+    }
 }
 

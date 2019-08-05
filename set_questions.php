@@ -47,7 +47,7 @@ if ($form->is_cancelled()) {
     $question = $fromform->questionentry;
     if ($question != '') {
         // Check whether record with that question exists
-        insert_question($question);
+        tool_securityquestions_insert_question($question);
     }
 
     // Check if there is a question to be deprecated

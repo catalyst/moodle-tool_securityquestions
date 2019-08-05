@@ -66,9 +66,11 @@ function tool_securityquestions_deprecate_question($qid) {
 
 function tool_securityquestions_inject_security_questions($mform, $user) {
     global $DB;
+    global $USER;
+
+    $numquestions = get_config('tool_securityquestions', 'answerquestions');
 
     $inputarr = pick_questions($user);
-    $numquestions = get_config('tool_securityquestions', 'answerquestions');
 
     for ($i = 0; $i < $numquestions; $i++) {
         // get qid from inputarr
@@ -85,6 +87,8 @@ function tool_securityquestions_inject_security_questions($mform, $user) {
 
 function tool_securityquestions_validate_injected_questions($data, $errors, $user) {
     global $DB;
+    global $USER;
+
     $numquestions = get_config('tool_securityquestions', 'answerquestions');
 
     // For each question field, check response against database
@@ -111,35 +115,83 @@ function tool_securityquestions_validate_injected_questions($data, $errors, $use
 
 function pick_questions($user) {
     global $DB;
+    global $USER;
 
-    // Get all questions with responses
     $numquestions = get_config('tool_securityquestions', 'answerquestions');
-    $answeredquestions = $DB->get_records('tool_securityquestions_res', array('userid' => $user->id));
 
-    // Filter for questions that are currently active
-    $answeredactive = array();
+    //First, check if user has had questions selected in the last 5 mins
+    $currentquestions = $DB->get_records('tool_securityquestions_ans', array('userid' => $USER->id), 'id ASC');
 
-    $j = 0;
-    foreach ($answeredquestions as $question) {
-        $deprecated = $DB->get_field('tool_securityquestions', 'deprecated', array('id' => $question->qid));
-        if ($deprecated == 0) {
-            $answeredactive[$j] = $question;
-            $j++;
+    // Get array of questions less than 5 mins old
+    $temparray = array();
+    foreach ($currentquestions as $question) {
+        //Check if timecreated is <5 mins ago
+        $period = 5 * MINSECS;
+        $currenttime = time();
+        if ($question->timecreated >= ($currenttime - $period)) {
+            array_push($temparray, $question);
         }
     }
 
-    // Randomly pick n questions to be answered
-    $pickedkeys = array_rand($answeredactive, $numquestions);
+    //If found, perform data manipulation, if not, pick new questions and store them
+    if (count($temparray) >= $numquestions) {
 
-    // Create array to pass questions ids to the form
-    $inputarr = array();
-    $i = 0;
-    foreach ($pickedkeys as $key) {
-        $inputarr[$i] = $answeredactive[$key]->qid;
-        $i++;
+        // if questions found, Make sure the length of current array is what you are expecting, if not, get first n of array
+        if (count($temparray) > $numquestions) {
+            $temparray = array_slice($temparray, 0, $numquestions);
+        }
+
+        $inputarr = array();
+        $i = 0;
+        // Change array to be the format required for form injection
+        foreach ($temparray as $question) {
+            $inputarr[$i] = $question->qid;
+            $i++;
+        }
+
+        return $inputarr;
+    
+    } else {
+
+        // Get all questions with responses
+        $answeredquestions = $DB->get_records('tool_securityquestions_res', array('userid' => $user->id), 'qid ASC');
+
+        // Filter for questions that are currently active
+        $answeredactive = array();
+
+        $j = 0;
+        foreach ($answeredquestions as $question) {
+            $deprecated = $DB->get_field('tool_securityquestions', 'deprecated', array('id' => $question->qid));
+            if ($deprecated == 0) {
+                $answeredactive[$j] = $question;
+                $j++;
+            }
+        }
+
+        // Randomly pick n questions to be answered
+        $pickedkeys = array_rand($answeredactive, $numquestions);
+
+        // Create array to pass questions ids to the form
+        $inputarr = array();
+        $i = 0;
+        foreach ($pickedkeys as $key) {
+            $inputarr[$i] = $answeredactive[$key]->qid;
+            $i++;
+        }
+        
+        // Now questions have been picked, delete all records from table for user
+        $DB->delete_records('tool_securityquestions_ans', array('userid' => $USER->id));
+
+        // Now add current records for picked questions
+        $j = 0;
+        foreach ($inputarr as $question) {
+            $time = time();
+            $DB->insert_record('tool_securityquestions_ans', array('userid' => $USER->id, 'qid' => $inputarr[$j], 'timecreated' => $time));
+            $j++;
+        }
+
+        return $inputarr;
     }
-
-    return $inputarr;
 }
 
 // ==========================================NAVIGATION INJECTION====================================================
@@ -199,5 +251,4 @@ function tool_securityquestions_insert_question($question) {
     } else {
         return false;
     }
-
 }
