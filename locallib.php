@@ -115,12 +115,11 @@ function tool_securityquestions_validate_injected_questions($data, $errors, $use
 
 function tool_securityquestions_pick_questions($user) {
     global $DB;
-    global $USER;
 
     $numquestions = get_config('tool_securityquestions', 'answerquestions');
 
     // First, check if user has had questions selected in the last 5 mins
-    $currentquestions = $DB->get_records('tool_securityquestions_ans', array('userid' => $USER->id), 'id ASC');
+    $currentquestions = $DB->get_records('tool_securityquestions_ans', array('userid' => $user->id), 'id ASC');
 
     // Get array of questions less than 5 mins old
     $temparray = array();
@@ -180,13 +179,13 @@ function tool_securityquestions_pick_questions($user) {
         }
 
         // Now questions have been picked, delete all records from table for user
-        $DB->delete_records('tool_securityquestions_ans', array('userid' => $USER->id));
+        $DB->delete_records('tool_securityquestions_ans', array('userid' => $user->id));
 
         // Now add current records for picked questions
         $j = 0;
         foreach ($inputarr as $question) {
             $time = time();
-            $DB->insert_record('tool_securityquestions_ans', array('userid' => $USER->id, 'qid' => $inputarr[$j], 'timecreated' => $time));
+            $DB->insert_record('tool_securityquestions_ans', array('userid' => $user->id, 'qid' => $inputarr[$j], 'timecreated' => $time));
             $j++;
         }
 

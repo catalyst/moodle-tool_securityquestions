@@ -175,6 +175,20 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         //Now try and get questions again, verify the same
         $this->assertEquals($questions, tool_securityquestions_pick_questions());
     }
+
+    public function test_add_response() {
+        $this->resetAfterTest(true);
+        global $DB;
+        global $CFG;
+        global $USER;
+
+        // Add some questions for responses
+
+        // Add a response, and check it is hashed and added correctly
+        //tool_securityquestions_add_response()
+
+
+    }
 }
 
 
