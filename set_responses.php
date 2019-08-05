@@ -26,6 +26,7 @@ require_once(dirname(__FILE__) . '/../../../config.php');
 require_once($CFG->libdir . '/navigationlib.php');
 require_once($CFG->dirroot.'/user/editlib.php');
 require_once(__DIR__.'/set_responses_form.php');
+require_once(__DIR__.'/locallib.php');
 
 global $CFG, $SESSION, $PAGE, $USER;
 
@@ -49,14 +50,7 @@ if ($form->is_cancelled()) {
 } else if ($fromform = $form->get_data()) {
     $qid = $fromform->questions;
     $response = $fromform->response;
-    // Hash response
-    $response = hash('sha1', $response);
-    // Check if response to question already exists, if so update, else, create record
-    if ($DB->record_exists('tool_securityquestions_res', array('qid' => $qid, 'userid' => $USER->id))) {
-        $DB->set_field('tool_securityquestions_res', 'response', $response, array('qid' => $qid, 'userid' => $USER->id));
-    } else {
-        $DB->insert_record('tool_securityquestions_res', array('qid' => $qid, 'userid' => $USER->id, 'response' => $response));
-    }
+    tool_securityquestions_add_response($response, $qid);
 
     // Set flags for display notification
     $notifysuccess = true;

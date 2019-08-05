@@ -70,7 +70,7 @@ function tool_securityquestions_inject_security_questions($mform, $user) {
 
     $numquestions = get_config('tool_securityquestions', 'answerquestions');
 
-    $inputarr = pick_questions($user);
+    $inputarr = tool_securityquestions_pick_questions($user);
 
     for ($i = 0; $i < $numquestions; $i++) {
         // get qid from inputarr
@@ -113,7 +113,7 @@ function tool_securityquestions_validate_injected_questions($data, $errors, $use
 
 // =============================================QUESTION SETUP=========================================================
 
-function pick_questions($user) {
+function tool_securityquestions_pick_questions($user) {
     global $DB;
     global $USER;
 
@@ -250,5 +250,19 @@ function tool_securityquestions_insert_question($question) {
         }
     } else {
         return false;
+    }
+}
+
+function tool_securityquestions_add_response($response, $qid) {
+    global $USER;
+    global $DB;
+
+    // Hash response
+    $response = hash('sha1', $response);
+    // Check if response to question already exists, if so update, else, create record
+    if ($DB->record_exists('tool_securityquestions_res', array('qid' => $qid, 'userid' => $USER->id))) {
+        $DB->set_field('tool_securityquestions_res', 'response', $response, array('qid' => $qid, 'userid' => $USER->id));
+    } else {
+        $DB->insert_record('tool_securityquestions_res', array('qid' => $qid, 'userid' => $USER->id, 'response' => $response));
     }
 }

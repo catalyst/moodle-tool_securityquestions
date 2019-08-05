@@ -149,6 +149,32 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $active3 = tool_securityquestions_get_active_questions();
         $this->assertEquals(0, count($active3));
     }
+
+    public function test_pick_questions() {
+        $this->resetAfterTest(true);
+        global $DB;
+        global $CFG;
+        global $USER;
+
+        // Setup some questions, and some responses
+        for ($i = 1; $i < 6; $i++) {
+            tool_securityquestions_insert_question("question$i");
+            $response = hash('sha1', "response$i");
+            tool_securityquestions_add_response($response, $i);
+        }
+
+        // Verify that the table for picked questions is empty
+        $table = $DB->get_records('tool_securityquestions_ans');
+        $this->assertTrue(empty($table));
+
+        // Pick some questions, then check table
+        $questions = tool_securityquestions_pick_questions();
+        $table2 = $DB->get_records('tool_securityquestions_ans');
+        $this->assertFalse(empty($table2));
+
+        //Now try and get questions again, verify the same
+        $this->assertEquals($questions, tool_securityquestions_pick_questions());
+    }
 }
 
 
