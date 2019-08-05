@@ -52,5 +52,8 @@ if ($hassiteconfig) {
 
         $settings->add(new admin_setting_configtext('tool_securityquestions/answerquestions', get_string('settingsanswerquestions', 'tool_securityquestions'),
                     get_string('settingsanswerquestionsdesc', 'tool_securityquestions'), 2, PARAM_INT));
+
+        $settings->add(new admin_setting_configduration('tool_passwordvalidator/questionduration', get_string('settingsquestionduration', 'tool_securityquestions'),
+                    get_string('settingsquestiondurationdesc', 'tool_securityquestions'), 5*MINSECS, MINSECS));
     }
 }

@@ -126,7 +126,7 @@ function pick_questions($user) {
     $temparray = array();
     foreach ($currentquestions as $question) {
         //Check if timecreated is <5 mins ago
-        $period = 5 * MINSECS;
+        $period = get_config('tool_securityquestions', 'questionduration');
         $currenttime = time();
         if ($question->timecreated >= ($currenttime - $period)) {
             array_push($temparray, $question);

@@ -52,4 +52,6 @@ $string['settingsminuserquestions'] = 'Minimum number of user answered questions
 $string['settingsminuserquestionsdesc'] = 'Enter the minimum number of active security questions that a user must answer before they are no longer prompted.';
 $string['settingsanswerquestions'] = 'Questions required for verification';
 $string['settingsanswerquestionsdesc'] = 'The number of questions required for users to verify themselves to perform account security actions.';
+$string['settingsquestionduration'] = 'Question Duration';
+$string['settingsquestiondurationdesc'] = 'The duration that questions are active when selected on a high-security page. After this period, new questions will be selected.';
 
