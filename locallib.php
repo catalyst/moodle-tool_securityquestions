@@ -119,13 +119,13 @@ function pick_questions($user) {
 
     $numquestions = get_config('tool_securityquestions', 'answerquestions');
 
-    //First, check if user has had questions selected in the last 5 mins
+    // First, check if user has had questions selected in the last 5 mins
     $currentquestions = $DB->get_records('tool_securityquestions_ans', array('userid' => $USER->id), 'id ASC');
 
     // Get array of questions less than 5 mins old
     $temparray = array();
     foreach ($currentquestions as $question) {
-        //Check if timecreated is <5 mins ago
+        // Check if timecreated is <5 mins ago
         $period = get_config('tool_securityquestions', 'questionduration');
         $currenttime = time();
         if ($question->timecreated >= ($currenttime - $period)) {
@@ -133,7 +133,7 @@ function pick_questions($user) {
         }
     }
 
-    //If found, perform data manipulation, if not, pick new questions and store them
+    // If found, perform data manipulation, if not, pick new questions and store them
     if (count($temparray) >= $numquestions) {
 
         // if questions found, Make sure the length of current array is what you are expecting, if not, get first n of array
@@ -150,7 +150,7 @@ function pick_questions($user) {
         }
 
         return $inputarr;
-    
+
     } else {
 
         // Get all questions with responses
@@ -178,7 +178,7 @@ function pick_questions($user) {
             $inputarr[$i] = $answeredactive[$key]->qid;
             $i++;
         }
-        
+
         // Now questions have been picked, delete all records from table for user
         $DB->delete_records('tool_securityquestions_ans', array('userid' => $USER->id));
 
