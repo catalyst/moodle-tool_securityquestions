@@ -23,12 +23,17 @@
  */
 
 require_once(dirname(__FILE__) . '/../../../config.php');
-require_once($CFG->libdir . '/navigationlib.php');
-require_once($CFG->dirroot.'/user/editlib.php');
 require_once(__DIR__.'/set_responses_form.php');
 require_once(__DIR__.'/locallib.php');
 
 global $CFG, $SESSION, $PAGE, $USER;
+
+$courseid = optional_param('courseid', SITEID, PARAM_INT);
+$url = new moodle_url('/user/preferences.php');
+if ($courseid !== SITEID) {
+    $url->param('courseid', $courseid);
+}
+$PAGE->set_url($url);
 
 $PAGE->set_title('Edit Security Question Responses');
 $PAGE->set_heading(get_string('setresponsespagestring', 'tool_securityquestions'));
@@ -37,11 +42,7 @@ $PAGE->set_context(context_user::instance($USER->id));
 $notifysuccess = false;
 $notifycontent = '';
 
-if ($SESSION->wantsurl == $PAGE->url) {
-    $prevurl = new moodle_url('/user/preferences.php');
-} else {
-    $prevurl = $SESSION->wantsurl;
-}
+$prevurl = new moodle_url('/user/preferences.php');
 
 $form = new set_responses_form();
 if ($form->is_cancelled()) {

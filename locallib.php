@@ -235,6 +235,11 @@ function tool_securityquestions_inject_navigation_node($navigation, $user, $user
         return null;
     }
 
+    // Dont inject if not enough questions are set
+    if (count(tool_securityquestions_get_active_questions()) < get_config('tool_securityquestions', 'minquestions')) {
+        return null;
+    }
+
     $url = new moodle_url('/admin/tool/securityquestions/set_responses.php');
     $node = navigation_node::create(get_string('setresponsessettingsmenu', 'tool_securityquestions'), $url,
             navigation_node::TYPE_SETTING);
