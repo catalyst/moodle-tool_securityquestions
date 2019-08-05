@@ -242,6 +242,42 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $count4 = count($DB->get_records('tool_securityquestions_res', array('userid' => $USER->id)));
         $this->assertEquals(3, $count4);
     }
+
+    public function test_validate_injected_questions() {
+        $this->resetAfterTest(true);
+        global $USER;
+        global $DB;
+        // Add questions and responses to validate against
+        tool_securityquestions_insert_question('question1');
+        tool_securityquestions_insert_question('question2');
+        tool_securityquestions_insert_question('question3');
+
+        // Setup fake data object to validate questions against with correct responses
+        $data = array();
+
+        $active = tool_securityquestions_get_active_questions();
+        $i = 0;
+        foreach ($active as $question) {
+            tool_securityquestions_add_response("response$i", $question->id);
+            $data["question$i"] = "response$i";
+            $data["hiddenq$i"] = $question->id;
+            $i++;
+        }
+
+        $errors = array();
+
+        // Test that validation passed, and no errors were returned
+        $errors = tool_securityquestions_validate_injected_questions($data, $errors, $USER);
+        $this->assertEquals(array(), $errors);
+
+        $data["question0"] = "badresponse1";
+        $data["question1"] = "badresponse2";
+
+        $errors2 = array();
+        // Test that validation failed, and errors were returned
+        $errors2 = tool_securityquestions_validate_injected_questions($data, $errors2, $USER);
+        $this->assertNotEquals(array(), $errors2);
+    }
 }
 
 
