@@ -37,7 +37,7 @@ After initial responses are set, if users wish to add additional responses, or c
 
 When Questions are Presented
 ----------------------------
-In the above section [Security Controls](#security-controls), there is a secion of controls ***Active Callbacks*** that has a list of callbacks that the plugin should inject verification into. Any section that is enabled in this control will have security questions injected into the form definition for these functions. If no forms are selected, users will be prompted to set their questions, and will be able to modify them, but they will never be required to answer questions. Therefore it is essential that forms are selected to be injected into.
+In the above section [Security Controls](#security-controls), there is a secion of controls **Injection Points for Security Questions** that has a list of callbacks that the plugin should inject verification into. Any section that is enabled in this control will have security questions injected into the form definition for these functions. If no forms are selected, users will be prompted to set their questions, and will be able to modify them, but they will never be required to answer questions. Therefore it is essential that forms are selected to be injected into.
 
 Installation
 ------------
