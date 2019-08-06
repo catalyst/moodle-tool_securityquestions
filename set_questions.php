@@ -61,7 +61,9 @@ if ($form->is_cancelled()) {
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('setsecurityquestionspagestring', 'tool_securityquestions'));
 
+echo '<br>';
 generate_table();
+echo '<br>';
 
 $form->display();
 
