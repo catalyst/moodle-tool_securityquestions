@@ -63,5 +63,6 @@ $string['settingsinjectsetpw'] = 'Set Password Form.';
 $string['forcedconfig'] = 'Settings are read only, configuration is forced in template file: ';
 $string['badconfigload'] = 'Unable to load template configuration file. Check variables are correct, and that template is inside the templates folder. - ';
 $string['configloc'] = ' at location: ';
-$string['passwordconfigpath'] = '/config_policies/{$a}.php';
+$string['configpath'] = '/config_policies/{$a}.php';
+$string['templateforced-on'] = 'This template enforces the default settings for the security controls, and ensures that users will always have enough questions to respond to, and enough responses to use for validation.';
 
