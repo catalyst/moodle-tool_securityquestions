@@ -278,6 +278,43 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $errors2 = tool_securityquestions_validate_injected_questions($data, $errors2, $USER);
         $this->assertNotEquals(array(), $errors2);
     }
+
+    public function test_get_active_user_responses() {
+        $this->resetAfterTest(true);
+        global $USER;
+        global $DB;
+        // Set minimum number of questions to 1
+        set_config('minquestions', 1 , 'tool_securityquestions');
+
+        // Add questions and responses to validate against
+        tool_securityquestions_insert_question('question1');
+        tool_securityquestions_insert_question('question2');
+        tool_securityquestions_insert_question('question3');
+
+        // Get all active questions and set responses
+        $active = tool_securityquestions_get_active_questions();
+        $i = 0;
+        foreach ($active as $question) {
+            tool_securityquestions_add_response("response$i", $question->id);
+            $i++;
+        }
+
+        // Verify that number of responses recorded = number of active
+        $this->assertEquals(count(tool_securityquestions_get_active_user_responses()), count($active));
+
+        // Add more questions, dont record responses
+        tool_securityquestions_insert_question('question4');
+        tool_securityquestions_insert_question('question5');
+
+        // Check that active responses is still the same
+        $this->assertEquals(count(tool_securityquestions_get_active_user_responses()), 3);
+        $active2 = tool_securityquestions_get_active_questions();
+        $this->assertEquals(count($active2), 5);
+
+        //Now deprecate a question with a response and ensure amount drops
+        $this->assertEquals(true, tool_securityquestions_deprecate_question(reset($active)->id));
+        $this->assertEquals(count(tool_securityquestions_get_active_user_responses()), 2);
+    }
 }
 
 

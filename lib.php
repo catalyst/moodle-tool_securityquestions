@@ -36,26 +36,6 @@ function tool_securityquestions_extend_navigation_user_settings($navigation, $us
     }
 }
 
-/*function tool_securityquestions_extend_change_password_form($mform, $user) {
-    if (get_config('tool_securityquestions', 'enable_plugin')) {
-        // Check if injection point is enabled
-        global $PAGE;
-
-        if ((strpos($PAGE->url, 'change_password.php') !== false) &&
-        (strpos(get_config('tool_securityquestions', 'injectpoints'), 'changepw') !== false)) {
-            // Change Password form
-            require_once(__DIR__.'/locallib.php');
-            tool_securityquestions_inject_security_questions($mform, $user);
-
-        } else if ((strpos($PAGE->url, 'set_password.php') !== false) &&
-        (strpos(get_config('tool_securityquestions', 'injectpoints'), 'setpw') !== false)) {
-            // Set Password form
-            require_once(__DIR__.'/locallib.php');
-            tool_securityquestions_inject_security_questions($mform, $user);
-        }
-    }
-}*/
-
 function tool_securityquestions_extend_change_password_form($mform, $user) {
     if (get_config('tool_securityquestions', 'enable_plugin')) {
         require_once(__DIR__.'/locallib.php');
@@ -70,12 +50,4 @@ function tool_securityquestions_extend_change_password_validation($data, $errors
         return $errors;
     }
 }
-
-/*function tool_securityquestions_extend_login_validation($data, $errors, $user) {
-    if (get_config('tool_securityquestions', 'enable_plugin')) {
-        require_once(__DIR__.'/locallib.php');
-        $errors = tool_securityquestions_validate_injected_questions($data, $errors, $user);
-        return $errors;
-    }
-}*/
 
