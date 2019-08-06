@@ -58,3 +58,10 @@ $string['settingsinjectpoints'] = 'Injection Points for Security Questions';
 $string['settingsinjectpointsdesc'] = 'Select all forms that the security questions should be injected into.';
 $string['settingsinjectchangepw'] = 'Change Password Form.';
 $string['settingsinjectsetpw'] = 'Set Password Form.';
+
+// Template Strings
+$string['forcedconfig'] = 'Settings are read only, configuration is forced in template file: ';
+$string['badconfigload'] = 'Unable to load template configuration file. Check variables are correct, and that template is inside the templates folder. - ';
+$string['configloc'] = ' at location: ';
+$string['passwordconfigpath'] = '/config_policies/{$a}.php';
+

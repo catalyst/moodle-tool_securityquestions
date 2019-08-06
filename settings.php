@@ -41,6 +41,21 @@ if ($hassiteconfig) {
     $ADMIN->add('securityquestions', $settings);
 
     if (!during_initial_install()) {
+
+        // Alert if using config template
+        $name = get_config('tool_passwordvalidator', 'chosen_template');
+        if (trim($name) != '') {
+            // Construct the display text
+            $text = get_string('passwordforcedconfig', 'tool_passwordvalidator') . $name;
+            $text .= get_string('passwordconfigloc', 'tool_passwordvalidator');
+            $text .= (__DIR__ . get_string('passwordconfigpath', 'tool_passwordvalidator', $name).'<br>');
+            $text .= get_string("template$name", 'tool_passwordvalidator');
+
+            // Add the control
+            $templatedesc = $OUTPUT->notification($text, 'notifymessage');
+            $settings->add(new admin_setting_heading('tool_passwordvalidator/template_heading', '', $templatedesc));
+        }
+
         $settings->add(new admin_setting_configcheckbox('tool_securityquestions/enable_plugin', get_string('settingsenablename', 'tool_securityquestions'),
                     get_string('settingsenabledesc', 'tool_securityquestions'), 0));
 
