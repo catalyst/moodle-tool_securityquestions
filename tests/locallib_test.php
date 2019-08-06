@@ -311,7 +311,7 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $active2 = tool_securityquestions_get_active_questions();
         $this->assertEquals(count($active2), 5);
 
-        //Now deprecate a question with a response and ensure amount drops
+        // Now deprecate a question with a response and ensure amount drops
         $this->assertEquals(true, tool_securityquestions_deprecate_question(reset($active)->id));
         $this->assertEquals(count(tool_securityquestions_get_active_user_responses()), 2);
     }

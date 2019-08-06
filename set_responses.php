@@ -29,7 +29,7 @@ require_once(__DIR__.'/locallib.php');
 global $CFG, $SESSION, $PAGE, $USER;
 
 $courseid = optional_param('courseid', SITEID, PARAM_INT);
-$url = new moodle_url('/user/preferences.php');
+$url = new moodle_url('/user/preferences.php'); // NEED BETTER NAVIGATION NODE
 if ($courseid !== SITEID) {
     $url->param('courseid', $courseid);
 }
@@ -61,8 +61,7 @@ if ($form->is_cancelled()) {
 // Build the page output.
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('setresponsespagestring', 'tool_securityquestions'));
-
-generate_count_header();
+echo '<br>';
 $form->display();
 
 // Display notification if successful response recorded
@@ -71,6 +70,7 @@ if ($notifysuccess == true) {
     echo $OUTPUT->notification(get_string('formresponserecorded', 'tool_securityquestions', $notifycontent), 'notifysuccess');
 }
 
+generate_count_header();
 echo $OUTPUT->footer();
 
 
@@ -99,5 +99,5 @@ function generate_count_header() {
     $displaystring = get_string('formresponsesremaining', 'tool_securityquestions', $numremaining);
 
     // Add display element
-    echo("<h3>$displaystring</h3>");
+    echo("<h4>$displaystring</h4>");
 }
