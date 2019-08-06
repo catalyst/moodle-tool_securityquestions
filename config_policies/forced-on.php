@@ -15,12 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * A tool to validate passwords against particular password policies.
+ * A tool to require security question 2FA for resetting passwords.
  *
- * NIST Password Standards file, from NIST 800-63-B
- * File used to force configurations for the plugin
- *
- * @package   tool_passwordvalidator
+ * @package   tool_securityquestions
  * @copyright 2019 Peter Burnett <peterburnett@catalyst-au.net>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,6 +25,7 @@
 // @codingStandardsIgnoreStart
 $CFG->forced_plugin_settings['tool_securityquestions']['chosen_template'] = basename(__FILE__, '.php');
 // @codingStandardsIgnoreEnd
+$CFG->forced_plugin_settings['tool_securityquestions']['enable_plugin'] = 1;
 $CFG->forced_plugin_settings['tool_securityquestions']['minquestions'] = 10;
 $CFG->forced_plugin_settings['tool_securityquestions']['minuserquestions'] = 3;
 $CFG->forced_plugin_settings['tool_securityquestions']['answerquestions'] = 2;
