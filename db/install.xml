@@ -43,6 +43,7 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="12" NOTNULL="false" SEQUENCE="false" COMMENT="User ID"/>
         <FIELD NAME="locked" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Field for storing whether a user is locked out"/>
+        <FIELD NAME="counter" TYPE="int" LENGTH="5" NOTNULL="false" SEQUENCE="false" COMMENT="Field for storing the amount of current failed attempts"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
