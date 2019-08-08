@@ -110,10 +110,12 @@ function tool_securityquestions_validate_injected_questions($data, $errors, $use
     // Check that enough questions have been answered by the user to enable securityquestions
     if (count(tool_securityquestions_get_active_questions()) >= get_config('tool_securityquestions', 'minuserquestions')) {
         global $DB;
-        global $USER;
+
+        // First check if account is allowed to reset pw
+        
 
         $numquestions = get_config('tool_securityquestions', 'answerquestions');
-
+        $errorfound = false;
         // For each question field, check response against database
         for ($i = 0; $i < $numquestions; $i++) {
             // Get question response for database
@@ -129,8 +131,26 @@ function tool_securityquestions_validate_injected_questions($data, $errors, $use
             $response = hash('sha1', $response);
             if ($response != $setresponse) {
                 $errors[$name] = get_string('formanswerfailed', 'tool_securityquestions');
+                $errorfound = true;
+            }
+
+            //If locked out, always respond with the lockout message
+            if (tool_securityquestions_is_locked_out($user)) {
+                $errors[$name] = get_string('formlockedout', 'tool_securityquestions');
             }
         }
+
+        if ($errorfound && !tool_securityquestions_is_locked_out($user)) {
+            // If an error was found, increment lockout counter
+            tool_securityquestions_increment_lockout_counter($user);
+
+            // If counter is now over the specified count, lock account
+            if (tool_securityquestions_get_lockout_counter($user) >= get_config('tool_securityquestions', 'lockoutnum')) {
+                tool_securityquestions_lock_user($user);
+            }
+        }
+
+        // Lastly, return the errors array
         return $errors;
     } else {
         return $errors;
@@ -355,4 +375,11 @@ function tool_securityquestions_unlock_user($user) {
     // First ensure that the user is initialised in the table (should never be uninitialised here)
     tool_securityquestions_initialise_lockout_counter($user);
     $DB->set_field('tool_securityquestions_loc', 'locked', 0, array('userid' => $user->id));
+}
+
+function tool_securityquestions_get_lockout_counter($user) {
+    global $DB;
+    // First ensure that the user is initialised in the table (should never be uninitialised here)
+    tool_securityquestions_initialise_lockout_counter($user);
+    return $DB->get_field('tool_securityquestions_loc', 'counter', array('userid' => $user->id));
 }

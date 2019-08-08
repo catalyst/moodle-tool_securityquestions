@@ -42,6 +42,7 @@ $string['formresponserecorded'] = 'Response successfully recorded for question: 
 $string['formresponseempty'] = 'Response cannot be empty.';
 $string['formanswerquestion'] = 'Enter a response to question {$a}:';
 $string['formanswerfailed'] = 'Response does not match recorded response';
+$string['formlockedout'] = 'Account is locked from resetting password. Please contact System Administrators for further assistance.';
 
 // Setting Strings
 $string['settingsenablename'] = 'Enable Plugin';
@@ -58,6 +59,9 @@ $string['settingsinjectpoints'] = 'Injection Points for Security Questions';
 $string['settingsinjectpointsdesc'] = 'Select all forms that the security questions should be injected into.';
 $string['settingsinjectchangepw'] = 'Change Password Form.';
 $string['settingsinjectsetpw'] = 'Set Password Form.';
+$string['settingslockoutnum'] = 'Answer attempts before lockout';
+$string['settingslockoutnumdesc'] = 'The number of attempts at answering questions a user is allowed before being locked out of password resetting.';
+
 
 // Template Strings
 $string['forcedconfig'] = 'Settings are read only, configuration is forced in template file: ';

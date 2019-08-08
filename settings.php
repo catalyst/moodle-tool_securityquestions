@@ -70,5 +70,8 @@ if ($hassiteconfig) {
 
         $settings->add(new admin_setting_configduration('tool_securityquestions/questionduration', get_string('settingsquestionduration', 'tool_securityquestions'),
                     get_string('settingsquestiondurationdesc', 'tool_securityquestions'), 5 * MINSECS, MINSECS));
+
+        $settings->add(new admin_setting_configtext('tool_securityquestions/lockoutnum', get_string('settingslockoutnum', 'tool_securityquestions'),
+                    get_string('settingslockoutnumdesc', 'tool_securityquestions'), 3, PARAM_INT));
     }
 }
