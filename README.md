@@ -8,9 +8,10 @@ This plugin adds a framework for adding and enforcing security questions for use
 
 * [Security Controls](#security-controls)
 * [Setting Questions](#setting-questions)
-* [Setting Question Responses](#setting-question-reponses)
+* [Setting Question Responses](#setting-question-responses)
 * [Resetting User Lockouts](#resetting-user-lockouts)
 * [Installation](#installation)
+* [Templates](#templates)
 
 Security Controls
 -----------------
