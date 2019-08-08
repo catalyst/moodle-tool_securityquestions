@@ -303,3 +303,43 @@ function tool_securityquestions_add_response($response, $qid) {
         return false;
     }
 }
+
+// ======================================LOCKOUT INTERACTION FUNCTIONS=============================================
+
+function tool_securityquestions_increment_lockout_counter($user) {
+    global $DB;
+
+    // First ensure the user is initialised in the table
+    tool_securityquestions_initialise_lockout_counter($user);
+
+    //If already initialised, increment counter
+    $count = $DB->get_field('tool_securityquestions_loc', 'counter', array('userid' => $user->id));
+    $DB->set_field('tool_securityquestions_loc', 'counter',($count + 1), array('userid' => 0));
+    return true;
+}
+
+function tool_securityquestions_initialise_lockout_counter($user) {
+    global $DB;
+
+    //Check if user exists in the lockout table
+    if (!$DB->record_exists('tool_securityquestions_loc', array('userid' => $user->id))) {
+        // If not, create entry for user, not locked out, counter 0
+        $DB->insert_record('tool_securityquestions_loc', array('userid' => $user->id, 'locked' => 0, 'counter' => 0));
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function tool_securityquestions_is_locked_out($user) {
+    global $DB;
+    // First ensure that the user is initialised in the table
+    tool_securityquestions_initialise_lockout_counter($user);
+
+    $lock = $DB->get_field('tool_securityquestions_loc', 'locked', array('userid' => $user->id));
+    if ($lock) {
+        return true;
+    } else {
+        return false;
+    }
+}
