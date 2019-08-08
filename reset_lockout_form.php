@@ -36,7 +36,7 @@ class reset_lockout_form extends moodleform {
         $mform->addElement('text', 'resetid', get_string('formresetid', 'tool_securityquestions'));
         $mform->addRule('resetid',  get_string('formresetnotnumber', 'tool_securityquestions'), 'numeric');
 
-        //Checkbox for clearing responses as well
+        // Checkbox for clearing responses as well
         $mform->addElement('advcheckbox', 'clearresponses', '', get_string('formclearresponses', 'tool_securityquestions'));
 
         $this->add_action_buttons(true, get_string('formresetbutton', 'tool_securityquestions'));
