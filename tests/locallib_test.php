@@ -315,6 +315,40 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertEquals(true, tool_securityquestions_deprecate_question(reset($active)->id));
         $this->assertEquals(count(tool_securityquestions_get_active_user_responses($USER)), 2);
     }
+
+    public function test_initialise_lockout_counter() {
+        $this->resetAfterTest(true);
+        global $USER;
+        global $DB;
+
+        // Check that user doesnt exist inside of the lockout table to start
+        $this->assertEquals(false, $DB->record_exists('tool_securityquestions_loc', array('userid' => $USER->id)));
+        
+        // Now initialise the user, and ensure that it adds the user record
+        tool_securityquestions_initialise_lockout_counter($USER);
+        $this->assertEquals(true, $DB->record_exists('tool_securityquestions_loc', array('userid' => $USER->id)));
+        
+        // Check that counter starts at 0, and not locked out
+        $record = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
+        
+        $this->assertEquals(0, $record->counter);
+        $this->assertEquals(0, $record->locked);
+
+        //now attempt to initialise again, and ensure no duplicate records
+        tool_securityquestions_initialise_lockout_counter($USER);
+        $records = $DB->get_records('tool_securityquestions_loc', array('userid' => $USER->id));
+        $this->assertEquals(1, count($records));
+
+        //now manually change the status of locked and counter, and ensure not reset by initialise
+        $DB->set_field('tool_securityquestions_loc', 'counter', 2, array('userid' => $USER->id));
+        $DB->set_field('tool_securityquestions_loc', 'locked', 1, array('userid' => $USER->id));
+
+        tool_securityquestions_initialise_lockout_counter($USER);
+        $record2 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
+        
+        $this->assertEquals(2, $record2->counter);
+        $this->assertEquals(1, $record2->locked);
+    }
 }
 
 
