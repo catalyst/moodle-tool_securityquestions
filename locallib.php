@@ -51,14 +51,13 @@ function tool_securityquestions_get_active_questions() {
     return $active;
 }
 
-function tool_securityquestions_get_active_user_responses() {
+function tool_securityquestions_get_active_user_responses($user) {
     global $DB;
-    global $USER;
     $active = tool_securityquestions_get_active_questions();
     $questions = array();
 
     foreach ($active as $question) {
-        $record = $DB->get_record('tool_securityquestions_res', array('userid' => $USER->id, 'qid' => $question->id));
+        $record = $DB->get_record('tool_securityquestions_res', array('userid' => $user->id, 'qid' => $question->id));
         if (!empty($record)) {
             array_push($questions, $record);
         }
@@ -83,7 +82,7 @@ function tool_securityquestions_deprecate_question($qid) {
 function tool_securityquestions_inject_security_questions($mform, $user) {
 
     // Check that enough questions have been answered by the user to enable securityquestions
-    if (count(tool_securityquestions_get_active_questions()) >= get_config('tool_securityquestions', 'minuserquestions')) {
+    if (count(tool_securityquestions_get_active_user_responses($user)) >= get_config('tool_securityquestions', 'minuserquestions')) {
         global $DB;
         global $USER;
 
@@ -108,11 +107,8 @@ function tool_securityquestions_inject_security_questions($mform, $user) {
 function tool_securityquestions_validate_injected_questions($data, $errors, $user) {
 
     // Check that enough questions have been answered by the user to enable securityquestions
-    if (count(tool_securityquestions_get_active_questions()) >= get_config('tool_securityquestions', 'minuserquestions')) {
+    if (count(tool_securityquestions_get_active_user_responses($user)) >= get_config('tool_securityquestions', 'minuserquestions')) {
         global $DB;
-
-        // First check if account is allowed to reset pw
-        
 
         $numquestions = get_config('tool_securityquestions', 'answerquestions');
         $errorfound = false;

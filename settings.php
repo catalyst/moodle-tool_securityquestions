@@ -29,6 +29,16 @@ global $CFG;
 
 if ($hassiteconfig) {
 
+    // First, check values for items are set to sane amounts, if not, fix
+    // Min Questions > Min user questions > Min user responses
+    if (get_config('tool_securityquestions', 'minuserquestions') > get_config('tool_securityquestions', 'minquestions')) {
+        set_config('minuserquestions', get_config('tool_securityquestions', 'minquestions'), 'tool_securityquestions');
+    }
+
+    if (get_config('tool_securityquestions', 'answerquestions') > get_config('tool_securityquestions', 'minuserquestions')) {
+        set_config('answerquestions', get_config('tool_securityquestions', 'minuserquestions'), 'tool_securityquestions');
+    }
+
     // Create validator category for page and external page
     $ADMIN->add('tools', new admin_category('securityquestions', get_string('pluginname', 'tool_securityquestions')));
 
