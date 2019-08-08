@@ -47,6 +47,8 @@ $string['formlockedout'] = 'Account is locked from resetting password. Please co
 $string['formresetid'] = 'Enter account ID to be unlocked:';
 $string['formresetnotnumber'] = 'ID must be a number';
 $string['formresetnotfound'] = 'User is not locked out, or does not exist';
+$string['formuserunlocked'] = 'User successfully unlocked.';
+$string['formresetbutton'] = 'Unlock User';
 
 // Setting Strings
 $string['settingsenablename'] = 'Enable Plugin';

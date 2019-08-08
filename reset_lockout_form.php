@@ -35,7 +35,7 @@ class reset_lockout_form extends moodleform {
         $mform->addElement('text', 'resetid', get_string('formresetid', 'tool_securityquestions'));
         $mform->addRule('resetid',  get_string('formresetnotnumber', 'tool_securityquestions'), 'numeric');
 
-        $this->add_action_buttons();
+        $this->add_action_buttons(true, get_string('formresetbutton', 'tool_securityquestions'));
     }
 
     public function validation($data, $files) {

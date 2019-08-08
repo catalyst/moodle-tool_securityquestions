@@ -31,6 +31,9 @@ defined('MOODLE_INTERNAL') || die();
 
 admin_externalpage_setup('tool_securityquestions_reset_lockout');
 
+$notifysuccess = false;
+$notifycontent = '';
+
 $prevurl = ($CFG->wwwroot.'/admin/category.php?category=securityquestions');
 
 $form = new reset_lockout_form();
@@ -39,7 +42,15 @@ if ($form->is_cancelled()) {
     redirect($prevurl);
 
 } else if ($fromform = $form->get_data()) {
-    // UNLOCK HERE
+    global $DB;
+    $userid = $fromform->resetid;
+    $user = $DB->get_record('user', array('id' => $userid));
+
+    tool_securityquestions_reset_lockout_counter($user);
+    tool_securityquestions_unlock_user($user);
+
+    $notifysuccess = true;
+    $notifycontent = $DB->get_record('tool_securityquestions', array('id' => $qid))->content;
 }
 
 // Build the page output.
@@ -47,6 +58,12 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('resetuserpagename', 'tool_securityquestions'));
 echo '<br>';
 $form->display();
+
+if ($notifysuccess == true) {
+    $notifysuccess == false;
+    echo $OUTPUT->notification(get_string('formuserunlocked', 'tool_securityquestions'), 'notifysuccess');
+}
+
 echo '<br>';
 echo '<h3>Locked Out Users</h3>';
 generate_table();
