@@ -68,6 +68,8 @@ $string['settingsinjectchangepw'] = 'Change Password Form.';
 $string['settingsinjectsetpw'] = 'Set Password Form.';
 $string['settingslockoutnum'] = 'Answer Attempts Before Lockout';
 $string['settingslockoutnumdesc'] = 'The number of attempts at answering questions a user is allowed before being locked out of password resetting.';
+$string['settingsquestionfile'] = 'Question File to Use';
+$string['settingsquestionfiledesc'] = 'Enter the filename of a question file you would like to use to add questions.';
 
 // Template Strings
 $string['forcedconfig'] = 'Settings are read only, configuration is forced in template file: ';

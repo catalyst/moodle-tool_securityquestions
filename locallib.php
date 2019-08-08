@@ -390,3 +390,27 @@ function tool_securityquestions_reset_lockout_counter($user) {
     tool_securityquestions_initialise_lockout_counter($user);
     $DB->set_field('tool_securityquestions_loc', 'counter', 0, array('userid' => $user->id));
 }
+
+function tool_securityquestions_read_questions_file($filepath) {
+    try {
+        $questions = fopen($filepath, 'r');
+    } catch (Exception $e) {
+        return false;
+    }
+
+    while (!feof($questions)) {
+        $question = trim(fgets($questions));
+        tool_securityquestions_insert_question($question);
+    }
+
+    return true;
+}
+
+function tool_securityquestions_use_template_file() {
+    $file = get_config('tool_securityquestions', 'questionfile');
+    if ($file !== '') {
+        // If a filepath is set, use that config file
+        $path = __DIR__.'/question/'.$file;
+        tool_securityquestions_read_questions_file($path);
+    }
+}

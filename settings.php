@@ -39,6 +39,9 @@ if ($hassiteconfig) {
         set_config('answerquestions', get_config('tool_securityquestions', 'minuserquestions'), 'tool_securityquestions');
     }
 
+    // Force any template files that are specified
+    tool_securityquestions_use_template_file();
+
     // Create validator category for page and external page
     $ADMIN->add('tools', new admin_category('securityquestions', get_string('pluginname', 'tool_securityquestions')));
 
@@ -88,5 +91,8 @@ if ($hassiteconfig) {
 
         $settings->add(new admin_setting_configtext('tool_securityquestions/lockoutnum', get_string('settingslockoutnum', 'tool_securityquestions'),
                     get_string('settingslockoutnumdesc', 'tool_securityquestions'), 3, PARAM_INT));
+        
+        $settings->add(new admin_setting_configtext('tool_securityquestions/questionfile', get_string('settingsquestionfile', 'tool_securityquestions'),
+                    get_string('settingsquestionfile', 'tool_securityquestions'), '', PARAM_TEXT));
     }
 }
