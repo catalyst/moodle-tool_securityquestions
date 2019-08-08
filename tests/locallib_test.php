@@ -323,34 +323,34 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
 
         // Check that user doesnt exist inside of the lockout table to start
         $this->assertEquals(false, $DB->record_exists('tool_securityquestions_loc', array('userid' => $USER->id)));
-        
+
         // Now initialise the user, and ensure that it adds the user record
         tool_securityquestions_initialise_lockout_counter($USER);
         $this->assertEquals(true, $DB->record_exists('tool_securityquestions_loc', array('userid' => $USER->id)));
-        
+
         // Check that counter starts at 0, and not locked out
         $record = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
-        
+
         $this->assertEquals(0, $record->counter);
         $this->assertEquals(0, $record->locked);
 
-        //now attempt to initialise again, and ensure no duplicate records
+        // Now attempt to initialise again, and ensure no duplicate records
         tool_securityquestions_initialise_lockout_counter($USER);
         $records = $DB->get_records('tool_securityquestions_loc', array('userid' => $USER->id));
         $this->assertEquals(1, count($records));
 
-        //now manually change the status of locked and counter, and ensure not reset by initialise
+        // Now manually change the status of locked and counter, and ensure not reset by initialise
         $DB->set_field('tool_securityquestions_loc', 'counter', 2, array('userid' => $USER->id));
         $DB->set_field('tool_securityquestions_loc', 'locked', 1, array('userid' => $USER->id));
 
         tool_securityquestions_initialise_lockout_counter($USER);
         $record2 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
-        
+
         $this->assertEquals(2, $record2->counter);
         $this->assertEquals(1, $record2->locked);
     }
 
-    function test_increment_lockout_counter() {
+    public function test_increment_lockout_counter() {
         $this->resetAfterTest(true);
         global $USER;
         global $DB;
@@ -367,14 +367,14 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         // Now test that after initialisation, counter is incremented
         $record = reset($records);
         $this->assertEquals(1, $record->counter);
-        
+
         // Increment again and check it works correctly for already initialised users
         tool_securityquestions_increment_lockout_counter($USER);
         $record2 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
         $this->assertEquals(2, $record2->counter);
     }
 
-    function test_reset_lockout_counter() {
+    public function test_reset_lockout_counter() {
         $this->resetAfterTest(true);
         global $USER;
         global $DB;
@@ -411,7 +411,7 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertEquals(1, $record4->locked);
     }
 
-    function test_get_lockout_counter() {
+    public function test_get_lockout_counter() {
         $this->resetAfterTest(true);
         global $USER;
         global $DB;
@@ -446,7 +446,7 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertEquals($record2->counter, $count2);
     }
 
-    function test_lock_user() {
+    public function test_lock_user() {
         $this->resetAfterTest(true);
         global $USER;
         global $DB;
@@ -460,7 +460,7 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $records = $DB->get_records('tool_securityquestions_loc', array('userid' => $USER->id));
         $this->assertEquals(1, count($records));
 
-        //Test that the user is locked
+        // Test that the user is locked
         $record = reset($records);
         $this->assertEquals(1, $record->locked);
 
@@ -470,7 +470,7 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertEquals(1, $record2->locked);
     }
 
-    function test_unlock_user() {
+    public function test_unlock_user() {
         $this->resetAfterTest(true);
         global $USER;
         global $DB;
@@ -484,7 +484,7 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $records = $DB->get_records('tool_securityquestions_loc', array('userid' => $USER->id));
         $this->assertEquals(1, count($records));
 
-        //Test that the user is unlocked
+        // Test that the user is unlocked
         $record = reset($records);
         $this->assertEquals(0, $record->locked);
 
