@@ -4,11 +4,12 @@
 
 # Security Questions 2FA
 
-This plugin adds a framework for adding and enforcing security questions for users to perform certain account security actions, such as changing or recovering passwords.
+This plugin adds a framework for adding and enforcing security questions for users to perform certain account security actions, such as changing or recovering passwords. Currently it only operates on the Moodle Password reset page, however it is easily extensible to other forms.
 
 * [Security Controls](#security-controls)
-* [Setting Questions](#modify-security-questions)
-* [Setting Responses](#setting-question-reponses)
+* [Setting Questions](#setting-questions)
+* [Setting Question Responses](#setting-question-reponses)
+* [Resetting User Lockouts](#resetting-user-lockouts)
 * [Installation](#installation)
 
 Security Controls
@@ -21,10 +22,10 @@ Security Controls
 
 **Question Duration** When users are presented with questions that need to be answered for verification, they will be active for a certain period of time. This control specifies the duration of the active period. When a user first visits a page that requires verification, the questions will be generated, and presented to the user. This is the start point of the period. If users reload the page, or visit other pages that require verification, they will be presented the same question, until the end of the period. Once the period has passed, and a user visits a page that requires verification, they will be presented with fresh questions.
 
-**Injection Points for Security Questions** This control allows administrators to set all of the forms that they wish the security questions plugin to inject into. These forms will require answering of security questions before the form can validate, and the action can be completed. Without any forms being selected here, the plugin will not inject into any points, and will not be enabled, so it is critical that desired forms are selected here.
+**Answer Attempts Before Lockout** This control is the number of attempts users will have at their security question verification. Each failed attempt will count up, and when this threshold is hit, the security question response check will always fail, and users will be informed to seek assistance from a system administrator. If a user gets both questions wrong on the page, it will only count as one failed attempt. When the user successfully answers their security questions, and a password reset is successfully performed, the counter will be set to 0. If a user is locked out, and an administrator performs a reset of the account lockout, the counter for failed attempts is reset to 0.
 
-Modify Security Questions
--------------------------
+Setting Questions
+-----------------
 This page allows an admin to set the security questions for use in the Moodle instance. Entering a question at the top, and clicking Submit Question, will add this questions to the active question pool. Questions by default start not deprecated, until the questions are manually deprecated by an Admin. The plugin will not be enabled until the number of active security questions is equal to or higher than the number set in the 'Minimum number of active security questions' security control.
 
 At the bottom of this page, there is a field for entering question ID's. When the form is submitted, if that field is populated with a valid question ID, that question will be deprecated. This removes the question from the active questions pool, after which users won't be able to set new responses to this question, and the question won't be able to be used to authenticate. When a question has been deprecated, if any users are now under the amount of required questions answered, they will be prompted to set addition responses. Admins will be unable to deprecate a question if it puts the amount of active questions under the required amount. More questions must be added first to deprecate a question.
@@ -35,9 +36,9 @@ When a user first logs in after the plugin installation, if the plugin is active
 
 After initial responses are set, if users wish to add additional responses, or change current responses, they may do so by visiting User Preferences->Edit Security Question Responses, which will lead them back to the set_responses page.
 
-When Questions are Presented
-----------------------------
-In the above section [Security Controls](#security-controls), there is a secion of controls **Injection Points for Security Questions** that has a list of callbacks that the plugin should inject verification into. Any section that is enabled in this control will have security questions injected into the form definition for these functions. If no forms are selected, users will be prompted to set their questions, and will be able to modify them, but they will never be required to answer questions. Therefore it is essential that forms are selected to be injected into.
+Resetting User Lockouts
+-----------------------
+From the Site Administration Menu, navigate to Plugins->Security Questions->Reset Security Question Lockouts. This page allows site administrators to reset accounts that are locked out from resetting their password due to repeated failed security question verification. Administrators can enter an User ID to reset the lockout on that account, and clear the lockout counter, so users will have a fresh set of attempts at answering the prompted questions. There is a checkbox that optionally allows administrators to also clear user responses to the questions, after which users will be prompted set new responses on their next login. If user responses are cleared, they will not be prompted to answer any questions on attempting to reset their password, so they will not be denied from accessing the service due to lack of password and security questions.
 
 Installation
 ------------
@@ -63,5 +64,3 @@ require(__DIR__.'/admin/tool/securityquestions/config_policies/<TEMPLATE HERE>.p
 ```
 
 where <TEMPLATE HERE> is the name of template file to use, such as forced-on.php. To verify that a template has been applied, visit the main Admin Settings menu for the plugin. There will be a header notification displaying details about the template. This means that the template is active. Settings on the admin menu will not be able to be changed.
-
-

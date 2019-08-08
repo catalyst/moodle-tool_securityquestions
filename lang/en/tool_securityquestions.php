@@ -65,7 +65,7 @@ $string['settingsinjectpoints'] = 'Injection Points for Security Questions';
 $string['settingsinjectpointsdesc'] = 'Select all forms that the security questions should be injected into.';
 $string['settingsinjectchangepw'] = 'Change Password Form.';
 $string['settingsinjectsetpw'] = 'Set Password Form.';
-$string['settingslockoutnum'] = 'Answer attempts before lockout';
+$string['settingslockoutnum'] = 'Answer Attempts Before Lockout';
 $string['settingslockoutnumdesc'] = 'The number of attempts at answering questions a user is allowed before being locked out of password resetting.';
 
 
