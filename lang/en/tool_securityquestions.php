@@ -46,9 +46,10 @@ $string['formanswerfailed'] = 'Response does not match recorded response';
 $string['formlockedout'] = 'Account is locked from resetting password. Please contact System Administrators for further assistance.';
 $string['formresetid'] = 'Enter account ID to be unlocked:';
 $string['formresetnotnumber'] = 'ID must be a number';
-$string['formresetnotfound'] = 'User is not locked out, or does not exist';
+$string['formresetnotfound'] = 'User does not exist';
 $string['formuserunlocked'] = 'User successfully unlocked.';
 $string['formresetbutton'] = 'Unlock User';
+$string['formclearresponses'] = 'Also clear user question responses';
 
 // Setting Strings
 $string['settingsenablename'] = 'Enable Plugin';
@@ -67,7 +68,6 @@ $string['settingsinjectchangepw'] = 'Change Password Form.';
 $string['settingsinjectsetpw'] = 'Set Password Form.';
 $string['settingslockoutnum'] = 'Answer Attempts Before Lockout';
 $string['settingslockoutnumdesc'] = 'The number of attempts at answering questions a user is allowed before being locked out of password resetting.';
-
 
 // Template Strings
 $string['forcedconfig'] = 'Settings are read only, configuration is forced in template file: ';

@@ -32,8 +32,12 @@ class reset_lockout_form extends moodleform {
     public function definition() {
         $mform = $this->_form;
 
+        // Text box for ID entry
         $mform->addElement('text', 'resetid', get_string('formresetid', 'tool_securityquestions'));
         $mform->addRule('resetid',  get_string('formresetnotnumber', 'tool_securityquestions'), 'numeric');
+
+        //Checkbox for clearing responses as well
+        $mform->addElement('advcheckbox', 'clearresponses', '', get_string('formclearresponses', 'tool_securityquestions'));
 
         $this->add_action_buttons(true, get_string('formresetbutton', 'tool_securityquestions'));
     }
@@ -43,7 +47,7 @@ class reset_lockout_form extends moodleform {
         $errors = parent::validation($data, $files);
 
         if (is_numeric($data['resetid'])) {
-            $exists = $DB->record_exists('tool_securityquestions_loc', array('userid' => $data['resetid']));
+            $exists = $DB->record_exists('user', array('id' => $data['resetid']));
             if (!$exists) {
                 $errors['resetid'] = get_string('formresetnotfound', 'tool_securityquestions');
             }

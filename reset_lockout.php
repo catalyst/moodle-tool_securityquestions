@@ -49,6 +49,11 @@ if ($form->is_cancelled()) {
     tool_securityquestions_reset_lockout_counter($user);
     tool_securityquestions_unlock_user($user);
 
+    // Additionally clear responses to questions if the checkbox is set
+    if ($fromform->clearresponses) {
+        $DB->delete_records('tool_securityquestions_res', array('userid' => $userid));
+    }
+
     $notifysuccess = true;
     $notifycontent = $DB->get_record('tool_securityquestions', array('id' => $qid))->content;
 }

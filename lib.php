@@ -25,8 +25,10 @@
 defined('MOODLE_INTERNAL') || die;
 
 function tool_securityquestions_after_require_login() {
-    require_once(__DIR__.'/locallib.php');
-    require_question_responses();
+    if (get_config('tool_securityquestions', 'enable_plugin')) {
+        require_once(__DIR__.'/locallib.php');
+        require_question_responses();
+    }
 }
 
 function tool_securityquestions_extend_navigation_user_settings($navigation, $user, $usercontext, $course, $coursecontext) {
