@@ -130,7 +130,7 @@ function tool_securityquestions_validate_injected_questions($data, $errors, $use
                 $errorfound = true;
             }
 
-            //If locked out, always respond with the lockout message
+            // If locked out, always respond with the lockout message
             if (tool_securityquestions_is_locked_out($user)) {
                 $errors[$name] = get_string('formlockedout', 'tool_securityquestions');
             }
@@ -330,15 +330,15 @@ function tool_securityquestions_increment_lockout_counter($user) {
     // First ensure the user is initialised in the table
     tool_securityquestions_initialise_lockout_counter($user);
 
-    //If already initialised, increment counter
+    // If already initialised, increment counter
     $count = $DB->get_field('tool_securityquestions_loc', 'counter', array('userid' => $user->id));
-    $DB->set_field('tool_securityquestions_loc', 'counter',($count + 1), array('userid' => $user->id));
+    $DB->set_field('tool_securityquestions_loc', 'counter', ($count + 1), array('userid' => $user->id));
 }
 
 function tool_securityquestions_initialise_lockout_counter($user) {
     global $DB;
 
-    //Check if user exists in the lockout table
+    // Check if user exists in the lockout table
     if (!$DB->record_exists('tool_securityquestions_loc', array('userid' => $user->id))) {
         // If not, create entry for user, not locked out, counter 0
         $DB->insert_record('tool_securityquestions_loc', array('userid' => $user->id, 'locked' => 0, 'counter' => 0));
