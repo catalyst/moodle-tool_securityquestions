@@ -410,6 +410,30 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $record4 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
         $this->assertEquals(1, $record4->locked);
     }
+
+    function test_lock_user() {
+        $this->resetAfterTest(true);
+        global $USER;
+        global $DB;
+
+        // Test that the function initialises Users first
+        $empty = $DB->get_records('tool_securityquestions_loc', array('userid' => $USER->id));
+        $this->assertEquals(0, count($empty));
+
+        tool_securityquestions_lock_user($USER);
+
+        $records = $DB->get_records('tool_securityquestions_loc', array('userid' => $USER->id));
+        $this->assertEquals(1, count($records));
+
+        //Test that the user is locked
+        $record = reset($records);
+        $this->assertEquals(1, $record->locked);
+
+        // Test nothing happens if account is locked a second time
+        tool_securityquestions_lock_user($USER);
+        $record2 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
+        $this->assertEquals(1, $record2->locked);
+    }
 }
 
 
