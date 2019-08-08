@@ -32,14 +32,23 @@ class reset_lockout_form extends moodleform {
     public function definition() {
         $mform = $this->_form;
 
-        // ADD CONTENT HERE
+        $mform->addElement('text', 'resetid', get_string('formresetid', 'tool_securityquestions'));
+        $mform->addRule('resetid',  get_string('formresetnotnumber', 'tool_securityquestions'), 'numeric');
 
         $this->add_action_buttons();
     }
 
     public function validation($data, $files) {
-
+        global $DB;
         $errors = parent::validation($data, $files);
+
+        if (is_numeric($data['resetid'])) {
+            $exists = $DB->record_exists('tool_securityquestions_loc', array('userid' => $data['resetid']));
+            if (!$exists) {
+                $errors['resetid'] = get_string('formresetnotfound', 'tool_securityquestions');
+            }
+        }
+
         return $errors;
     }
 }

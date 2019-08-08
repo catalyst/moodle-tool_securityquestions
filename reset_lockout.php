@@ -39,16 +39,17 @@ if ($form->is_cancelled()) {
     redirect($prevurl);
 
 } else if ($fromform = $form->get_data()) {
-
+    // UNLOCK HERE
 }
 
 // Build the page output.
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('setsecurityquestionspagestring', 'tool_securityquestions'));
-
+echo $OUTPUT->heading(get_string('resetuserpagename', 'tool_securityquestions'));
+echo '<br>';
 $form->display();
+echo '<br>';
+echo '<h3>Locked Out Users</h3>';
 generate_table();
-
 echo $OUTPUT->footer();
 
 // =======================================DISPLAY AND VALIDATION FUNCTIONS ====================================

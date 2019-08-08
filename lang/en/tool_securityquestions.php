@@ -44,6 +44,9 @@ $string['formresponseempty'] = 'Response cannot be empty.';
 $string['formanswerquestion'] = 'Enter a response to question {$a}:';
 $string['formanswerfailed'] = 'Response does not match recorded response';
 $string['formlockedout'] = 'Account is locked from resetting password. Please contact System Administrators for further assistance.';
+$string['formresetid'] = 'Enter account ID to be unlocked:';
+$string['formresetnotnumber'] = 'ID must be a number';
+$string['formresetnotfound'] = 'User is not locked out, or does not exist';
 
 // Setting Strings
 $string['settingsenablename'] = 'Enable Plugin';
