@@ -17,7 +17,7 @@
 /**
  *
  *
- * @package    tool_passwordvalidator
+ * @package    tool_securityquestion
  * @copyright  2019 Peter Burnett <peterburnett@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

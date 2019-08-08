@@ -444,7 +444,6 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertEquals($record2->counter, 0);
         $count2 = tool_securityquestions_get_lockout_counter($USER);
         $this->assertEquals($record2->counter, $count2);
-
     }
 
     function test_lock_user() {

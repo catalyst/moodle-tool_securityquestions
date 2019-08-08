@@ -42,10 +42,15 @@ if ($hassiteconfig) {
     // Create validator category for page and external page
     $ADMIN->add('tools', new admin_category('securityquestions', get_string('pluginname', 'tool_securityquestions')));
 
-    // Add External admin page for validation
+    // Add External admin page for setting security questions
     $ADMIN->add('securityquestions', new admin_externalpage('tool_securityquestions_setform',
         get_string('setquestionspagename', 'tool_securityquestions'),
         new moodle_url('/admin/tool/securityquestions/set_questions.php')));
+
+    // Add External admin page for resetting lockedout users
+    $ADMIN->add('securityquestions', new admin_externalpage('tool_securityquestions_reset_lockout',
+        get_string('resetuserpagename', 'tool_securityquestions'),
+        new moodle_url('/admin/tool/securityquestions/reset_lockout.php')));
 
     $settings = new admin_settingpage('securitysettings', get_string('securityquestionssettings', 'tool_securityquestions'));
     $ADMIN->add('securityquestions', $settings);
