@@ -314,8 +314,7 @@ function tool_securityquestions_increment_lockout_counter($user) {
 
     //If already initialised, increment counter
     $count = $DB->get_field('tool_securityquestions_loc', 'counter', array('userid' => $user->id));
-    $DB->set_field('tool_securityquestions_loc', 'counter',($count + 1), array('userid' => 0));
-    return true;
+    $DB->set_field('tool_securityquestions_loc', 'counter',($count + 1), array('userid' => $user->id));
 }
 
 function tool_securityquestions_initialise_lockout_counter($user) {
@@ -342,4 +341,18 @@ function tool_securityquestions_is_locked_out($user) {
     } else {
         return false;
     }
+}
+
+function tool_securityquestions_lock_user($user) {
+    global $DB;
+    // First ensure that the user is initialised in the table (should never be uninitialised here)
+    tool_securityquestions_initialise_lockout_counter($user);
+    $DB->set_field('tool_securityquestions_loc', 'locked', 1, array('userid' => $user->id));
+}
+
+function tool_securityquestions_unlock_user($user) {
+    global $DB;
+    // First ensure that the user is initialised in the table (should never be uninitialised here)
+    tool_securityquestions_initialise_lockout_counter($user);
+    $DB->set_field('tool_securityquestions_loc', 'locked', 0, array('userid' => $user->id));
 }
