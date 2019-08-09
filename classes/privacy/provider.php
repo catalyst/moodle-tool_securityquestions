@@ -66,27 +66,7 @@ class provider implements
      * @return  contextlist   $contextlist  The contextlist containing the list of contexts used in this plugin.
      */
     public static function get_contexts_for_userid(int $userid) : contextlist {
-    $contextlist = new \core_privacy\local\request\contextlist();
-        /*$sql = "
-            SELECT l.contextid
-              FROM {tool_securityquestions_res} l
-             WHERE l.userid = :userid";
-
-        $contextlist->add_from_sql($sql, ['userid' => $userid]);
-
-        $sql = "
-            SELECT l.contextid
-              FROM {tool_securityquestions_loc} l
-             WHERE l.userid = :userid";
-
-        $contextlist->add_from_sql($sql, ['userid' => $userid]);
-
-        $sql = "
-            SELECT l.contextid
-              FROM {tool_securityquestions_ans} l
-             WHERE l.userid = :userid";
-
-        $contextlist->add_from_sql($sql, ['userid' => $userid]);*/
+        $contextlist = new \core_privacy\local\request\contextlist();
         $contextlist->add_user_context($userid);
         return $contextlist;
     }
@@ -97,35 +77,36 @@ class provider implements
      * @param userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
      */
     public static function get_users_in_context(userlist $userlist) {
-        
         $context = $userlist->get_context();
+        // If current context is user, all users are contained within, get all users
+        if ($context == CONTEXT_USER) {
+            $sql = "
+            SELECT l.userid
+            FROM {tool_securityquestions_ans}";
+            $userlist->add_from_sql('userid', $sql);
 
-        $sql = "
-        SELECT l.userid
-        FROM {tool_securityquestions_ans} l
-        WHERE l.contextid = :context";
+            $sql = "
+            SELECT l.userid
+            FROM {tool_securityquestions_loc}";
+            $userlist->add_from_sql('userid', $sql);
 
-        $userlist->add_from_sql('userid', $sql, ['context' => $context]);
-
-        $sql = "
-        SELECT l.contextid
-        FROM {tool_securityquestions_loc} l
-        WHERE l.userid = :userid";
-
-        $userlist->add_from_sql('userid', $sql, ['context' => $context]);
-
-        $sql = "
-        SELECT l.contextid
-        FROM {tool_securityquestions_res} l
-        WHERE l.userid = :userid";
-
-        $userlist->add_from_sql('userid', $sql, ['context' => $context]);
+            $sql = "
+            SELECT l.userid
+            FROM {tool_securityquestions_res}";
+            $userlist->add_from_sql('userid', $sql);
+        }
     }
 
     public static function export_user_data(approved_contextlist $contextlist) {
         global $DB;
         $userid = $contextlist->get_user()->id;
         foreach ($contextlist as $context){
+
+            // if not in user context, exit loop
+            if ($context != CONTEXT_USER) {
+                continue;
+            }
+
             // Get records for user ID
             $ans = $DB->get_records('tool_securityquestions_ans', array('userid' => $userid));
             $loc = $DB->get_records('tool_securityquestions_loc', array('userid' => $userid));
@@ -148,26 +129,23 @@ class provider implements
     public static function delete_data_for_all_users_in_context(\context $context) {
         global $DB;
 
-        $sql = "
-        DELETE
-        FROM {tool_securityquestions_ans} l
-        WHERE l.contextid = :context";
+        // if not in user context, exit loop
+        if ($context == CONTEXT_USER) {
+            $sql = "
+            DELETE
+            FROM {tool_securityquestions_ans}";
+            $DB->execute($sql);
 
-        $DB->execute($sql, ['context' => $context]);
+            $sql = "
+            DELETE
+            FROM {tool_securityquestions_loc}";
+            $DB->execute($sql);
 
-        $sql = "
-        DELETE
-        FROM {tool_securityquestions_loc} l
-        WHERE l.contextid = :context";
-
-        $DB->execute($sql, ['context' => $context]);
-
-        $sql = "
-        DELETE
-        FROM {tool_securityquestions_res} l
-        WHERE l.contextid = :context";
-
-        $DB->execute($sql, ['context' => $context]);
+            $sql = "
+            DELETE
+            FROM {tool_securityquestions_res}";
+            $DB->execute($sql);
+        }
     }
 
     public static function delete_data_for_user(approved_contextlist $contextlist) {
@@ -175,6 +153,12 @@ class provider implements
         $userid = $contextlist->get_user()->id;
 
         foreach ($contextlist as $context) {
+
+            // if not in user context, exit loop
+            if ($context != CONTEXT_USER) {
+                continue;
+            }
+
             $sql = "
             DELETE
             FROM {tool_securityquestions_ans} l
