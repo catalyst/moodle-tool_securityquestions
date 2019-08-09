@@ -77,6 +77,18 @@ function tool_securityquestions_deprecate_question($qid) {
     }
 }
 
+function tool_securityquestions_undeprecate_question($qid) {
+    // This function has no side effects unlike deprecate, which must check minimum questions
+    global $DB;
+    // If record doesnt exist, return false
+    if ($DB->record_exists('tool_securityquestions', array('id' =>$qid))) {
+        $DB->set_field('tool_securityquestions', 'deprecated', 0, array('id' => $qid));
+        return true;
+    } else {
+        return false;
+    }
+}
+
 // ================================================FORM INJECTION FUNCTIONS============================================
 
 function tool_securityquestions_inject_security_questions($mform, $user) {
@@ -288,11 +300,22 @@ function require_question_responses() {
 
 function tool_securityquestions_insert_question($question) {
     global $DB;
+    // Trim question first
+    $question = trim($question);
     if ($question != '') {
+        // Construct query and determine if question already exists
         $sqlquestion = $DB->sql_compare_text($question, strlen($question));
+        $exists = ($DB->record_exists_sql('SELECT * FROM {tool_securityquestions} WHERE content = ?', array($sqlquestion)));
 
-        if (!($DB->record_exists_sql('SELECT * FROM {tool_securityquestions} WHERE content = ?', array($sqlquestion)))) {
+        if ($exists) {
+            $record = $DB->get_record_sql('SELECT * FROM {tool_securityquestions} WHERE content = ?', array($sqlquestion));
+        }
+
+        if (!$exists) {
             return $DB->insert_record('tool_securityquestions', array('content' => $question, 'deprecated' => 0));
+        } else if ($exists && $record->deprecated != 0) {
+            // If Deprecated record found, undeprecate
+            return tool_securityquestions_undeprecate_question($record->id);
         } else {
             return false;
         }
