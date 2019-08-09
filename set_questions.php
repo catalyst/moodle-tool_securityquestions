@@ -31,6 +31,9 @@ defined('MOODLE_INTERNAL') || die();
 
 admin_externalpage_setup('tool_securityquestions_setform');
 
+// If a template is in use, apply it
+tool_securityquestions_use_template_file();
+
 $prevurl = ($CFG->wwwroot.'/admin/category.php?category=securityquestions');
 
 $questions = $DB->get_records('tool_securityquestions');

@@ -39,9 +39,6 @@ if ($hassiteconfig) {
         set_config('answerquestions', get_config('tool_securityquestions', 'minuserquestions'), 'tool_securityquestions');
     }
 
-    // Force any template files that are specified
-    tool_securityquestions_use_template_file();
-
     // Create validator category for page and external page
     $ADMIN->add('tools', new admin_category('securityquestions', get_string('pluginname', 'tool_securityquestions')));
 
