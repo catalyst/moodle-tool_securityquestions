@@ -35,6 +35,9 @@ $prevurl = ($CFG->wwwroot.'/admin/category.php?category=securityquestions');
 
 $questions = $DB->get_records('tool_securityquestions');
 
+$notifysuccess = false;
+$notifycontent = '';
+
 $form = new set_questions_form();
 if ($form->is_cancelled()) {
 
@@ -55,18 +58,25 @@ if ($form->is_cancelled()) {
     if ($depid != '') {
         tool_securityquestions_deprecate_question($depid);
     }
+
+    $notifysuccess = true;
+    $notifycontent = $DB->get_record('tool_securityquestions', array('id' => $qid))->content;
 }
 
 // Build the page output.
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('setsecurityquestionspagestring', 'tool_securityquestions'));
-
 echo '<br>';
-generate_table();
-echo '<br>';
-
 $form->display();
 
+if ($notifysuccess == true) {
+    $notifysuccess == false;
+    echo $OUTPUT->notification(get_string('formquestionadded', 'tool_securityquestions'), 'notifysuccess');
+}
+
+echo '<br>';
+echo '<h3>Current Questions</h3>';
+generate_table();
 echo $OUTPUT->footer();
 
 // =============================================DISPLAY AND VALIDATION FUNCTIONS=========================================
