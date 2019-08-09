@@ -79,3 +79,19 @@ $string['configloc'] = ' at location: ';
 $string['configpath'] = '/config_policies/{$a}.php';
 $string['templateforced-on'] = 'This template enforces the default settings for the security controls, and ensures that users will always have enough questions to respond to, and enough responses to use for validation.';
 
+// Privacy API Strings
+$string['privacy:metadata:tool_securityquestions_res'] = 'This table stores information about user responses to security questions, including hashed responses, and which questions have been responded to.';
+$string['privacy:metadata:tool_securityquestions_res:userid'] = 'The ID of the user with this response.';
+$string['privacy:metadata:tool_securityquestions_res:response'] = 'The securely hashed response that a user has entered as a response to a question.';
+$string['privacy:metadata:tool_securityquestions_res:qid'] = 'The question ID that a response corresponds to.';
+
+$string['privacy:metadata:tool_securityquestions_loc'] = 'This table stores information about whether a user is locked from resetting their password, as well as the number of failed attempts at entering security questions.';
+$string['privacy:metadata:tool_securityquestions_loc:userid'] = 'The ID of the user to keep track of the locked status.';
+$string['privacy:metadata:tool_securityquestions_loc:counter'] = 'The amount of times that a user has failed security question validation since last password reset.';
+$string['privacy:metadata:tool_securityquestions_loc:locked'] = 'The locked status of a user.';
+
+$string['privacy:metadata:tool_securityquestions_ans'] = 'This table stores information about whether about which random questions were picked to present to a user, and when the last random selection was.';
+$string['privacy:metadata:tool_securityquestions_ans:userid'] = 'The ID of the user to keep track of questions to be answered.';
+$string['privacy:metadata:tool_securityquestions_ans:qid'] = 'The Question ID of a question that was picked for a user.';
+$string['privacy:metadata:tool_securityquestions_ans:timecreated'] = 'The time that this question was picked for a user.';
+
