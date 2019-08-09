@@ -152,8 +152,9 @@ function tool_securityquestions_validate_injected_questions($data, $errors, $use
             // If an error was found, increment lockout counter
             tool_securityquestions_increment_lockout_counter($user);
 
+            $lockoutamount = get_config('tool_securityquestions', 'lockoutnum');
             // If counter is now over the specified count, lock account
-            if (tool_securityquestions_get_lockout_counter($user) >= get_config('tool_securityquestions', 'lockoutnum')) {
+            if (tool_securityquestions_get_lockout_counter($user) >= $lockoutamount && $lockoutamount > 0) {
                 tool_securityquestions_lock_user($user);
             }
         }
