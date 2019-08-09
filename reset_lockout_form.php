@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Password Validation Settings form
+ * Form for resetting users that are locked out from resetting password
  *
  * @package     tool_securityquestions
  * @copyright   Peter Burnett <peterburnett@catalyst-au.net>
@@ -34,6 +34,7 @@ class reset_lockout_form extends moodleform {
 
         // Text box for ID entry
         $mform->addElement('text', 'resetid', get_string('formresetid', 'tool_securityquestions'));
+        $mform->setType('resetid', PARAM_TEXT);
         $mform->addRule('resetid',  get_string('formresetnotnumber', 'tool_securityquestions'), 'numeric');
 
         // Checkbox for clearing responses as well

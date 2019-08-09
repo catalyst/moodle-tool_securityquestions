@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Page for users to answer the security questions
+ * Testing file for functions inside locallib.php
  *
  * @package    tool_securityquestions
  * @copyright  2019 Peter Burnett <peterburnett@catalyst-au.net>

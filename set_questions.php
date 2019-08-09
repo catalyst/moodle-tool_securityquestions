@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *
+ * Page for setting questions to be used on the site
  *
  * @package    tool_securityquestion
  * @copyright  2019 Peter Burnett <peterburnett@catalyst-au.net>

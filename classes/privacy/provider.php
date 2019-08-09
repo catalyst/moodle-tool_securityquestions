@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Privacy provider for Security Questions plugin
+ *
+ * @package     tool_securityquestions
+ * @copyright   Peter Burnett <peterburnett@catalyst-au.net>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace tool_securityquestions\privacy;
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\contextlist;

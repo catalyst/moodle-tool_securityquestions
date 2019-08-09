@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Password Validation Settings form
+ * Form for setting questions to be used on the site
  *
  * @package     tool_securityquestions
  * @copyright   Peter Burnett <peterburnett@catalyst-au.net>
@@ -32,7 +32,11 @@ class set_questions_form extends moodleform {
     public function definition() {
         $mform = $this->_form;
         $mform->addElement('text', 'questionentry', get_string('formquestionentry', 'tool_securityquestions'));
+        $mform->setType('questionentry', PARAM_TEXT);
+
         $mform->addElement('text', 'deprecate', get_string('formdeprecateentry', 'tool_securityquestions'));
+        $mform->setType('deprecate', PARAM_TEXT);
+
         $this->add_action_buttons();
     }
 

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Security Questions plugin for changing user passwords
+ * Security Questions plugin for resetting user passwords
  *
  * @package    tool_securityquestions
  * @copyright  2019 Peter Burnett <peterburnett@catalyst-au.net>

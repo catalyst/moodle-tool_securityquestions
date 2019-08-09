@@ -35,9 +35,10 @@ if ($courseid !== SITEID) {
 }
 $PAGE->set_url($url);
 
+$PAGE->set_context(context_user::instance($USER->id));
 $PAGE->set_title('Edit Security Question Responses');
 $PAGE->set_heading(get_string('setresponsespagestring', 'tool_securityquestions'));
-$PAGE->set_context(context_user::instance($USER->id));
+
 
 $notifysuccess = false;
 $notifycontent = '';

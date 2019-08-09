@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * A tool to require security question 2FA for resetting passwords.
+ * Template file for forcing admin settings for the plugin.
  *
  * @package   tool_securityquestions
  * @copyright 2019 Peter Burnett <peterburnett@catalyst-au.net>
@@ -30,3 +30,5 @@ $CFG->forced_plugin_settings['tool_securityquestions']['minquestions'] = 10;
 $CFG->forced_plugin_settings['tool_securityquestions']['minuserquestions'] = 3;
 $CFG->forced_plugin_settings['tool_securityquestions']['answerquestions'] = 2;
 $CFG->forced_plugin_settings['tool_securityquestions']['questionduration'] = 300;
+$CFG->forced_plugin_settings['tool_securityquestions']['lockoutnum'] = 2;
+

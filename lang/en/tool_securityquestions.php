@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *
+ * File containing Lang strings for the plugin
  *
  * @package    tool_securityquestions
  * @copyright  2019 Peter Burnett <peterburnett@catalyst-au.net>

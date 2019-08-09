@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *  Page for resetting locked ou user account
+ *  Page for resetting users that are locked out from resetting password
  *
  * @package    tool_securityquestion
  * @copyright  2019 Peter Burnett <peterburnett@catalyst-au.net>
