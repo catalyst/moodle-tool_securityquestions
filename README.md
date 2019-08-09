@@ -58,10 +58,16 @@ For more instructions on installation, visit [the Moodle Plugin Installation Gui
 
 Templates
 ---------
-This plugin can make use of template files in order to force configs, and disallow anyone from being able to change the amount of questions required to perform password resets, as well as the amount of questions users are required to respond to. The template files are within the folder `config_policies` inside of the plugin directory. To use these templates, edit your config.php file in the main Moodle directory, and add the lines:
+**Config Templates**
+This plugin can make use of template files in order to force configs, and disallow anyone from being able to change the amount of questions required to perform password resets, as well as the amount of questions users are required to respond to. The template files are within the folder `/config_policies/` inside of the plugin directory. To use these templates, edit your config.php file in the main Moodle directory, and add the lines:
 
 ```php
 require(__DIR__.'/admin/tool/securityquestions/config_policies/<TEMPLATE HERE>.php');
 ```
 
 where <TEMPLATE HERE> is the name of template file to use, such as forced-on.php. To verify that a template has been applied, visit the main Admin Settings menu for the plugin. There will be a header notification displaying details about the template. This means that the template is active. Settings on the admin menu will not be able to be changed.
+
+**Question Templates**
+This plugin can also make use of question template files. These files should be added into the `/question/` directory inside of the main plugin directory. The questions should be a single questions per line, and the file should be a text file. There is an example file inside of the directory, to illustrate the required structure. **DO NOT** use this file as a question template file in a production environment.
+
+When a question template file is loaded, all of questions in the file will be forced active, until the file is removed from the control on the admin settins menu. If the template is removed, all of the questions will remain active, and must be manually deprecated if any are to be removed. You can add additional questions on top of a template file, which will not be affected by the status of a template. If a template file is loaded that does not have enough questions to satisfy the Security Control "Minimum Number of Active Security Questions", more questions will have to be manually added to meet the minimum amount, before the plugin will become active.
