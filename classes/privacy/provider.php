@@ -13,20 +13,20 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 namespace tool_securityquestions\privacy;
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\contextlist;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\writer;
- 
-class provider implements 
+
+class provider implements
         // This plugin does store personal user data.
         \core_privacy\local\metadata\provider,
         \core_privacy\local\request\plugin\provider  {
 
     public static function get_metadata(collection $collection) : collection {
- 
+
         $collection->add_database_table(
             'tool_securityquestions_res',
              [
@@ -100,7 +100,7 @@ class provider implements
     public static function export_user_data(approved_contextlist $contextlist) {
         global $DB;
         $userid = $contextlist->get_user()->id;
-        foreach ($contextlist as $context){
+        foreach ($contextlist as $context) {
 
             // if not in user context, exit loop
             if ($context != CONTEXT_USER) {
@@ -163,21 +163,21 @@ class provider implements
             DELETE
             FROM {tool_securityquestions_ans} l
             WHERE l.userid = :userid";
-    
+
             $DB->execute($sql, ['userid' => $userid]);
 
             $sql = "
             DELETE
             FROM {tool_securityquestions_loc} l
             WHERE l.userid = :userid";
-    
+
             $DB->execute($sql, ['userid' => $userid]);
 
             $sql = "
             DELETE
             FROM {tool_securityquestions_res} l
             WHERE l.userid = :userid";
-    
+
             $DB->execute($sql, ['userid' => $userid]);
         }
     }
