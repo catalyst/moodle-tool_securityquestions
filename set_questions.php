@@ -38,8 +38,11 @@ $prevurl = ($CFG->wwwroot.'/admin/category.php?category=securityquestions');
 
 $questions = $DB->get_records('tool_securityquestions');
 
-$notifysuccess = false;
-$notifycontent = '';
+$notifyadd = false;
+$notifyaddcontent = '';
+
+$notifydep = false;
+$notifydepcontent = '';
 
 $form = new set_questions_form();
 if ($form->is_cancelled()) {
@@ -54,16 +57,21 @@ if ($form->is_cancelled()) {
     if ($question != '') {
         // Check whether record with that question exists
         tool_securityquestions_insert_question($question);
+
+        // Setup success notification
+        $notifyaddcontent = $question;
+        $notifyadd = true;
     }
 
     // Check if there is a question to be deprecated
     $depid = $fromform->deprecate;
-    if ($depid != '') {
-        tool_securityquestions_deprecate_question($depid);
+    if ($depid != '' && $fromform->confirmdeprecate) {
+        if (tool_securityquestions_deprecate_question($depid)) {
+            // Setup success notification
+            $notifydepcontent = $depid;
+            $notifydep = true;
+        }
     }
-
-    $notifysuccess = true;
-    $notifycontent = $DB->get_record('tool_securityquestions', array('id' => $qid))->content;
 }
 
 // Build the page output.
@@ -72,9 +80,13 @@ echo $OUTPUT->heading(get_string('setsecurityquestionspagestring', 'tool_securit
 echo '<br>';
 $form->display();
 
-if ($notifysuccess == true) {
-    $notifysuccess == false;
-    echo $OUTPUT->notification(get_string('formquestionadded', 'tool_securityquestions'), 'notifysuccess');
+if ($notifyadd == true) {
+    $notifyadd == false;
+    echo $OUTPUT->notification(get_string('formquestionadded', 'tool_securityquestions', $notifyaddcontent), 'notifysuccess');
+}
+if ($notifydep == true) {
+    $notifydep == false;
+    echo $OUTPUT->notification(get_string('formquestiondeprecated', 'tool_securityquestions', $notifydepcontent), 'notifysuccess');
 }
 
 echo '<br>';

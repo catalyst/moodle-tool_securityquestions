@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die;
 
 /**
  * Returns whether a question can be deprecated
- * 
+ *
  * @param int $qid The ID of the question to test
  * @return bool whether the question can be deprecated
  */
@@ -53,7 +53,7 @@ function tool_securityquestions_can_deprecate_question($qid) {
 
 /**
  * Returns an array of all active question records
- * 
+ *
  * @return array an array of all active question records
  */
 function tool_securityquestions_get_active_questions() {
@@ -64,7 +64,7 @@ function tool_securityquestions_get_active_questions() {
 
 /**
  * Returns an array of all responses to active questions from a user
- * 
+ *
  * @param stdClass $user The User to check responses for
  * @return array an array of all response records to active questions for a given user
  */
@@ -85,7 +85,7 @@ function tool_securityquestions_get_active_user_responses($user) {
 
 /**
  * Deprecates a question if it can be deprecated
- * 
+ *
  * @param int $qid The question ID to deprecate
  * @return bool returns true if the question was deprecated, false if not permitted
  */
@@ -102,7 +102,7 @@ function tool_securityquestions_deprecate_question($qid) {
 
 /**
  * Undeprecates a question
- * 
+ *
  * @param int $qid The question ID to undeprecate
  * @return bool returns true if the question was undeprecated, false if question couldn't be found
  */
@@ -122,7 +122,7 @@ function tool_securityquestions_undeprecate_question($qid) {
 
 /**
  * Injects security question elements into a form
- * 
+ *
  * @param mform $mform the form to inject elements into
  * @param stdClass $user the user to pick questions for
  */
@@ -153,7 +153,7 @@ function tool_securityquestions_inject_security_questions($mform, $user) {
 
 /**
  * Validates injected form elements for security questions to check for correct responses
- * 
+ *
  * @param array $data The form data submitted by the user
  * @param array $errors The array of error messages for form elements
  * @param stdClass $user the user to validate responses against
@@ -214,7 +214,7 @@ function tool_securityquestions_validate_injected_questions($data, $errors, $use
 // =============================================QUESTION SETUP=========================================================
 /**
  * Picks questions for a user to respond to
- * 
+ *
  * @param stdClass $user the user to pick questions for
  * @return array $inputarr an array of question ID's to inject into a form
  */
@@ -301,7 +301,7 @@ function tool_securityquestions_pick_questions($user) {
 // ==========================================NAVIGATION INJECTION====================================================
 /**
  * Injects a navigation node onto a user's preferences page to edit/set responses to security questions
- * 
+ *
  * @param navigation $navigation the navigation node to inject into
  * @param stdClass $user the user to pick questions for
  * @param context $usercontext the user context to operate under
@@ -360,7 +360,7 @@ function require_question_responses() {
 // =============================================SET QUESTIONS AND RESPONSES============================================
 /**
  * Inserts a question into the database
- * 
+ *
  * @param string $question The question content to be inserted
  * @return bool returns true if a question was successfully inserted or undeprecated, false for failure
  */
@@ -392,7 +392,7 @@ function tool_securityquestions_insert_question($question) {
 
 /**
  * Inserts a response to a question into the database
- * 
+ *
  * @param string $response The question response to be inserted
  * @param int $qid the question to respond to
  * @return bool returns true if a response was successfully inserted, false for failure
@@ -421,7 +421,7 @@ function tool_securityquestions_add_response($response, $qid) {
 // ======================================LOCKOUT INTERACTION FUNCTIONS=============================================
 /**
  * Increments the lockout counter for a user
- * 
+ *
  * @param stdClass $user the user to increment the counter of
  */
 function tool_securityquestions_increment_lockout_counter($user) {
@@ -437,7 +437,7 @@ function tool_securityquestions_increment_lockout_counter($user) {
 
 /**
  * Initialises a user in the lockout table
- * 
+ *
  * @param stdClass $user the user to increment the counter of
  * @return bool returns true if user initialised, false if already present
  */
@@ -456,7 +456,7 @@ function tool_securityquestions_initialise_lockout_counter($user) {
 
 /**
  * Checks whether a user is currently locked from resetting password
- * 
+ *
  * @param stdClass $user the user to increment the counter of
  * @return bool returns true if user is locked out, false if not locked out
  */
@@ -475,7 +475,7 @@ function tool_securityquestions_is_locked_out($user) {
 
 /**
  * Locks a user, initialises then locks a user if not found in table
- * 
+ *
  * @param stdClass $user the user to increment the counter of
  */
 function tool_securityquestions_lock_user($user) {
@@ -487,7 +487,7 @@ function tool_securityquestions_lock_user($user) {
 
 /**
  * Unlocks a user, and resets the lockout counter
- * 
+ *
  * @param stdClass $user the user to increment the counter of
  */
 function tool_securityquestions_unlock_user($user) {
@@ -501,7 +501,7 @@ function tool_securityquestions_unlock_user($user) {
 
 /**
  * Returns the current count of the attempt counter
- * 
+ *
  * @param stdClass $user the user to increment the counter of
  * @return int the current attempt counter
  */
@@ -514,7 +514,7 @@ function tool_securityquestions_get_lockout_counter($user) {
 
 /**
  * Resets the lockout attempt counter to 0
- * 
+ *
  * @param stdClass $user the user to increment the counter of
  */
 function tool_securityquestions_reset_lockout_counter($user) {
@@ -524,10 +524,10 @@ function tool_securityquestions_reset_lockout_counter($user) {
     $DB->set_field('tool_securityquestions_loc', 'counter', 0, array('userid' => $user->id));
 }
 
-//===========================================TEMPLATE FILE FUNCTIONS======================================
+// ===========================================TEMPLATE FILE FUNCTIONS======================================
 /**
  * Reads a question template file, and inserts all questions
- * 
+ *
  * @param string $filepath the path to the question template file
  */
 function tool_securityquestions_read_questions_file($filepath) {

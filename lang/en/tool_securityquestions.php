@@ -50,7 +50,9 @@ $string['formresetnotfound'] = 'User does not exist';
 $string['formuserunlocked'] = 'User successfully unlocked.';
 $string['formresetbutton'] = 'Unlock User';
 $string['formclearresponses'] = 'Also clear user question responses';
-$string['formquestionadded'] = 'Question Successfully added.';
+$string['formquestionadded'] = 'Question successfully added: {$a}';
+$string['formconfirmdeprecate'] = 'Confirm Question Deprecation';
+$string['formquestiondeprecated'] = 'Question ID {$a} successfully deprecated.';
 
 // Setting Strings
 $string['settingsenablename'] = 'Enable Plugin';
