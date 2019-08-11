@@ -37,12 +37,12 @@ class set_questions_form extends moodleform {
         $mform->addElement('text', 'questionentry', get_string('formquestionentry', 'tool_securityquestions'));
         $mform->setType('questionentry', PARAM_TEXT);
 
-        //Add Question Deprecation
+        // Add Question Deprecation
         $mform->addElement('html', '<h4>Deprecate Question</h4>');
         $mform->addElement('text', 'deprecate', get_string('formdeprecateentry', 'tool_securityquestions'));
         $mform->setType('deprecate', PARAM_TEXT);
-        
-        //Add checkbox to confirm deprecation
+
+        // Add checkbox to confirm deprecation
         $mform->addElement('advcheckbox', 'confirmdeprecate', '', get_string('formconfirmdeprecate', 'tool_securityquestions'));
         $this->add_action_buttons();
     }
