@@ -111,7 +111,7 @@ class provider implements
         foreach ($contextlist as $context) {
 
             // if not in user context, exit loop
-            if ($context != CONTEXT_USER) {
+            if ($context->contextlevel != CONTEXT_USER) {
                 continue;
             }
 
@@ -120,17 +120,23 @@ class provider implements
             $loc = $DB->get_records('tool_securityquestions_loc', array('userid' => $userid));
             $res = $DB->get_records('tool_securityquestions_res', array('userid' => $userid));
 
-            writer::with_context($context)->export_data(
-                [get_string('privacy:metadata:tool_securityquestions_ans', 'tool_securityquestions'), $context],
-                (object) $ans);
+            foreach ($ans as $answer) {
+                writer::with_context($context)->export_data(
+                    [get_string('privacy:metadata:tool_securityquestions_ans', 'tool_securityquestions'), $context],
+                    (object) $answer);
+            }
 
-            writer::with_context($context)->export_data(
-                [get_string('privacy:metadata:tool_securityquestions_loc', 'tool_securityquestions'), $context],
-                (object) $loc);
+            foreach ($loc as $locked) {
+                writer::with_context($context)->export_data(
+                    [get_string('privacy:metadata:tool_securityquestions_loc', 'tool_securityquestions'), $context],
+                    (object) $locked);
+            }
 
-            writer::with_context($context)->export_data(
-                [get_string('privacy:metadata:tool_securityquestions_res', 'tool_securityquestions'), $context],
-                (object) $res);
+            foreach ($res as $response) {
+                writer::with_context($context)->export_data(
+                    [get_string('privacy:metadata:tool_securityquestions_res', 'tool_securityquestions'), $context],
+                    (object) $response);
+            }
         }
     }
 
@@ -138,7 +144,7 @@ class provider implements
         global $DB;
 
         // if not in user context, exit loop
-        if ($context == CONTEXT_USER) {
+        if ($context->contextlevel == CONTEXT_USER) {
             $sql = "
             DELETE
             FROM {tool_securityquestions_ans}";
