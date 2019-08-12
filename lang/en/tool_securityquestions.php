@@ -84,6 +84,9 @@ $string['templateforced-on'] = 'This template enforces the default settings for 
 // Event Strings
 $string['userlockedeventname'] = 'User locked from resetting password due to failed question attempts.';
 
+// Task Strings
+$string['taskcleantables'] = 'Clean plugin database of deleted users';
+
 // Privacy API Strings
 $string['privacy:metadata:tool_securityquestions_res'] = 'This table stores information about user responses to security questions, including hashed responses, and which questions have been responded to.';
 $string['privacy:metadata:tool_securityquestions_res:userid'] = 'The ID of the user with this response.';
