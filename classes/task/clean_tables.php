@@ -59,18 +59,18 @@ class clean_tables extends \core\task\scheduled_task {
 
         // Now purge records of any missing user
         // tool_securityquestions_loc contains unique userid records
-        $sql = "SELECT userid FROM {tool_securityquestions_loc} WHERE NOT EXISTS (SELECT id FROM {user})";
-        $missingusers = $DB->execute($sql);
+        $sql = "SELECT userid FROM {tool_securityquestions_loc} WHERE userid NOT IN (SELECT id FROM {user})";
+        $missingusers = $DB->get_records_sql($sql);
 
         foreach ($missingusers as $missinguser) {
             // Remove entries from locked table
-            $DB->delete_records('tool_securityquestions_loc', array('userid' => $missinguser->id));
+            $DB->delete_records('tool_securityquestions_loc', array('userid' => $missinguser->userid));
 
             // Remove entries from the response table
-            $DB->delete_records('tool_securityquestions_res', array('userid' => $missinguser->id));
+            $DB->delete_records('tool_securityquestions_res', array('userid' => $missinguser->userid));
 
             // Remove entries from the answer table
-            $DB->delete_records('tool_securityquestions_ans', array('userid' => $missinguser->id));
+            $DB->delete_records('tool_securityquestions_ans', array('userid' => $missinguser->userid));
         }
     }
 }
