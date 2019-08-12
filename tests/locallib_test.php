@@ -451,6 +451,10 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         global $USER;
         global $DB;
 
+        // Create a user and login as user
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
         // Test that the function initialises Users first
         $empty = $DB->get_records('tool_securityquestions_loc', array('userid' => $USER->id));
         $this->assertEquals(0, count($empty));
@@ -474,6 +478,10 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->resetAfterTest(true);
         global $USER;
         global $DB;
+
+        // Create a user and login as user
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
 
         // Test that the function initialises Users first
         $empty = $DB->get_records('tool_securityquestions_loc', array('userid' => $USER->id));

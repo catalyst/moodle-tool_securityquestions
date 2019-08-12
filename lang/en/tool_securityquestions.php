@@ -81,6 +81,9 @@ $string['configloc'] = ' at location: ';
 $string['configpath'] = '/config_policies/{$a}.php';
 $string['templateforced-on'] = 'This template enforces the default settings for the security controls, and ensures that users will always have enough questions to respond to, and enough responses to use for validation.';
 
+// Event Strings
+$string['userlockedeventname'] = 'User locked from resetting password due to failed question attempts.';
+
 // Privacy API Strings
 $string['privacy:metadata:tool_securityquestions_res'] = 'This table stores information about user responses to security questions, including hashed responses, and which questions have been responded to.';
 $string['privacy:metadata:tool_securityquestions_res:userid'] = 'The ID of the user with this response.';

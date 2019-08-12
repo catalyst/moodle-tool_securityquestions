@@ -22,6 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die;
+require_once(__DIR__.'/classes/event/user_locked.php');
 
 // =============================================DEPRECATION FUNCTIONS============================================
 
@@ -146,7 +147,9 @@ function tool_securityquestions_inject_security_questions($mform, $user) {
             $questionnum = $i + 1;
             $mform->addElement('html', "<h4>Security Question $questionnum: $qcontent</h4>");
             $mform->addElement('text', "question$i", get_string('formanswerquestion', 'tool_securityquestions', $questionnum));
+            $mform->setType("question$i", PARAM_TEXT);
             $mform->addElement('hidden', "hiddenq$i", $qid);
+            $mform->setType("hiddenq$i", PARAM_TEXT);
         }
     }
 }
@@ -201,8 +204,6 @@ function tool_securityquestions_validate_injected_questions($data, $errors, $use
                 tool_securityquestions_lock_user($user);
             }
         }
-
-        // TODO add error logging here when lockout is fired
 
         // Lastly, return the errors array
         return $errors;
@@ -483,6 +484,10 @@ function tool_securityquestions_lock_user($user) {
     // First ensure that the user is initialised in the table (should never be uninitialised here)
     tool_securityquestions_initialise_lockout_counter($user);
     $DB->set_field('tool_securityquestions_loc', 'locked', 1, array('userid' => $user->id));
+
+    // Add event for logging locked user
+    $event = \tool_securityquestions\event\locked_out::locked_out_event($user);
+    $event->trigger();
 }
 
 /**
