@@ -29,7 +29,7 @@ require_once(__DIR__.'/locallib.php');
 global $CFG, $SESSION, $PAGE, $USER;
 
 $courseid = optional_param('courseid', SITEID, PARAM_INT);
-$url = new moodle_url('/user/preferences.php'); // NEED BETTER NAVIGATION NODE
+$url = new moodle_url('/user/preferences.php');
 if ($courseid !== SITEID) {
     $url->param('courseid', $courseid);
 }
@@ -43,7 +43,11 @@ $PAGE->set_heading(get_string('setresponsespagestring', 'tool_securityquestions'
 $notifysuccess = false;
 $notifycontent = '';
 
-$prevurl = new moodle_url('/user/preferences.php');
+if (!empty($SESSION->wantsurl)) {
+    $prevurl = $SESSION->wantsurl;
+} else {
+    $prevurl = new moodle_url('/my/');
+}
 
 $form = new set_responses_form();
 if ($form->is_cancelled()) {
