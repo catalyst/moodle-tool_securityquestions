@@ -103,3 +103,5 @@ $string['privacy:metadata:tool_securityquestions_ans:userid'] = 'The ID of the u
 $string['privacy:metadata:tool_securityquestions_ans:qid'] = 'The Question ID of a question that was picked for a user.';
 $string['privacy:metadata:tool_securityquestions_ans:timecreated'] = 'The time that this question was picked for a user.';
 
+$string['privacy:metadata:tool_securityquestions'] = 'Security Questions Data';
+

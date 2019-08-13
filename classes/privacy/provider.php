@@ -27,6 +27,7 @@ use core_privacy\local\metadata\collection;
 use core_privacy\local\request\contextlist;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\writer;
+use core_privacy\local\request\transform;
 
 class provider implements
         // This plugin does store personal user data.
@@ -76,6 +77,7 @@ class provider implements
     public static function get_contexts_for_userid(int $userid) : contextlist {
         $contextlist = new \core_privacy\local\request\contextlist();
         $contextlist->add_user_context($userid);
+        $contextlist->add_system_context();
         return $contextlist;
     }
 
@@ -86,20 +88,20 @@ class provider implements
      */
     public static function get_users_in_context(userlist $userlist) {
         $context = $userlist->get_context();
-        // If current context is user, all users are contained within, get all users
-        if ($context == CONTEXT_USER) {
+        // If current context is system, all users are contained within, get all users
+        if ($context->contextlevel == CONTEXT_SYSTEM) {
             $sql = "
-            SELECT l.userid
+            SELECT *
             FROM {tool_securityquestions_ans}";
             $userlist->add_from_sql('userid', $sql);
 
             $sql = "
-            SELECT l.userid
+            SELECT *
             FROM {tool_securityquestions_loc}";
             $userlist->add_from_sql('userid', $sql);
 
             $sql = "
-            SELECT l.userid
+            SELECT *
             FROM {tool_securityquestions_res}";
             $userlist->add_from_sql('userid', $sql);
         }
@@ -110,32 +112,49 @@ class provider implements
         $userid = $contextlist->get_user()->id;
         foreach ($contextlist as $context) {
 
-            // if not in user context, exit loop
-            if ($context->contextlevel != CONTEXT_USER) {
-                continue;
-            }
+            // if not in system context, exit loop
+            if ($context->contextlevel == CONTEXT_SYSTEM) {
 
-            // Get records for user ID
-            $ans = $DB->get_records('tool_securityquestions_ans', array('userid' => $userid));
-            $loc = $DB->get_records('tool_securityquestions_loc', array('userid' => $userid));
-            $res = $DB->get_records('tool_securityquestions_res', array('userid' => $userid));
+                $parentclass = array();
 
-            foreach ($ans as $answer) {
+                // Get records for user ID
+                $ans = $DB->get_records('tool_securityquestions_ans', array('userid' => $userid));
+                $loc = $DB->get_records('tool_securityquestions_loc', array('userid' => $userid));
+                $res = $DB->get_records('tool_securityquestions_res', array('userid' => $userid));
+
+                if (count($ans) > 0) {
+                    $i = 0;
+                    foreach ($ans as $answer) {
+                        $parentclass['Answer'][$i]['userid'] = $answer->userid;
+                        $parentclass['Answer'][$i]['qid'] = $answer->qid;
+                        $parentclass['Answer'][$i]['timecreated'] = \core_privacy\local\request\transform::datetime($answer->timecreated);
+                        $i++;
+                    }
+                }
+
+                if (count($loc) > 0) {
+                    $j = 0;
+                    foreach ($loc as $locked) {
+                        $parentclass['Locked'][$j]['userid'] = $locked->userid;
+                        $parentclass['Locked'][$j]['counter'] = $locked->counter;
+                        $parentclass['Locked'][$j]['locked'] = $locked->locked;
+                        $j++;
+                    }
+                }
+
+                if (count($res) > 0) {
+                    $k = 0;
+                    foreach ($res as $response) {
+                        $parentclass['Response'][$k]['userid'] = $response->userid;
+                        $parentclass['Response'][$k]['response'] = $response->response;
+                        $parentclass['Response'][$k]['qid'] = $response->qid;
+                        $k++;
+                    }
+                }
+
                 writer::with_context($context)->export_data(
-                    [get_string('privacy:metadata:tool_securityquestions_ans', 'tool_securityquestions'), $context],
-                    (object) $answer);
-            }
-
-            foreach ($loc as $locked) {
-                writer::with_context($context)->export_data(
-                    [get_string('privacy:metadata:tool_securityquestions_loc', 'tool_securityquestions'), $context],
-                    (object) $locked);
-            }
-
-            foreach ($res as $response) {
-                writer::with_context($context)->export_data(
-                    [get_string('privacy:metadata:tool_securityquestions_res', 'tool_securityquestions'), $context],
-                    (object) $response);
+                    [get_string('privacy:metadata:tool_securityquestions', 'tool_securityquestions')],
+                    (object) $parentclass);
             }
         }
     }
@@ -144,7 +163,7 @@ class provider implements
         global $DB;
 
         // if not in user context, exit loop
-        if ($context->contextlevel == CONTEXT_USER) {
+        if ($context->contextlevel == CONTEXT_SYSTEM) {
             $sql = "
             DELETE
             FROM {tool_securityquestions_ans}";
@@ -169,30 +188,29 @@ class provider implements
         foreach ($contextlist as $context) {
 
             // if not in user context, exit loop
-            if ($context != CONTEXT_USER) {
-                continue;
+            if ($context->contextlevel == CONTEXT_SYSTEM) {
+
+                $sql = "
+                DELETE
+                FROM {tool_securityquestions_ans} l
+                WHERE l.userid = :userid";
+
+                $DB->execute($sql, ['userid' => $userid]);
+
+                $sql = "
+                DELETE
+                FROM {tool_securityquestions_loc} l
+                WHERE l.userid = :userid";
+
+                $DB->execute($sql, ['userid' => $userid]);
+
+                $sql = "
+                DELETE
+                FROM {tool_securityquestions_res} l
+                WHERE l.userid = :userid";
+
+                $DB->execute($sql, ['userid' => $userid]);
             }
-
-            $sql = "
-            DELETE
-            FROM {tool_securityquestions_ans} l
-            WHERE l.userid = :userid";
-
-            $DB->execute($sql, ['userid' => $userid]);
-
-            $sql = "
-            DELETE
-            FROM {tool_securityquestions_loc} l
-            WHERE l.userid = :userid";
-
-            $DB->execute($sql, ['userid' => $userid]);
-
-            $sql = "
-            DELETE
-            FROM {tool_securityquestions_res} l
-            WHERE l.userid = :userid";
-
-            $DB->execute($sql, ['userid' => $userid]);
         }
     }
 }
