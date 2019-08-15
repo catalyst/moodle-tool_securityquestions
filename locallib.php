@@ -536,15 +536,20 @@ function tool_securityquestions_reset_lockout_counter($user) {
  * @param string $filepath the path to the question template file
  */
 function tool_securityquestions_read_questions_file($filepath) {
-    try {
-        $questions = fopen($filepath, 'r');
-    } catch (Exception $e) {
-        return false;
-    }
 
-    while (!feof($questions)) {
-        $question = trim(fgets($questions));
-        tool_securityquestions_insert_question($question);
+    if (file_exists($filepath)) {
+        try {
+            $questions = fopen($filepath, 'r');
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+    
+    if (!empty($questions)) {
+        while (!feof($questions)) {
+            $question = trim(fgets($questions));
+            tool_securityquestions_insert_question($question);
+        }
     }
 
     return true;

@@ -34,7 +34,7 @@ class set_responses_form extends moodleform {
 
         $this->generate_select($mform);
 
-        $mform->addElement('text', 'response', get_string('formresponseentrybox', 'tool_securityquestions'));
+        $mform->addElement('text', 'response', get_string('formresponseentrybox', 'tool_securityquestions'), 'size="50"');
         $mform->setType('response', PARAM_TEXT);
 
         $this->add_action_buttons();
