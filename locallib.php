@@ -544,7 +544,7 @@ function tool_securityquestions_read_questions_file($filepath) {
             return false;
         }
     }
-    
+
     if (!empty($questions)) {
         while (!feof($questions)) {
             $question = trim(fgets($questions));

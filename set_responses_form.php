@@ -61,6 +61,7 @@ class set_responses_form extends moodleform {
         foreach ($questions as $question) {
             $qarray[$question->id] = $question->content;
         }
+
         // Add form element
         $mform->addElement('select', 'questions', get_string('formresponseselectbox', 'tool_securityquestions'), $qarray);
     }
