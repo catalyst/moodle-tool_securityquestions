@@ -31,8 +31,8 @@ defined('MOODLE_INTERNAL') || die();
 
 admin_externalpage_setup('tool_securityquestions_reset_lockout');
 
-$notifysuccess = false;
-$notifycontent = '';
+$notifyresetsuccess = false;
+$notifyclearsuccess = false;
 
 $prevurl = ($CFG->wwwroot.'/admin/category.php?category=securityquestions');
 
@@ -48,14 +48,13 @@ if ($form->is_cancelled()) {
 
     tool_securityquestions_reset_lockout_counter($user);
     tool_securityquestions_unlock_user($user);
+    $notifyresetsuccess = true;
 
     // Additionally clear responses to questions if the checkbox is set
     if ($fromform->clearresponses) {
         $DB->delete_records('tool_securityquestions_res', array('userid' => $userid));
+        $notifyclearsuccess = true;
     }
-
-    $notifysuccess = true;
-    $notifycontent = $DB->get_record('tool_securityquestions', array('id' => $qid))->content;
 }
 
 // Build the page output.
@@ -64,9 +63,14 @@ echo $OUTPUT->heading(get_string('resetuserpagename', 'tool_securityquestions'))
 echo '<br>';
 $form->display();
 
-if ($notifysuccess == true) {
-    $notifysuccess == false;
+if ($notifyresetsuccess == true) {
+    $notifyresetsuccess == false;
     echo $OUTPUT->notification(get_string('formuserunlocked', 'tool_securityquestions'), 'notifysuccess');
+}
+
+if ($notifyclearsuccess == true) {
+    $notifyclearsuccess == false;
+    echo $OUTPUT->notification(get_string('resetuserresponsescleared', 'tool_securityquestions'), 'notifysuccess');
 }
 
 echo '<br>';

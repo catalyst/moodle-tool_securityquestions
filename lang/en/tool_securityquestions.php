@@ -48,6 +48,7 @@ $string['formresetid'] = 'Enter account ID to be unlocked:';
 $string['formresetnotnumber'] = 'ID must be a number';
 $string['formresetnotfound'] = 'User does not exist';
 $string['formuserunlocked'] = 'User successfully unlocked.';
+$string['formuserresponsescleared'] = 'User Responses successfully cleared';
 $string['formresetbutton'] = 'Unlock User';
 $string['formclearresponses'] = 'Also clear user question responses';
 $string['formquestionadded'] = 'Question successfully added: {$a}';
