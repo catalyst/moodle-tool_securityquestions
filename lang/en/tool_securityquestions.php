@@ -36,6 +36,7 @@ $string['resetuserpagename'] = 'Reset Security Question Lockouts';
 $string['formselectquestion'] = 'Select Question to Modify';
 $string['formquestionentry'] = 'Enter a question to add to the question pool:';
 $string['formdeprecateentry'] = 'Enter a question ID to deprecate:';
+$string['formdeprecatenotfound'] = 'Question does not exist';
 $string['formresponseselectbox'] = 'Select Question to respond to:';
 $string['formresponseentrybox'] = 'Enter response to the selected question:';
 $string['formresponsesremaining'] = '{$a} additional responses required.';
