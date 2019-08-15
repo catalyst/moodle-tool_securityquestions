@@ -63,6 +63,7 @@ class set_questions_form extends moodleform {
                 $errors['deprecate'] = get_string('formdeprecatenotfound', 'tool_securityquestions');
             }
         }
-    return $errors;
+
+        return $errors;
     }
 }
