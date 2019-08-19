@@ -162,12 +162,13 @@ function tool_securityquestions_inject_security_questions($mform, $user) {
  * @param stdClass $user the user to validate responses against
  * @return array $errors The array of error messages with any additional messages added
  */
-function tool_securityquestions_validate_injected_questions($data, $errors, $user) {
+function tool_securityquestions_validate_injected_questions($data, $user) {
+    $errors = array();
 
     // Check that enough questions have been answered by the user to enable securityquestions
     if (count(tool_securityquestions_get_active_user_responses($user)) >= get_config('tool_securityquestions', 'minuserquestions')) {
         global $DB;
-
+        
         $numquestions = get_config('tool_securityquestions', 'answerquestions');
         $errorfound = false;
         // For each question field, check response against database

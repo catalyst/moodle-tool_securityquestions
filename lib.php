@@ -45,10 +45,10 @@ function tool_securityquestions_extend_set_password_form($mform, $user) {
     }
 }
 
-function tool_securityquestions_extend_set_password_validation($data, $errors, $user) {
+function tool_securityquestions_validate_extend_set_password_form($data, $user) {
     if (get_config('tool_securityquestions', 'enable_plugin')) {
         require_once(__DIR__.'/locallib.php');
-        $errors = tool_securityquestions_validate_injected_questions($data, $errors, $user);
+        $errors = tool_securityquestions_validate_injected_questions($data, $user);
         return $errors;
     }
 }
