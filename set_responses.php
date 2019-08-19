@@ -25,6 +25,7 @@
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once(__DIR__.'/set_responses_form.php');
 require_once(__DIR__.'/locallib.php');
+require_once(__DIR__. '/../../../login/lib.php');
 
 global $CFG, $SESSION, $PAGE, $USER;
 
@@ -39,6 +40,11 @@ $PAGE->set_context(context_user::instance($USER->id));
 $PAGE->set_title('Edit Security Question Responses');
 $PAGE->set_heading(get_string('setresponsespagestring', 'tool_securityquestions'));
 
+// First, check if the require_recent_login function exists
+if (function_exists('require_recent_login')) {
+    // Require recent login to edit responses to questions
+    require_recent_login();
+}
 
 $notifysuccess = false;
 $notifycontent = '';
