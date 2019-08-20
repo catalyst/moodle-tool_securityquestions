@@ -24,7 +24,6 @@
 
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
-require_once(__DIR__.'/set_questions_form.php');
 require_once(__DIR__.'/locallib.php');
 
 defined('MOODLE_INTERNAL') || die();
@@ -44,7 +43,7 @@ $notifyaddcontent = '';
 $notifydep = false;
 $notifydepcontent = '';
 
-$form = new set_questions_form();
+$form = new \tool_securityquestions\form\set_questions();
 if ($form->is_cancelled()) {
 
     redirect($prevurl);

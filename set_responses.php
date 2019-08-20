@@ -23,7 +23,6 @@
  */
 
 require_once(dirname(__FILE__) . '/../../../config.php');
-require_once(__DIR__.'/set_responses_form.php');
 require_once(__DIR__.'/locallib.php');
 require_once(__DIR__. '/../../../login/lib.php');
 
@@ -55,7 +54,7 @@ if (!empty($SESSION->wantsurl)) {
     $prevurl = new moodle_url('/my/');
 }
 
-$form = new set_responses_form();
+$form = new \tool_securityquestions\form\set_responses();
 if ($form->is_cancelled()) {
     redirect($prevurl);
 

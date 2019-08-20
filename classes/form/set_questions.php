@@ -22,12 +22,12 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace tool_securityquestions\form;
 
+defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->libdir/formslib.php");
 
-
-class set_questions_form extends moodleform {
+class set_questions extends \moodleform {
 
     public function definition() {
         $mform = $this->_form;
