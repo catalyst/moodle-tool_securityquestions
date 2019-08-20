@@ -267,7 +267,7 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $errors = array();
 
         // Test that validation passed, and no errors were returned
-        $errors = tool_securityquestions_validate_injected_questions($data, $errors, $USER);
+        $errors = tool_securityquestions_validate_injected_questions($data, $USER);
         $this->assertEquals(array(), $errors);
 
         $data["question0"] = "badresponse1";
@@ -275,7 +275,7 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
 
         $errors2 = array();
         // Test that validation failed, and errors were returned
-        $errors2 = tool_securityquestions_validate_injected_questions($data, $errors2, $USER);
+        $errors2 = tool_securityquestions_validate_injected_questions($data, $USER);
         $this->assertNotEquals(array(), $errors2);
     }
 
@@ -509,6 +509,28 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         tool_securityquestions_unlock_user($USER);
         $record4 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
         $this->assertEquals(0, $record4->locked);
+    }
+
+    public static function hash_response_provider() {
+        return [
+            // Data array [hash, string]
+            ['ecb252044b5ea0f679ee78ec1a12904739e2904d', 'string'],
+            ['ecb252044b5ea0f679ee78ec1a12904739e2904d', 'STRING'],
+            ['ecb252044b5ea0f679ee78ec1a12904739e2904d', ' STRING '],
+            ['ecb252044b5ea0f679ee78ec1a12904739e2904d', ' string '],
+            ['da39a3ee5e6b4b0d3255bfef95601890afd80709', '      '],
+            ['f52c6e2b3d375cea9587f632aece713511dc7b58', 'str ing'],
+            ['423e14cffea08eef9214663397ed1f3164af9f8c', 'awdawd'],
+            ['da39a3ee5e6b4b0d3255bfef95601890afd80709', ''],
+        ];
+    }
+
+    /**
+     * @dataProvider hash_response_provider
+     */
+    public function test_hash_response($hash, $string) {
+        $normhash = tool_securityquestions_hash_response($string);
+        $this->assertEquals($normhash, $hash);
     }
 }
 
