@@ -1,5 +1,5 @@
-<a href="https://travis-ci.org/Peterburnett/moodle-tool_securityquestions">
-<img src="https://travis-ci.org/Peterburnett/moodle-tool_securityquestions.svg?branch=master">
+<a href="https://travis-ci.org/catalyst/moodle-tool_securityquestions">
+<img src="https://travis-ci.org/catalyst/moodle-tool_securityquestions.svg?branch=master">
 </a>
 
 # Security Questions 2FA
@@ -15,15 +15,25 @@ This plugin adds a framework for adding and enforcing security questions for use
 
 Security Controls
 -----------------
-**Minimum Number of Active Security Questions:** This control is the minimum number of active security questions that must be active at one time. If there aren't enough questions active, users will not be prompted to set or answer questions during use of the moodle instance. This allows for diversity of questions and responses, as users do not have to answer all of the questions, in a typical installation. Defaults to 10.
 
-**Minimum Number of User Answered Questions:** This control is the minimum number of active questions that a user must answer, in order to be able to use the Moodle instance. If users do not meet the number of answered active questions, they will be prompted to answer additional questions, until they meet the minimum number of active questions. If a question is deprecated, and will no longer be used for authentication, users will be prompted to answer additional questions until the minimum is met. Defaults to 5.
+### Minimum Number of Active Security Questions
+This control is the minimum number of active security questions that must be active at one time. If there aren't enough questions active, users will not be prompted to set or answer questions during use of the moodle instance. This allows for diversity of questions and responses, as users do not have to answer all of the questions, in a typical installation. Defaults to 10.
 
-**Questions Required for Verification:** This control is the minimum number of questions that users must answer when they attempt to perform security related account actions, such as changing or recovering a password. Users must answer these questions correctly in the same session. E.g. users will be presented with *n* security questions that they have provided responses to. They must answer both correctly on the same page, and submit at the same time, to proceed to account security controls. If a user fails the security questions, they will be presented with another set of questions, until they succeed, or fail 3 times, at which point they will be unable to perform any account based actions that require higher security verification. Users most contact an Administrator to unlock their questions.
+### Minimum Number of User Answered Questions
 
-**Question Duration** When users are presented with questions that need to be answered for verification, they will be active for a certain period of time. This control specifies the duration of the active period. When a user first visits a page that requires verification, the questions will be generated, and presented to the user. This is the start point of the period. If users reload the page, or visit other pages that require verification, they will be presented the same question, until the end of the period. Once the period has passed, and a user visits a page that requires verification, they will be presented with fresh questions.
+This control is the minimum number of active questions that a user must answer, in order to be able to use the Moodle instance. If users do not meet the number of answered active questions, they will be prompted to answer additional questions, until they meet the minimum number of active questions. If a question is deprecated, and will no longer be used for authentication, users will be prompted to answer additional questions until the minimum is met. Defaults to 5.
 
-**Answer Attempts Before Lockout** This control is the number of attempts users will have at their security question verification. Each failed attempt will count up, and when this threshold is hit, the security question response check will always fail, and users will be informed to seek assistance from a system administrator. If a user gets both questions wrong on the page, it will only count as one failed attempt. When the user successfully answers their security questions, and a password reset is successfully performed, the counter will be set to 0. If a user is locked out, and an administrator performs a reset of the account lockout, the counter for failed attempts is reset to 0.
+### Questions Required for Verification
+
+This control is the minimum number of questions that users must answer when they attempt to perform security related account actions, such as changing or recovering a password. Users must answer these questions correctly in the same session. E.g. users will be presented with *n* security questions that they have provided responses to. They must answer both correctly on the same page, and submit at the same time, to proceed to account security controls. If a user fails the security questions, they will be presented with another set of questions, until they succeed, or fail 3 times, at which point they will be unable to perform any account based actions that require higher security verification. Users most contact an Administrator to unlock their questions.
+
+### Question Duration
+
+When users are presented with questions that need to be answered for verification, they will be active for a certain period of time. This control specifies the duration of the active period. When a user first visits a page that requires verification, the questions will be generated, and presented to the user. This is the start point of the period. If users reload the page, or visit other pages that require verification, they will be presented the same question, until the end of the period. Once the period has passed, and a user visits a page that requires verification, they will be presented with fresh questions.
+
+### Answer Attempts Before Lockout
+
+This control is the number of attempts users will have at their security question verification. Each failed attempt will count up, and when this threshold is hit, the security question response check will always fail, and users will be informed to seek assistance from a system administrator. If a user gets both questions wrong on the page, it will only count as one failed attempt. When the user successfully answers their security questions, and a password reset is successfully performed, the counter will be set to 0. If a user is locked out, and an administrator performs a reset of the account lockout, the counter for failed attempts is reset to 0.
 
 Setting Questions
 -----------------
@@ -43,11 +53,15 @@ From the Site Administration Menu, navigate to Plugins->Security Questions->Rese
 
 Installation
 ------------
-**Requirements:** This plugin will work natively with Moodle from version 3.8 onwards, as this is the version that the hooks required for plugin functionality were added into Moodle core, from tracker MDL-66173. If a previous version is used, the commit from MDL-66173 can be backported to a previous installation, and the plugin will be functional.
+
+### Requirements
+
+This plugin will work natively with Moodle from version 3.8 onwards, as this is the version that the hooks required for plugin functionality were added into Moodle core, from tracker MDL-66173. If a previous version is used, the commit from MDL-66173 can be backported to a previous installation, and the plugin will be functional.
 
 Another requirement is for MDL-60470 to be included in the Moodle installation, which was added in Moodle version 3.7. If this commit is not present, users will not be prompted to set their security questions when they login after plugin setup.+
  
-**Installation:**
+### Installation
+
 To install the plugin simply drop it into the /path/to/moodle/admin/tool/securityquestions directory. When moodle is accessed it will prompt for installation of the plugin. Press upgrade database now, and the plugin will be installed.
 
 When the plugin is first installed, it will start disabled. To enable the plugin, setup steps must be performed. First, the admin settings must be configured to, with each [Security Control](#security-controls) set to a value. The defaults generally provide a sane baseline. After this, security questions must be set, for users to respond to. It is highly recommended to create **original questions**, and avoid common security questions such as "What is your mother's maiden name?".
@@ -58,7 +72,10 @@ For more instructions on installation, visit [the Moodle Plugin Installation Gui
 
 Templates
 ---------
-**Config Templates:** This plugin can make use of template files in order to force configs, and disallow anyone from being able to change the amount of questions required to perform password resets, as well as the amount of questions users are required to respond to. The template files are within the folder `/config_policies/` inside of the plugin directory. To use these templates, edit your config.php file in the main Moodle directory, and add the lines:
+
+### Config Templates
+
+This plugin can make use of template files in order to force configs, and disallow anyone from being able to change the amount of questions required to perform password resets, as well as the amount of questions users are required to respond to. The template files are within the folder `/config_policies/` inside of the plugin directory. To use these templates, edit your config.php file in the main Moodle directory, and add the lines:
 
 ```php
 require(__DIR__.'/admin/tool/securityquestions/config_policies/<TEMPLATE HERE>.php');
@@ -66,6 +83,8 @@ require(__DIR__.'/admin/tool/securityquestions/config_policies/<TEMPLATE HERE>.p
 
 where <TEMPLATE HERE> is the name of template file to use, such as forced-on.php. To verify that a template has been applied, visit the main Admin Settings menu for the plugin. There will be a header notification displaying details about the template. This means that the template is active. Settings on the admin menu will not be able to be changed.
 
-**Question Templates:** This plugin can also make use of question template files. These files should be added into the `/question/` directory inside of the main plugin directory. The questions should be a single questions per line, and the file should be a text file. There is an example file inside of the directory, to illustrate the required structure. **DO NOT** use this file as a question template file in a production environment.
+### Question Templates
+
+This plugin can also make use of question template files. These files should be added into the `/question/` directory inside of the main plugin directory. The questions should be a single questions per line, and the file should be a text file. There is an example file inside of the directory, to illustrate the required structure. **DO NOT** use this file as a question template file in a production environment.
 
 When a question template file is loaded, all of questions in the file will be forced active, until the file is removed from the control on the admin settins menu. If the template is removed, all of the questions will remain active, and must be manually deprecated if any are to be removed. You can add additional questions on top of a template file, which will not be affected by the status of a template. If a template file is loaded that does not have enough questions to satisfy the Security Control "Minimum Number of Active Security Questions", more questions will have to be manually added to meet the minimum amount, before the plugin will become active.
