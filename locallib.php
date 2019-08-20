@@ -168,7 +168,7 @@ function tool_securityquestions_validate_injected_questions($data, $user) {
     // Check that enough questions have been answered by the user to enable securityquestions
     if (count(tool_securityquestions_get_active_user_responses($user)) >= get_config('tool_securityquestions', 'minuserquestions')) {
         global $DB;
-        
+
         $numquestions = get_config('tool_securityquestions', 'answerquestions');
         $errorfound = false;
         // For each question field, check response against database
@@ -183,7 +183,7 @@ function tool_securityquestions_validate_injected_questions($data, $user) {
             // Execute DB query with data
             $setresponse = $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $user->id, 'qid' => $qid));
             // Hash response and compare to the database
-            $response = hash('sha1', $response);
+            $response = tool_securityquestions_hash_response($response);
             if ($response != $setresponse) {
                 $errors[$name] = get_string('formanswerfailed', 'tool_securityquestions');
                 $errorfound = true;
@@ -406,7 +406,7 @@ function tool_securityquestions_add_response($response, $qid) {
     // First check if question actually exists to set a response for
     if ($DB->record_exists('tool_securityquestions', array('id' => $qid))) {
         // Hash response
-        $response = hash('sha1', $response);
+        $response = tool_securityquestions_hash_response($response);
         // Check if response to question already exists, if so update, else, create record
         if ($DB->record_exists('tool_securityquestions_res', array('qid' => $qid, 'userid' => $USER->id))) {
             $DB->set_field('tool_securityquestions_res', 'response', $response, array('qid' => $qid, 'userid' => $USER->id));
@@ -418,6 +418,17 @@ function tool_securityquestions_add_response($response, $qid) {
     } else {
         return false;
     }
+}
+
+/**
+ * Hashes and normalises user responses
+ *
+ * @param string $response the string to be hashed and normalised
+ * @return string the normalised and hashed string
+ */
+function tool_securityquestions_hash_response($response) {
+    $temp = strtolower(trim($response));
+    return hash('sha1', $temp);
 }
 
 // ======================================LOCKOUT INTERACTION FUNCTIONS=============================================

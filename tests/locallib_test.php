@@ -267,7 +267,7 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $errors = array();
 
         // Test that validation passed, and no errors were returned
-        $errors = tool_securityquestions_validate_injected_questions($data, $errors, $USER);
+        $errors = tool_securityquestions_validate_injected_questions($data, $USER);
         $this->assertEquals(array(), $errors);
 
         $data["question0"] = "badresponse1";
@@ -275,7 +275,7 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
 
         $errors2 = array();
         // Test that validation failed, and errors were returned
-        $errors2 = tool_securityquestions_validate_injected_questions($data, $errors2, $USER);
+        $errors2 = tool_securityquestions_validate_injected_questions($data, $USER);
         $this->assertNotEquals(array(), $errors2);
     }
 
@@ -509,6 +509,33 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         tool_securityquestions_unlock_user($USER);
         $record4 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
         $this->assertEquals(0, $record4->locked);
+    }
+
+    public function test_hash_response() {
+        // Test that lowercase strings arent affected by normalisation
+        $test = 'test';
+        $hash = hash('sha1', $test);
+
+        $this->assertEquals($hash, tool_securityquestions_hash_response($test));
+
+        // All these strings should end as the same hash, normalisation
+        $string1 = 'string';
+        $string2 = 'STRING';
+        $string3 = ' STRING ';
+        $string4 = ' string ';
+
+        $hash1 = tool_securityquestions_hash_response($string1);
+        $hash2 = tool_securityquestions_hash_response($string2);
+        $hash3 = tool_securityquestions_hash_response($string3);
+        $hash4 = tool_securityquestions_hash_response($string4);
+
+        // Create manual hash and ensure all match
+        $manual = hash('sha1', strtolower(trim('string')));
+
+        $this->assertEquals($manual, $hash1);
+        $this->assertEquals($manual, $hash2);
+        $this->assertEquals($manual, $hash3);
+        $this->assertEquals($manual, $hash4);
     }
 }
 
