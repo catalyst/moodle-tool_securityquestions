@@ -340,8 +340,11 @@ function tool_securityquestions_inject_navigation_node($navigation, $user, $user
  * Forces redirect to the set_responses page if users havent answered enough questions
  */
 function require_question_responses() {
-    global $USER;
-    global $DB;
+    global $USER, $DB, $SESSION;
+
+    if (property_exists($SESSION, 'presentedresponse') && !get_config('tool_securityquestions', 'mandatory_questions')) {
+        return;
+    }
 
     // Check whether enough questions are set to make the plugin active
     $setquestions = $DB->get_records('tool_securityquestions', array('deprecated' => 0));
@@ -354,6 +357,7 @@ function require_question_responses() {
         $answeredquestions = $DB->get_records('tool_securityquestions_res', array('userid' => $USER->id));
         $url = '/admin/tool/securityquestions/set_responses.php';
         if (count($answeredquestions) < $requiredquestions) {
+            $SESSION->presentedresponse = true;
             redirect($url);
         }
     }

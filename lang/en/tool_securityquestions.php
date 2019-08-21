@@ -75,6 +75,10 @@ $string['settingslockoutnum'] = 'Answer Attempts Before Lockout';
 $string['settingslockoutnumdesc'] = 'The number of attempts at answering questions a user is allowed before being locked out of password resetting. Set this control to 0 to disable locking.';
 $string['settingsquestionfile'] = 'Question File to Use';
 $string['settingsquestionfiledesc'] = 'Enter the filename of a question file you would like to use to add questions.';
+$string['settingsmandatoryquestions'] = 'Mandatory Security Questions';
+$string['settingsmandatoryquestionsdesc'] = 'Enable this control to make security questions mandatory. If disabled, users will still be prompted to answer questions on login,
+                                             but they will be able to navigate away. On next login they will again be prompted.';
+
 
 // Template Strings
 $string['forcedconfig'] = 'Settings are read only, configuration is forced in template file: ';
