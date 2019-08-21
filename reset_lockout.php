@@ -24,7 +24,6 @@
 
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
-require_once(__DIR__.'/reset_lockout_form.php');
 require_once(__DIR__.'/locallib.php');
 
 defined('MOODLE_INTERNAL') || die();
@@ -36,7 +35,7 @@ $notifyclearsuccess = false;
 
 $prevurl = ($CFG->wwwroot.'/admin/category.php?category=securityquestions');
 
-$form = new reset_lockout_form();
+$form = new \tool_securityquestions\form\reset_lockout();
 if ($form->is_cancelled()) {
 
     redirect($prevurl);
