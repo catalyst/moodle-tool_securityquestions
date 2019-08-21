@@ -373,15 +373,11 @@ function tool_securityquestions_insert_question($question) {
     if ($question != '') {
         // Construct query and determine if question already exists
         $sqlquestion = $DB->sql_compare_text($question, strlen($question));
-        $exists = ($DB->record_exists_sql('SELECT * FROM {tool_securityquestions} WHERE content = ?', array($sqlquestion)));
+        $record = $DB->get_record_sql('SELECT * FROM {tool_securityquestions} WHERE content = ?', array($sqlquestion));
 
-        if ($exists) {
-            $record = $DB->get_record_sql('SELECT * FROM {tool_securityquestions} WHERE content = ?', array($sqlquestion));
-        }
-
-        if (!$exists) {
+        if (empty($record)) {
             return $DB->insert_record('tool_securityquestions', array('content' => $question, 'deprecated' => 0));
-        } else if ($exists && $record->deprecated != 0) {
+        } else if (!empty($record) && $record->deprecated != 0) {
             // If Deprecated record found, undeprecate
             return tool_securityquestions_undeprecate_question($record->id);
         } else {
