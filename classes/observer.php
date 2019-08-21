@@ -15,33 +15,31 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Scheduled task to cleanup deleted user table information
+ * Event observer for deleted users
  *
  * @package     tool_securityquestions
  * @copyright   Peter Burnett <peterburnett@catalyst-au.net>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_securityquestions\task;
+defined('MOODLE_INTERNAL') || die();
 
 /**
- * Task to clean plugin database tables.
+ * User Deleted event observer class
+ *
+ * @package    tool_securityquestions
+ * @copyright  Peter Burnett <peterburnett@catalyst-au.net>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class clean_tables extends \core\task\scheduled_task {
 
+class tool_securityquestions_observer {
     /**
-     * Get a descriptive name for this task.
+     * Event processor - user deleted
      *
-     * @return string
+     * @param \core\event\user_deleted $event
+     * @return bool
      */
-    public function get_name() {
-        return get_string('taskcleantables', 'tool_securityquestions');
-    }
-
-    /**
-     * Performs the cleaning of events.
-     */
-    public function execute() {
+    public static function user_deleted(\core\event\user_deleted $event) {
         global $DB;
 
         // First, find any users that are deleted in the user table
@@ -72,6 +70,8 @@ class clean_tables extends \core\task\scheduled_task {
             // Remove entries from the answer table
             $DB->delete_records('tool_securityquestions_ans', array('userid' => $missinguser->userid));
         }
+
+        return true;
     }
 }
 

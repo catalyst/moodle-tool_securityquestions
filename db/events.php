@@ -24,15 +24,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$tasks = [
-    [
-        'classname' => 'tool_securityquestions\task\clean_tables',
-        'blocking' => 0,
-        'minute' => '*',
-        'hour' => '*',
-        'day' => '*',
-        'month' => '*',
-        'dayofweek' => '*',
-    ],
-];
+$observers = array(
+    array(
+        'eventname' => '\core\event\user_deleted',
+        'callback' => 'tool_securityquestions_observer::user_deleted',
+    ),
+);
 
