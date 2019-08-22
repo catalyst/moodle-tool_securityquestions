@@ -387,7 +387,15 @@ function require_question_responses() {
         $url = '/admin/tool/securityquestions/set_responses.php';
         if (count($answeredquestions) < $requiredquestions) {
             $SESSION->presentedresponse = true;
-            redirect($url);
+            // If page has URL set, set it to wantsurl for cancel. Avoids issues with dashboard not having PAGE->url set
+            if ($PAGE->has_set_url()) {
+                $SESSION->wantsurl = $PAGE->url;
+            }
+
+            // Dont redirect if not in browser session
+            if (!CLI_SCRIPT && !AJAX_SCRIPT) {
+                redirect($url);
+            }
         }
     }
 }
