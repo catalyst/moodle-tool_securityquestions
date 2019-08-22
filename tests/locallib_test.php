@@ -247,6 +247,11 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->resetAfterTest(true);
         global $USER;
         global $DB;
+
+        // Create a user and login as user
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
         // Add questions and responses to validate against
         tool_securityquestions_insert_question('question1');
         tool_securityquestions_insert_question('question2');

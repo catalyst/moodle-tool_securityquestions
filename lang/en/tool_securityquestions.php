@@ -113,3 +113,6 @@ $string['privacy:metadata:tool_securityquestions_ans:timecreated'] = 'The time t
 
 $string['privacy:metadata:tool_securityquestions'] = 'Security Questions Data';
 
+// Capability String
+$string['securityquestions:questionsaccess'] = 'Security Questions Interaction';
+
