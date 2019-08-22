@@ -28,6 +28,13 @@ require_once(__DIR__. '/../../../login/lib.php');
 
 global $CFG, $SESSION, $PAGE, $USER;
 
+$courseid = optional_param('courseid', SITEID, PARAM_INT);
+$url = new moodle_url('/user/preferences.php');
+if ($courseid !== SITEID) {
+    $url->param('courseid', $courseid);
+}
+$PAGE->set_url($url);
+
 // First, check if the require_recent_login function exists
 if (function_exists('require_recent_login')) {
     // Require recent login to edit responses to questions
@@ -35,13 +42,6 @@ if (function_exists('require_recent_login')) {
 } else {
     require_login();
 }
-
-$courseid = optional_param('courseid', SITEID, PARAM_INT);
-$url = new moodle_url('/user/preferences.php');
-if ($courseid !== SITEID) {
-    $url->param('courseid', $courseid);
-}
-$PAGE->set_url($url);
 
 $PAGE->set_context(context_user::instance($USER->id));
 $PAGE->set_title('Edit Security Question Responses');

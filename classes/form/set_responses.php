@@ -26,18 +26,32 @@ namespace tool_securityquestions\form;
 
 defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->libdir/formslib.php");
+require_once(__DIR__.'/../../locallib.php');
 
 class set_responses extends \moodleform {
 
     public function definition() {
+        global $SESSION, $USER;
         $mform = $this->_form;
 
         $this->generate_select($mform);
 
         $mform->addElement('text', 'response', get_string('formresponseentrybox', 'tool_securityquestions'), 'size="50"');
         $mform->setType('response', PARAM_TEXT);
-
-        $this->add_action_buttons();
+        if (isset($SESSION->presentedresponse) && !get_config('tool_securityquestions', 'mandatory_questions')) {
+            // If user is allowed to navigate away, build custom buttons
+            $buttonarray = array();
+            $buttonarray[] =& $mform->createElement('submit', 'submitbutton', get_string('savechanges'));
+            $buttonarray[] =& $mform->createElement('cancel', 'cancel', get_string('formremindme', 'tool_securityquestions'));
+            $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        } else {
+            // If user must answer questions, dont show cancel button until enough answered
+            if (count(tool_securityquestions_get_active_user_responses($USER)) < get_config('tool_securityquestions', 'minuserquestions')) {
+                $this->add_action_buttons(false);
+            } else {
+                $this->add_action_buttons();
+            }
+        }
     }
 
     public function validation($data, $files) {

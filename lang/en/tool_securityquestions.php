@@ -55,6 +55,7 @@ $string['formclearresponses'] = 'Also clear user question responses';
 $string['formquestionadded'] = 'Question successfully added: {$a}';
 $string['formconfirmdeprecate'] = 'Confirm Question Deprecation';
 $string['formquestiondeprecated'] = 'Question ID {$a} successfully deprecated.';
+$string['formremindme'] = 'Remind me on next login';
 
 // Setting Strings
 $string['settingsenablename'] = 'Enable Plugin';
