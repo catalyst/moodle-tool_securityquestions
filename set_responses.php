@@ -24,7 +24,6 @@
 
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once(__DIR__.'/locallib.php');
-require_once(__DIR__. '/../../../login/lib.php');
 
 global $CFG, $SESSION, $PAGE, $USER;
 
