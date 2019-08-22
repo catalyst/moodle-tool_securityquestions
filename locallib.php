@@ -129,6 +129,12 @@ function tool_securityquestions_undeprecate_question($qid) {
  */
 function tool_securityquestions_inject_security_questions($mform, $user) {
 
+    // First check if user has the capability to interact with questions
+    $usercontext = context_user::instance($user->id);
+    if (!has_capability('tool/securityquestions:questionsaccess', $usercontext, $user)) {
+        return;
+    }
+
     // Check that enough questions have been answered by the user to enable securityquestions
     if (count(tool_securityquestions_get_active_user_responses($user)) >= get_config('tool_securityquestions', 'minuserquestions')) {
         global $DB;
@@ -164,6 +170,12 @@ function tool_securityquestions_inject_security_questions($mform, $user) {
  */
 function tool_securityquestions_validate_injected_questions($data, $user) {
     $errors = array();
+
+    // First check if user has the capability to interact with questions
+    $usercontext = context_user::instance($user->id);
+    if (!has_capability('tool/securityquestions:questionsaccess', $usercontext, $user)) {
+        return $errors;
+    }
 
     // Check that enough questions have been answered by the user to enable securityquestions
     if (count(tool_securityquestions_get_active_user_responses($user)) >= get_config('tool_securityquestions', 'minuserquestions')) {
@@ -314,6 +326,11 @@ function tool_securityquestions_pick_questions($user) {
 function tool_securityquestions_inject_navigation_node($navigation, $user, $usercontext, $course, $coursecontext) {
     global $PAGE;
 
+    // First check if user has the capability to interact with questions
+    if (!has_capability('tool/securityquestions:questionsaccess', $usercontext, $user)) {
+        return;
+    }
+
     // Only inject if user is on the preferences page
     $onpreferencepage = $PAGE->url->compare(new moodle_url('/user/preferences.php'), URL_MATCH_BASE);
     if (!$onpreferencepage) {
@@ -342,9 +359,15 @@ function tool_securityquestions_inject_navigation_node($navigation, $user, $user
 function require_question_responses() {
     global $USER, $DB, $SESSION, $PAGE, $CFG;
 
+    // First check if user has the capability to interact with questions
+    $usercontext = context_user::instance($USER->id);
+    if (!has_capability('tool/securityquestions:questionsaccess', $usercontext, $USER)) {
+        return;
+    }
+
     $config = get_config('tool_securityquestions');
     // Do not redirect if questions have already been presented if not mandatory
-    if (isset($SESSION->presentedresponse) && !$config->mandatory_questions) {
+    if (property_exists($SESSION, 'presentedresponse') && !$config->mandatory_questions) {
         return;
     }
     // Do not redirect if already on final page url, prevents redir loops from require_login
