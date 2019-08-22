@@ -56,6 +56,7 @@ $string['formquestionadded'] = 'Question successfully added: {$a}';
 $string['formconfirmdeprecate'] = 'Confirm Question Deprecation';
 $string['formquestiondeprecated'] = 'Question ID {$a} successfully deprecated.';
 $string['formremindme'] = 'Remind me on next login';
+$string['formsaveresponse'] = 'Save Response';
 
 // Setting Strings
 $string['settingsenablename'] = 'Enable Plugin';

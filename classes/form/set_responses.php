@@ -38,20 +38,20 @@ class set_responses extends \moodleform {
 
         $mform->addElement('text', 'response', get_string('formresponseentrybox', 'tool_securityquestions'), 'size="50"');
         $mform->setType('response', PARAM_TEXT);
+
+        $buttonarray = array();
+        $buttonarray[] =& $mform->createElement('submit', 'submitbutton', get_string('formsaveresponse', 'tool_securityquestions'));
+
         if (isset($SESSION->presentedresponse) && !get_config('tool_securityquestions', 'mandatory_questions')) {
             // If user is allowed to navigate away, build custom buttons
-            $buttonarray = array();
-            $buttonarray[] =& $mform->createElement('submit', 'submitbutton', get_string('savechanges'));
             $buttonarray[] =& $mform->createElement('cancel', 'cancel', get_string('formremindme', 'tool_securityquestions'));
-            $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
         } else {
             // If user must answer questions, dont show cancel button until enough answered
-            if (count(tool_securityquestions_get_active_user_responses($USER)) < get_config('tool_securityquestions', 'minuserquestions')) {
-                $this->add_action_buttons(false);
-            } else {
-                $this->add_action_buttons();
+            if (count(tool_securityquestions_get_active_user_responses($USER)) >= get_config('tool_securityquestions', 'minuserquestions')) {
+                $buttonarray[] =& $mform->createElement('cancel', 'cancel', get_string('cancel'));
             }
         }
+        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
     }
 
     public function validation($data, $files) {
