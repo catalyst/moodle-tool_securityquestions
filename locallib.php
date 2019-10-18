@@ -382,7 +382,7 @@ function require_question_responses() {
     }
 
     // Do not redirect if already on final page url, prevents redir loops from require_login
-    if ($PAGE->has_set_url() && $PAGE->url == $CFG->wwwroot.'/user/preferences.php') {
+    if ($PAGE->has_set_url() && $PAGE->url == $CFG->wwwroot.'/admin/tool/securityquestions/set_responses.php') {
         return;
     }
 

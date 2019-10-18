@@ -25,13 +25,18 @@
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once(__DIR__.'/locallib.php');
 
-global $CFG, $SESSION, $PAGE, $USER;
-
-$courseid = optional_param('courseid', SITEID, PARAM_INT);
-$url = new moodle_url('/user/preferences.php');
-if ($courseid !== SITEID) {
-    $url->param('courseid', $courseid);
+// Add navigation menu
+if ($node = $PAGE->settingsnav->find('root', \navigation_node::TYPE_SETTING)) {
+    $PAGE->navbar->add($node->get_content(), $node->action());
 }
+foreach (array('dashboard', 'preferences') as $label) {
+    if ($node = $PAGE->settingsnav->find($label, \navigation_node::TYPE_SETTING)) {
+        $PAGE->navbar->add($node->get_content(), $node->action());
+    }
+}
+$PAGE->navbar->add(get_string('setresponsessettingsmenu', 'tool_securityquestions'));
+
+$url = new moodle_url('/admin/tool/securityquestions/set_responses.php');
 $PAGE->set_url($url);
 
 // First, check if the require_recent_login function exists
@@ -67,6 +72,9 @@ if ($form->is_cancelled()) {
     // Set flags for display notification
     $notifysuccess = true;
     $notifycontent = $DB->get_record('tool_securityquestions', array('id' => $qid))->content;
+
+    // Redirect to current form to display updated data
+    redirect($PAGE->url);
 }
 
 // Build the page output.
