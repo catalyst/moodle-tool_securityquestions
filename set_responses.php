@@ -26,13 +26,8 @@ require_once(dirname(__FILE__) . '/../../../config.php');
 require_once(__DIR__.'/locallib.php');
 
 // Add navigation menu
-if ($node = $PAGE->settingsnav->find('root', \navigation_node::TYPE_SETTING)) {
+if ($node = $PAGE->settingsnav->find('usercurrentsettings', null)) {
     $PAGE->navbar->add($node->get_content(), $node->action());
-}
-foreach (array('dashboard', 'preferences') as $label) {
-    if ($node = $PAGE->settingsnav->find($label, \navigation_node::TYPE_SETTING)) {
-        $PAGE->navbar->add($node->get_content(), $node->action());
-    }
 }
 $PAGE->navbar->add(get_string('setresponsessettingsmenu', 'tool_securityquestions'));
 
