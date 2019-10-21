@@ -367,18 +367,14 @@ function require_question_responses() {
 
     $config = get_config('tool_securityquestions');
     // If questions already presented
-    if (property_exists($SESSION, 'presentedresponse') && !$config->mandatory_questions) {
+    if (property_exists($SESSION, 'presentedresponse')) {
         if (!$config->mandatory_questions) {
             // Do not redirect if not mandatory
             return;
         } else if ($config->graceperiod != 0) {
             $logintime = get_user_preferences('tool_securityquestions_logintime', null);
             // Check user time logged in since questions active
-            if ($logintime == null) {
-                // If user does not have a login time recorded, record here + return
-                set_user_preference('tool_securityquestions_logintime', time());
-                return;
-            } else if ($logintime + $config->graceperiod >= time()){
+            if ($logintime + $config->graceperiod >= time()) {
                 // If still in grace period, return
                 return;
             }
@@ -395,6 +391,11 @@ function require_question_responses() {
     $requiredset = $config->minquestions;
 
     if (count($setquestions) >= $requiredset) {
+
+        // Set user preference for first time being presented questions
+        if (get_user_preferences('tool_securityquestions_logintime', null) == null) {
+            set_user_preference('tool_securityquestions_logintime', time());
+        }
 
         // Check whether user has answered enough questions
         $requiredquestions = $config->minuserquestions;

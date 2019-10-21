@@ -73,6 +73,22 @@ if ($form->is_cancelled()) {
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('setresponsespagestring', 'tool_securityquestions'));
 echo '<br>';
+
+// Output a notification for grace period time remaining, if set
+$logintime = get_user_preferences('tool_securityquestions_logintime', null);
+if (!get_config('tool_securityquestions', 'mandatoryquestions') && $logintime != null
+    && get_config('tool_securityquestions', 'graceperiod')) {
+
+    // Find remaining time in grace period, and output it formatted nicely
+    $timerem = ($logintime + get_config('tool_securityquestions', 'graceperiod')) - time();
+
+    // Check if there is time left
+    if ($timerem > 0) {
+        $duration = sprintf('%02d:%02d:%02d', ($timerem / HOURSECS), (($timerem / MINSECS) % MINSECS), $timerem % MINSECS);
+        echo $OUTPUT->notification(get_string('formgraceperiodtimerem', 'tool_securityquestions', $duration), 'notifymessage');
+    }
+}
+
 $form->display();
 
 // Display notification if successful response recorded
