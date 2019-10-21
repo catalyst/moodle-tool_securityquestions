@@ -366,10 +366,25 @@ function require_question_responses() {
     }
 
     $config = get_config('tool_securityquestions');
-    // Do not redirect if questions have already been presented if not mandatory
+    // If questions already presented
     if (property_exists($SESSION, 'presentedresponse') && !$config->mandatory_questions) {
-        return;
+        if (!$config->mandatory_questions) {
+            // Do not redirect if not mandatory
+            return;
+        } else if ($config->graceperiod != 0) {
+            $logintime = get_user_preferences('tool_securityquestions_logintime', null);
+            // Check user time logged in since questions active
+            if ($logintime == null) {
+                // If user does not have a login time recorded, record here + return
+                set_user_preference('tool_securityquestions_logintime', time());
+                return;
+            } else if ($logintime + $config->graceperiod >= time()){
+                // If still in grace period, return
+                return;
+            }
+        }
     }
+
     // Do not redirect if already on final page url, prevents redir loops from require_login
     if ($PAGE->has_set_url() && $PAGE->url == $CFG->wwwroot.'/user/preferences.php') {
         return;
