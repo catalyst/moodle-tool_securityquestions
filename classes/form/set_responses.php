@@ -42,7 +42,9 @@ class set_responses extends \moodleform {
         $buttonarray = array();
         $buttonarray[] =& $mform->createElement('submit', 'submitbutton', get_string('formsaveresponse', 'tool_securityquestions'));
 
-        if (isset($SESSION->presentedresponse) && !get_config('tool_securityquestions', 'mandatory_questions')) {
+        // If questions aren't mandatory, or user is within the grace period
+        if (isset($SESSION->presentedresponse) && (!get_config('tool_securityquestions', 'mandatory_questions')) ||
+                get_user_preferences('tool_securityquestions_logintime') + get_config('tool_securityquestions', 'graceperiod') >= time()) {
             // If user is allowed to navigate away, build custom buttons
             $buttonarray[] =& $mform->createElement('cancel', 'cancel', get_string('formremindme', 'tool_securityquestions'));
         } else {

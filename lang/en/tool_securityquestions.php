@@ -57,6 +57,8 @@ $string['formconfirmdeprecate'] = 'Confirm Question Deprecation';
 $string['formquestiondeprecated'] = 'Question ID {$a} successfully deprecated.';
 $string['formremindme'] = 'Remind me on next login';
 $string['formsaveresponse'] = 'Save Response';
+$string['formgraceperiodtimerem'] = 'You are currently in a grace period for security questions. In this time, you may choose not to answer security questions, and will be reminded on next login.
+                                     After the grace period ends, you must answer security questions before accessing the rest of the system. Grace period duration remaning: {$a}';
 
 // Setting Strings
 $string['settingsenablename'] = 'Enable Plugin';
@@ -80,6 +82,9 @@ $string['settingsquestionfiledesc'] = 'Enter the filename of a question file you
 $string['settingsmandatoryquestions'] = 'Mandatory Security Questions';
 $string['settingsmandatoryquestionsdesc'] = 'Enable this control to make security questions mandatory. If disabled, users will still be prompted to answer questions on login,
                                              but they will be able to navigate away. On next login they will again be prompted.';
+$string['settingsgraceperiod'] = 'Response Grace Period';
+$string['settingsgraceperioddesc'] = 'A period of time during which a user can choose to not set question responses, even when mandatory questions are enabled. After this period users who
+                                      have not set reponses will be forced to set responses. Set this control to 0 to disable the grace period.';
 
 
 // Template Strings
