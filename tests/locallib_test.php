@@ -156,6 +156,10 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         global $CFG;
         global $USER;
 
+        // Log in a generated user
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
         // Setup some questions, and some responses
         for ($i = 1; $i < 6; $i++) {
             tool_securityquestions_insert_question("question$i");
@@ -189,11 +193,6 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $questions2 = tool_securityquestions_pick_questions($USER);
         $questions3 = tool_securityquestions_pick_questions($USER);
         $this->assertEquals($questions2, $questions3);
-        /*sleep(5);
-        // Potentially buggy, if random questions picked = previous choice, not sure
-        $questions4 = tool_securityquestions_pick_questions($USER);
-        $this->assertNotEquals($questions4, $questions2);
-        $this->assertNotEquals($questions4, $questions3);*/ // FIND WAY TO TEST THIS EFFECTIVELY
     }
 
     public function test_add_response() {
@@ -201,6 +200,10 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         global $DB;
         global $CFG;
         global $USER;
+
+        // Log in a generated user
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
 
         // Add some questions for responses
         tool_securityquestions_insert_question('question1');
@@ -226,7 +229,9 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
 
         $j = 1;
         foreach ($active as $question) {
-            $this->assertEquals(hash('sha1', "response$j"), $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => $question->id)));
+            $this->assertEquals(hash('sha1', "response$j". hash('sha1', $user->username)),
+                $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => $question->id)));
+
             $j++;
         }
 
@@ -235,7 +240,8 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $count3 = count($DB->get_records('tool_securityquestions_res', array('userid' => $USER->id)));
         $this->assertEquals(3, $count3);
 
-        $this->assertEquals(hash('sha1', 'response4'), $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => reset($active)->id)));
+        $this->assertEquals(hash('sha1', 'response4'. hash('sha1', $user->username)),
+            $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => reset($active)->id)));
 
         // Check that nothing happens for QID that doesnt exist
         $this->assertEquals(false, tool_securityquestions_add_response('response5', 10000));
@@ -288,6 +294,11 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->resetAfterTest(true);
         global $USER;
         global $DB;
+
+        // Create a user and login as user
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
         // Set minimum number of questions to 1
         set_config('minquestions', 1 , 'tool_securityquestions');
 
@@ -519,14 +530,15 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
     public static function hash_response_provider() {
         return [
             // Data array [hash, string]
-            ['ecb252044b5ea0f679ee78ec1a12904739e2904d', 'string'],
-            ['ecb252044b5ea0f679ee78ec1a12904739e2904d', 'STRING'],
-            ['ecb252044b5ea0f679ee78ec1a12904739e2904d', ' STRING '],
-            ['ecb252044b5ea0f679ee78ec1a12904739e2904d', ' string '],
-            ['da39a3ee5e6b4b0d3255bfef95601890afd80709', '      '],
-            ['f52c6e2b3d375cea9587f632aece713511dc7b58', 'str ing'],
-            ['423e14cffea08eef9214663397ed1f3164af9f8c', 'awdawd'],
-            ['da39a3ee5e6b4b0d3255bfef95601890afd80709', ''],
+            ['cfba18edc59451992303231fe0704009952f2c0b', 'string'],
+            ['cfba18edc59451992303231fe0704009952f2c0b', 'STRING'],
+            ['cfba18edc59451992303231fe0704009952f2c0b', ' STRING '],
+            ['cfba18edc59451992303231fe0704009952f2c0b', ' string '],
+            ['6b8b9353fc19cdfa39ac5bc504b40087e2a00054', '      '],
+            ['6872ba2dac81c77d993c8169364d6dab7b3880fb', 'str ing'],
+            ['d355c2b36ddefea2c8adecf61e232eda3869bb5b', 'awdawd'],
+            ['6b8b9353fc19cdfa39ac5bc504b40087e2a00054', ''],
+            ['e90a368f2a0d9e18a1f4416183e708aabb6e81ed', '測試'],
         ];
     }
 
@@ -534,7 +546,11 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
      * @dataProvider hash_response_provider
      */
     public function test_hash_response($hash, $string) {
-        $normhash = tool_securityquestions_hash_response($string);
+        $this->resetAfterTest(true);
+        // Create a user
+        $user = $this->getDataGenerator()->create_user(array('username' => 'testuser'));
+
+        $normhash = tool_securityquestions_hash_response($string, $user);
         $this->assertEquals($normhash, $hash);
     }
 }
