@@ -25,13 +25,13 @@
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once(__DIR__.'/locallib.php');
 
-global $CFG, $SESSION, $PAGE, $USER;
-
-$courseid = optional_param('courseid', SITEID, PARAM_INT);
-$url = new moodle_url('/user/preferences.php');
-if ($courseid !== SITEID) {
-    $url->param('courseid', $courseid);
+// Add navigation menu
+if ($node = $PAGE->settingsnav->find('usercurrentsettings', null)) {
+    $PAGE->navbar->add($node->get_content(), $node->action());
 }
+$PAGE->navbar->add(get_string('setresponsessettingsmenu', 'tool_securityquestions'));
+
+$url = new moodle_url('/admin/tool/securityquestions/set_responses.php');
 $PAGE->set_url($url);
 
 // First, check if the require_recent_login function exists
@@ -52,11 +52,13 @@ $notifycontent = '';
 if (!empty($SESSION->wantsurl)) {
     $prevurl = $SESSION->wantsurl;
 } else {
-    $prevurl = new moodle_url('/my/');
+    $prevurl = new moodle_url('/user/preferences.php');
 }
 
 $form = new \tool_securityquestions\form\set_responses();
 if ($form->is_cancelled()) {
+    // Unset wantsurl
+    unset($SESSION->wantsurl);
     redirect($prevurl);
 
 } else if ($fromform = $form->get_data()) {
@@ -67,6 +69,9 @@ if ($form->is_cancelled()) {
     // Set flags for display notification
     $notifysuccess = true;
     $notifycontent = $DB->get_record('tool_securityquestions', array('id' => $qid))->content;
+
+    // Redirect to current form to display updated data
+    redirect($PAGE->url);
 }
 
 // Build the page output.

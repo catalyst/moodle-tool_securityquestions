@@ -46,7 +46,13 @@ class set_responses extends \moodleform {
         if (isset($SESSION->presentedresponse) && (!get_config('tool_securityquestions', 'mandatory_questions')) ||
                 get_user_preferences('tool_securityquestions_logintime') + get_config('tool_securityquestions', 'graceperiod') >= time()) {
             // If user is allowed to navigate away, build custom buttons
-            $buttonarray[] =& $mform->createElement('cancel', 'cancel', get_string('formremindme', 'tool_securityquestions'));
+
+            if (!empty($SESSION->wantsurl)) {
+                // User got here from a redirect
+                $buttonarray[] =& $mform->createElement('cancel', 'cancel', get_string('formremindme', 'tool_securityquestions'));
+            } else {
+                $buttonarray[] =& $mform->createElement('cancel', 'cancel', get_string('cancel'));
+            }
         } else {
             // If user must answer questions, dont show cancel button until enough answered
             if (count(tool_securityquestions_get_active_user_responses($USER)) >= get_config('tool_securityquestions', 'minuserquestions')) {
