@@ -57,11 +57,13 @@ $notifycontent = '';
 if (!empty($SESSION->wantsurl)) {
     $prevurl = $SESSION->wantsurl;
 } else {
-    $prevurl = new moodle_url('/my/');
+    $prevurl = new moodle_url('/user/preferences.php');
 }
 
 $form = new \tool_securityquestions\form\set_responses();
 if ($form->is_cancelled()) {
+    // Unset wantsurl
+    unset($SESSION->wantsurl);
     redirect($prevurl);
 
 } else if ($fromform = $form->get_data()) {
