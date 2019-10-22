@@ -29,7 +29,7 @@ $string['securityquestionssettings'] = 'Security Questions Settings';
 $string['setsecurityquestionspagestring'] = 'Modify Security Questions';
 $string['answerquestionspagestring'] = 'Security Question Verification Required';
 $string['setresponsespagestring'] = 'Set Answers to Security Questions';
-$string['setresponsessettingsmenu'] = 'Edit Security Question Responses';
+$string['setresponsessettingsmenu'] = 'Security Question Responses';
 $string['resetuserpagename'] = 'Reset Security Question Lockouts';
 
 // Form Strings
