@@ -61,8 +61,10 @@ $string['formgraceperiodtimerem'] = 'You are currently in a grace period for sec
                                      After the grace period ends, you must answer security questions before accessing the rest of the system. Grace period duration remaning: {$a}';
 $string['formresetlockout'] = 'Reset Lockout';
 $string['formclearresponses'] = 'Clear User Responses:';
+$string['formclearresponsestable'] = 'Clear Responses';
 $string['formclearresponsesdesc'] = 'Enter a username or email to clear responses for user.';
 $string['formnolockedusers'] = 'No locked users found';
+$string['formlockedoutusers'] = 'Locked Out Users';
 
 
 // Setting Strings
