@@ -53,7 +53,7 @@ $string['formuserresponsescleared'] = 'User Responses successfully cleared';
 $string['formresetbutton'] = 'Clear Responses';
 $string['formclearresponses'] = 'Also clear user question responses';
 $string['formquestionadded'] = 'Question successfully added: {$a}';
-$string['formconfirmdeprecate'] = 'Confirm Question Deprecation';
+$string['formdeprecate'] = 'Deprecate Question';
 $string['formquestiondeprecated'] = 'Question ID {$a} successfully deprecated.';
 $string['formremindme'] = 'Remind me on next login';
 $string['formsaveresponse'] = 'Save Response';
@@ -65,6 +65,14 @@ $string['formclearresponsestable'] = 'Clear Responses';
 $string['formclearresponsesdesc'] = 'Enter a username or email to clear responses for user.';
 $string['formnolockedusers'] = 'No locked users found';
 $string['formlockedoutusers'] = 'Locked Out Users';
+$string['formaddquestionbutton'] = 'Add Question';
+$string['formtablequestion'] = 'Question';
+$string['formtabledeprecate'] = 'Deprecated';
+$string['formnoquestions'] = 'No questions set';
+$string['formcurrentquestions'] = 'Current Questions';
+$string['formquestiondeleted'] = 'Question ID {$a} successfully deprecated.';
+$string['formquestionnotdeleted'] = 'Unable to delete Question {$a}.';
+$string['formtablecount'] = 'Usage Count';
 
 
 // Setting Strings

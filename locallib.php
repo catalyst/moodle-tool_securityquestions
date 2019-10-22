@@ -119,6 +119,25 @@ function tool_securityquestions_undeprecate_question($qid) {
     }
 }
 
+function tool_securityquestions_delete_question($qid) {
+    global $DB;
+    // This function does not have to check for minimum questions, as question must be deprecated before use
+    // Check question exists
+    if ($DB->record_exists('tool_securityquestions', array('id' => $qid))) {
+        $question = $DB->get_records('tool_securityquestions', array('id' => $qid));
+        // Ensure question is deprecated before delete
+        if ($question->deprecated == 1) {
+            // Finally ensure no-one is using question
+            if ($DB->count_records('tool_securityquestions_res', array('qid' => $qid)) == 0) {
+                $DB->delete_record('tool_securityquestions', array('id' => 'qid'));
+                return true;
+            }
+        }
+    }
+    // Wasnt able to delete
+    return false;
+}
+
 // ================================================FORM INJECTION FUNCTIONS============================================
 
 /**
