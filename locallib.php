@@ -350,7 +350,8 @@ function tool_securityquestions_inject_navigation_node($navigation, $user, $user
     $url = new moodle_url('/admin/tool/securityquestions/set_responses.php');
     $node = navigation_node::create(get_string('setresponsessettingsmenu', 'tool_securityquestions'), $url,
             navigation_node::TYPE_SETTING);
-    $navigation->add_node($node);
+    $usernode = $navigation->find('useraccount', navigation_node::TYPE_CONTAINER);
+    $usernode->add_node($node);
 }
 
 /**
