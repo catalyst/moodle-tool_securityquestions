@@ -52,18 +52,22 @@ if ($form->is_cancelled()) {
     redirect($prevurl);
 
 } else if ($fromform = $form->get_data()) {
-    /*global $DB;
-    $userid = $fromform->resetid;
-    $user = $DB->get_record('user', array('id' => $userid));
 
-    tool_securityquestions_reset_lockout_counter($user);
-    tool_securityquestions_unlock_user($user);
+    $foundusers = $DB->get_records('user', array('username' => ($fromform->clearresponses)));
+    // User is guaranteed to exist here due to validation
+    if (!empty($foundusers)) {
+        // Get first matching username record
+        $user = reset($foundusers);
+    } else {
+        $foundusers = $DB->get_records('user', array('email' => ($fromform->clearresponses)));
+        if (!empty($foundusers)) {
+            // Get first matching email record (should be unique)
+            $user = reset($foundusers);
+        }
+    }
 
-    // Additionally clear responses to questions if the checkbox is set
-    if ($fromform->clearresponses) {
-        $DB->delete_records('tool_securityquestions_res', array('userid' => $userid));
-        $notifyclearsuccess = true;
-    }*/
+    tool_securityquestions_clear_user_responses($user);
+    $notifyclearsuccess = true;
 }
 
 // Build the page output.
@@ -79,7 +83,7 @@ if ($notifyresetsuccess == true) {
 
 if ($notifyclearsuccess == true) {
     $notifyclearsuccess == false;
-    echo $OUTPUT->notification(get_string('resetuserresponsescleared', 'tool_securityquestions'), 'notifysuccess');
+    echo $OUTPUT->notification(get_string('formuserresponsescleared', 'tool_securityquestions'), 'notifysuccess');
 }
 
 echo '<br>';
@@ -111,6 +115,11 @@ function generate_table() {
             html_writer::link($reset, get_string('formresetlockout', 'tool_securityquestions')),
         );
     }
+    if (count($lockedusers) != 0) {
+        echo html_writer::table($table);
+    } else {
+        $string = get_string('formnolockedusers', 'tool_securityquestions');
+        echo "<h4>$string</h4>";
+    }
 
-    echo html_writer::table($table);
 }

@@ -47,12 +47,21 @@ class reset_lockout extends \moodleform {
         global $DB;
         $errors = parent::validation($data, $files);
 
-        /*if (is_numeric($data['resetid'])) {
-            $exists = $DB->record_exists('user', array('id' => $data['resetid']));
-            if (!$exists) {
-                $errors['resetid'] = get_string('formresetnotfound', 'tool_securityquestions');
+        $foundusers = $DB->get_records('user', array('username' => ($data['clearresponses'])));
+        if (!empty($foundusers)) {
+            // Get first matching username record
+            $user = reset($foundusers);
+        } else {
+            $foundusers = $DB->get_records('user', array('email' => ($data['clearresponses'])));
+            if (!empty($foundusers)) {
+                // Get first matching email record (should be unique)
+                $user = reset($foundusers);
             }
-        }*/
+        }
+
+        if (!isset($user)) {
+            $errors['clearresponses'] = get_string('formresetnotfound', 'tool_securityquestions');
+        } 
 
         return $errors;
     }

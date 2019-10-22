@@ -601,6 +601,17 @@ function tool_securityquestions_reset_lockout_counter($user) {
     $DB->set_field('tool_securityquestions_loc', 'counter', 0, array('userid' => $user->id));
 }
 
+/**
+ * Clears all responses for a user
+ *
+ * @param stdClass $user the user to clear responses for
+ */
+function tool_securityquestions_clear_user_responses($user) {
+    global $DB;
+
+    $DB->delete_records('tool_securityquestions_res', array('userid' => $user->id));
+}
+
 // ===========================================TEMPLATE FILE FUNCTIONS======================================
 /**
  * Reads a question template file, and inserts all questions
