@@ -27,7 +27,7 @@ namespace tool_securityquestions\event;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Event for when users are locked out from resetting password
+ * Event for when users are unlocked from resetting password
  *
  * @property-read array $other {
  *      Extra information about event.
@@ -39,18 +39,23 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class locked_out extends \core\event\base {
+class user_unlocked extends \core\event\base {
     /**
      * Create instance of event.
      *
-     * @param int $userid the userid of the User whos account was locked
-     * @return locked_out the locked out event
+     * @param stdClass $user the user who unlocked another user
+     * @param stdClass $unlockeduser the user whos account was unlocked
+     * @return user_unlocked the locked out event
      */
-    public static function locked_out_event($user) {
+    public static function user_unlocked_event($user, $unlockeduser) {
 
         $data = array(
             'context' => \context_user::instance($user->id),
-            'other' => array ('userid' => $user->id)
+            'relateduserid' => $unlockeduser->id,
+            'other' => array (
+                'unlockeduserid' => $unlockeduser->id,
+                'userid' => $user->id,
+            )
         );
 
         return self::create($data);
@@ -72,7 +77,8 @@ class locked_out extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The user with ID '{$this->other['userid']}' was locked from resetting their password.";
+        return "The user with ID '{$this->other['unlockeduserid']}' was unlocked from
+         resetting their password by user with ID '{$this->other['userid']}'.";
     }
 
     /**
@@ -81,7 +87,7 @@ class locked_out extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('userlockedeventname', 'tool_securityquestions');
+        return get_string('userunlockedeventname', 'tool_securityquestions');
     }
 
     /**
@@ -90,6 +96,6 @@ class locked_out extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/login/forgot_password.php');
+        return new \moodle_url('/admin/tool/securityquestions/reset_lockout.php');
     }
 }

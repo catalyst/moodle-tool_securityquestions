@@ -33,12 +33,12 @@ class reset_lockout extends \moodleform {
         $mform = $this->_form;
 
         // Text box for ID entry
-        $mform->addElement('text', 'resetid', get_string('formresetid', 'tool_securityquestions'));
-        $mform->setType('resetid', PARAM_TEXT);
-        $mform->addRule('resetid',  get_string('formresetnotnumber', 'tool_securityquestions'), 'numeric');
+        $mform->addElement('text', 'clearresponses', get_string('formclearresponses', 'tool_securityquestions'),
+            array('placeholder' => 'Username or Email'));
+        $mform->setType('clearresponses', PARAM_TEXT);
 
-        // Checkbox for clearing responses as well
-        $mform->addElement('advcheckbox', 'clearresponses', '', get_string('formclearresponses', 'tool_securityquestions'));
+        // Description label
+        $mform->addElement('static', 'clearresponsesdesc', get_string('formclearresponsesdesc', 'tool_securityquestions'));
 
         $this->add_action_buttons(true, get_string('formresetbutton', 'tool_securityquestions'));
     }
@@ -47,11 +47,20 @@ class reset_lockout extends \moodleform {
         global $DB;
         $errors = parent::validation($data, $files);
 
-        if (is_numeric($data['resetid'])) {
-            $exists = $DB->record_exists('user', array('id' => $data['resetid']));
-            if (!$exists) {
-                $errors['resetid'] = get_string('formresetnotfound', 'tool_securityquestions');
+        // Validation for ensuring user account exists to clear responses for
+        $foundusers = $DB->get_records('user', array('username' => ($data['clearresponses'])));
+        if (!empty($foundusers)) {
+            // Get first matching username record
+            $user = reset($foundusers);
+        } else {
+            $foundusers = $DB->get_records('user', array('email' => ($data['clearresponses'])));
+            if (!empty($foundusers)) {
+                // Get first matching email record (should be unique)
+                $user = reset($foundusers);
             }
+        }
+        if (!isset($user)) {
+            $errors['clearresponses'] = get_string('formresetnotfound', 'tool_securityquestions');
         }
 
         return $errors;
