@@ -50,7 +50,7 @@ $string['formresetnotnumber'] = 'ID must be a number';
 $string['formresetnotfound'] = 'User does not exist';
 $string['formuserunlocked'] = 'User successfully unlocked.';
 $string['formuserresponsescleared'] = 'User Responses successfully cleared';
-$string['formresetbutton'] = 'Unlock User';
+$string['formresetbutton'] = 'Clear Responses';
 $string['formclearresponses'] = 'Also clear user question responses';
 $string['formquestionadded'] = 'Question successfully added: {$a}';
 $string['formconfirmdeprecate'] = 'Confirm Question Deprecation';
@@ -59,6 +59,10 @@ $string['formremindme'] = 'Remind me on next login';
 $string['formsaveresponse'] = 'Save Response';
 $string['formgraceperiodtimerem'] = 'You are currently in a grace period for security questions. In this time, you may choose not to answer security questions, and will be reminded on next login.
                                      After the grace period ends, you must answer security questions before accessing the rest of the system. Grace period duration remaning: {$a}';
+$string['formresetlockout'] = 'Reset Lockout';
+$string['formclearresponses'] = 'Clear User Responses:';
+$string['formclearresponsesdesc'] = 'Enter a username or email to clear responses for user.';
+
 
 // Setting Strings
 $string['settingsenablename'] = 'Enable Plugin';

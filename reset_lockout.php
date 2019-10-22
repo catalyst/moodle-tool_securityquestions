@@ -29,11 +29,22 @@ require_once(__DIR__.'/locallib.php');
 defined('MOODLE_INTERNAL') || die();
 
 admin_externalpage_setup('tool_securityquestions_reset_lockout');
+$resetid = optional_param('reset', 0, PARAM_INT);
+$prevurl = ($CFG->wwwroot.'/admin/category.php?category=securityquestions');
 
 $notifyresetsuccess = false;
 $notifyclearsuccess = false;
 
-$prevurl = ($CFG->wwwroot.'/admin/category.php?category=securityquestions');
+if ($resetid != 0) {
+    //Execute reset of user before regenerating page
+    $exists = $DB->record_exists('user', array('id' => $resetid));
+    if ($exists) {
+        $user = $DB->get_record('user', array('id' => $resetid));
+        tool_securityquestions_reset_lockout_counter($user);
+        tool_securityquestions_unlock_user($user);
+        $notifyresetsuccess = true;
+    }
+}
 
 $form = new \tool_securityquestions\form\reset_lockout();
 if ($form->is_cancelled()) {
@@ -41,19 +52,18 @@ if ($form->is_cancelled()) {
     redirect($prevurl);
 
 } else if ($fromform = $form->get_data()) {
-    global $DB;
+    /*global $DB;
     $userid = $fromform->resetid;
     $user = $DB->get_record('user', array('id' => $userid));
 
     tool_securityquestions_reset_lockout_counter($user);
     tool_securityquestions_unlock_user($user);
-    $notifyresetsuccess = true;
 
     // Additionally clear responses to questions if the checkbox is set
     if ($fromform->clearresponses) {
         $DB->delete_records('tool_securityquestions_res', array('userid' => $userid));
         $notifyclearsuccess = true;
-    }
+    }*/
 }
 
 // Build the page output.
@@ -86,12 +96,20 @@ function generate_table() {
     $lockedusers = $DB->get_records('tool_securityquestions_loc', array('locked' => 1));
 
     $table = new html_table();
-    $table->head = array('User ID', 'Email', 'Full Name');
-    $table->colclasses = array('centeralign', 'centeralign', 'centeralign');
+    $table->head = array('User ID', 'Username', 'Email', 'Full Name', 'Unlock User');
+    $table->colclasses = array('centeralign', 'centeralign', 'centeralign', 'centeralign', 'centeralign');
 
     foreach ($lockedusers as $userrecord) {
         $user = $DB->get_record('user', array('id' => $userrecord->userid));
-        $table->data[] = array($user->id, $user->email, fullname($user));
+        $reset = new moodle_url('/admin/tool/securityquestions/reset_lockout.php', array('reset' => $userrecord->id));
+        
+        $table->data[] = array(
+            $user->id,
+            $user->username,
+            $user->email,
+            fullname($user),
+            html_writer::link($reset, get_string('formresetlockout', 'tool_securityquestions')),
+        );
     }
 
     echo html_writer::table($table);
