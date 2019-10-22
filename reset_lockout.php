@@ -36,7 +36,7 @@ $notifyresetsuccess = false;
 $notifyclearsuccess = false;
 
 if ($resetid != 0) {
-    //Execute reset of user before regenerating page
+    // Execute reset of user lockout before regenerating page
     $exists = $DB->record_exists('user', array('id' => $resetid));
     if ($exists) {
         $user = $DB->get_record('user', array('id' => $resetid));
@@ -106,7 +106,7 @@ function generate_table() {
     foreach ($lockedusers as $userrecord) {
         $user = $DB->get_record('user', array('id' => $userrecord->userid));
         $reset = new moodle_url('/admin/tool/securityquestions/reset_lockout.php', array('reset' => $userrecord->id));
-        
+
         $table->data[] = array(
             $user->id,
             $user->username,
@@ -115,11 +115,12 @@ function generate_table() {
             html_writer::link($reset, get_string('formresetlockout', 'tool_securityquestions')),
         );
     }
+    // Dont output table if it is empty
     if (count($lockedusers) != 0) {
         echo html_writer::table($table);
     } else {
         $string = get_string('formnolockedusers', 'tool_securityquestions');
         echo "<h4>$string</h4>";
     }
-
 }
+

@@ -101,6 +101,7 @@ $string['templateforced-on'] = 'This template enforces the default settings for 
 
 // Event Strings
 $string['userlockedeventname'] = 'User locked from resetting password due to failed question attempts.';
+$string['userunlockedeventname'] = 'User unlocked from resetting password by an Administrator.';
 
 // Task Strings
 $string['taskcleantables'] = 'Clean plugin database of deleted users';

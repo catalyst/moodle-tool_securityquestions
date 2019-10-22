@@ -47,6 +47,7 @@ class reset_lockout extends \moodleform {
         global $DB;
         $errors = parent::validation($data, $files);
 
+        // Validation for ensuring user account exists to clear responses for
         $foundusers = $DB->get_records('user', array('username' => ($data['clearresponses'])));
         if (!empty($foundusers)) {
             // Get first matching username record
@@ -58,10 +59,9 @@ class reset_lockout extends \moodleform {
                 $user = reset($foundusers);
             }
         }
-
         if (!isset($user)) {
             $errors['clearresponses'] = get_string('formresetnotfound', 'tool_securityquestions');
-        } 
+        }
 
         return $errors;
     }

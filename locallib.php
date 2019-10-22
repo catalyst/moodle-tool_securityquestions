@@ -567,13 +567,17 @@ function tool_securityquestions_lock_user($user) {
  *
  * @param stdClass $user the user to increment the counter of
  */
-function tool_securityquestions_unlock_user($user) {
-    global $DB;
+function tool_securityquestions_unlock_user($unlockuser) {
+    global $DB, $USER;
     // First ensure that the user is initialised in the table (should never be uninitialised here)
-    tool_securityquestions_initialise_lockout_counter($user);
+    tool_securityquestions_initialise_lockout_counter($unlockuser);
     // Set lockout to false, and reset counter to 0
-    $DB->set_field('tool_securityquestions_loc', 'locked', 0, array('userid' => $user->id));
-    $DB->set_field('tool_securityquestions_loc', 'counter', 0, array('userid' => $user->id));
+    $DB->set_field('tool_securityquestions_loc', 'locked', 0, array('userid' => $unlockuser->id));
+    $DB->set_field('tool_securityquestions_loc', 'counter', 0, array('userid' => $unlockuser->id));
+
+    // Fire an unlocked event for the user
+    $event = \tool_securityquestions\event\user_unlocked::user_unlocked_event($USER, $unlockuser);
+    $event->trigger();
 }
 
 /**
