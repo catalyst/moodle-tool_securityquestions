@@ -25,15 +25,6 @@
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once(__DIR__.'/locallib.php');
 
-// Add navigation menu
-if ($node = $PAGE->settingsnav->find('usercurrentsettings', null)) {
-    $PAGE->navbar->add($node->get_content(), $node->action());
-}
-$PAGE->navbar->add(get_string('setresponsessettingsmenu', 'tool_securityquestions'));
-
-$url = new moodle_url('/admin/tool/securityquestions/set_responses.php');
-$PAGE->set_url($url);
-
 // First, check if the require_recent_login function exists
 if (function_exists('require_recent_login')) {
     // Require recent login to edit responses to questions
@@ -45,6 +36,14 @@ if (function_exists('require_recent_login')) {
 $PAGE->set_context(context_user::instance($USER->id));
 $PAGE->set_title('Edit Security Question Responses');
 $PAGE->set_heading(get_string('setresponsespagestring', 'tool_securityquestions'));
+$url = new moodle_url('/admin/tool/securityquestions/set_responses.php');
+$PAGE->set_url($url);
+
+// Add navigation menu
+if ($node = $PAGE->settingsnav->find('usercurrentsettings', null)) {
+    $PAGE->navbar->add($node->get_content(), $node->action());
+}
+$PAGE->navbar->add(get_string('setresponsessettingsmenu', 'tool_securityquestions'));
 
 $notifysuccess = false;
 $notifycontent = '';
