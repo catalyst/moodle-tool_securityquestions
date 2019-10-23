@@ -30,6 +30,10 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->resetAfterTest(true);
         global $DB;
 
+        // Log in a generated user
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
         // Try to insert a question into database
         $this->assertEquals(true, tool_securityquestions_insert_question('does this work?'));
 
@@ -53,6 +57,10 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
     public function test_get_active_questions() {
         $this->resetAfterTest(true);
         global $DB;
+
+        // Log in a generated user
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
 
         // Insert some questions to the database
         tool_securityquestions_insert_question('active1');
@@ -84,6 +92,10 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->resetAfterTest(true);
         global $DB;
         global $CFG;
+
+        // Log in a generated user
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
 
         // Set minimum number of required questions
         set_config('minquestions', 3 , 'tool_securityquestions');
@@ -127,6 +139,10 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->resetAfterTest(true);
         global $DB;
         global $CFG;
+
+        // Log in a generated user
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
 
         // Set minimum questions to 0
         set_config('minquestions', 0 , 'tool_securityquestions');

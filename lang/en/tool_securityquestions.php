@@ -53,7 +53,7 @@ $string['formuserresponsescleared'] = 'User Responses successfully cleared';
 $string['formresetbutton'] = 'Clear Responses';
 $string['formclearresponses'] = 'Also clear user question responses';
 $string['formquestionadded'] = 'Question successfully added: {$a}';
-$string['formconfirmdeprecate'] = 'Confirm Question Deprecation';
+$string['formdeprecate'] = 'Deprecate Question';
 $string['formquestiondeprecated'] = 'Question ID {$a} successfully deprecated.';
 $string['formremindme'] = 'Remind me on next login';
 $string['formsaveresponse'] = 'Save Response';
@@ -65,6 +65,18 @@ $string['formclearresponsestable'] = 'Clear Responses';
 $string['formclearresponsesdesc'] = 'Enter a username or email to clear responses for user.';
 $string['formnolockedusers'] = 'No locked users found';
 $string['formlockedoutusers'] = 'Locked Out Users';
+$string['formaddquestionbutton'] = 'Add Question';
+$string['formtablequestion'] = 'Question';
+$string['formtabledeprecate'] = 'Deprecated';
+$string['formnoquestions'] = 'No questions set';
+$string['formcurrentquestions'] = 'Current Questions: {$a}';
+$string['formquestiondeleted'] = 'Question ID {$a} successfully deleted.';
+$string['formquestionnotdeleted'] = 'Unable to delete Question {$a}.';
+$string['formtablecount'] = 'Usage Count';
+$string['formstatusactive'] = 'Active - {$a} additional questions required.';
+$string['formstatusnotactive'] = 'Not Active - {$a} additional questions required.';
+$string['formquestionnotdeprecated'] = 'Unable to deprecate Question {$a}.';
+
 
 
 // Setting Strings
@@ -104,6 +116,9 @@ $string['templateforced-on'] = 'This template enforces the default settings for 
 // Event Strings
 $string['userlockedeventname'] = 'User locked from resetting password due to failed question attempts.';
 $string['userunlockedeventname'] = 'User unlocked from resetting password by an Administrator.';
+$string['questionaddedeventname'] = 'Administrator added Security Question.';
+$string['questiondeprecatedeventname'] = 'Administrator deprecated Security Question.';
+$string['questiondeletedeventname'] = 'Administrator deleted Security Question.';
 
 // Task Strings
 $string['taskcleantables'] = 'Clean plugin database of deleted users';

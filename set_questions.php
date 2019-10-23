@@ -33,16 +33,52 @@ admin_externalpage_setup('tool_securityquestions_setform');
 // If a template is in use, apply it
 tool_securityquestions_use_template_file();
 
-$prevurl = ($CFG->wwwroot.'/admin/category.php?category=securityquestions');
-
-$questions = $DB->get_records('tool_securityquestions');
-
+// Setup notification block
 $notifyadd = false;
 $notifyaddcontent = '';
-
 $notifydep = false;
 $notifydepcontent = '';
+$notifydeptype = 'notifyerror';
+$notifydelete = false;
+$notifydeletetype = 'notifyerror';
+$notifydeletecontent = '';
 
+// Deprecate question from action if set
+$deprecate = optional_param('deprecate', 0, PARAM_INT);
+if ($deprecate != 0) {
+    if (tool_securityquestions_deprecate_question($deprecate)) {
+        $notifydep = true;
+        $notifydepcontent = $deprecate;
+        $notifydeptype = 'notifysuccess';
+    } else {
+        $notifydep = true;
+        $notifydepcontent = $deprecate;
+    }
+}
+
+// Delete question from action if set
+$delete = optional_param('delete', 0, PARAM_INT);
+if ($delete != 0) {
+    $success = tool_securityquestions_delete_question($delete);
+    // Setup notification for success or failure
+    if ($success) {
+        $notifydelete = true;
+        $notifydeletecontent = $delete;
+        $notifydeletetype = 'notifysuccess';
+    } else {
+        $notifydelete = true;
+        $notifydeletecontent = $delete;
+    }
+}
+
+$qcount = count(tool_securityquestions_get_active_questions());
+if (get_config('tool_securityquestions', 'minquestions') - $qcount <= 0) {
+    $qremaining = 0;
+} else {
+    $qremaining = (get_config('tool_securityquestions', 'minquestions') - $qcount);
+}
+
+$prevurl = ($CFG->wwwroot.'/admin/category.php?category=securityquestions');
 $form = new \tool_securityquestions\form\set_questions();
 if ($form->is_cancelled()) {
 
@@ -62,15 +98,8 @@ if ($form->is_cancelled()) {
         $notifyadd = true;
     }
 
-    // Check if there is a question to be deprecated
-    $depid = $fromform->deprecate;
-    if ($depid != '' && $fromform->confirmdeprecate) {
-        if (tool_securityquestions_deprecate_question($depid)) {
-            // Setup success notification
-            $notifydepcontent = $depid;
-            $notifydep = true;
-        }
-    }
+    // Redraw page
+    redirect($PAGE->url);
 }
 
 // Build the page output.
@@ -79,17 +108,35 @@ echo $OUTPUT->heading(get_string('setsecurityquestionspagestring', 'tool_securit
 echo '<br>';
 $form->display();
 
+// Echo notifications for actions
 if ($notifyadd == true) {
-    $notifyadd == false;
     echo $OUTPUT->notification(get_string('formquestionadded', 'tool_securityquestions', $notifyaddcontent), 'notifysuccess');
 }
 if ($notifydep == true) {
-    $notifydep == false;
-    echo $OUTPUT->notification(get_string('formquestiondeprecated', 'tool_securityquestions', $notifydepcontent), 'notifysuccess');
+    if ($notifydeptype == 'notifysuccess') {
+        $string = get_string('formquestiondeprecated', 'tool_securityquestions', $notifydepcontent);
+    } else if ($notifydeptype == 'notifyerror') {
+        $string = get_string('formquestionnotdeprecated', 'tool_securityquestions', $notifydepcontent);
+    }
+    echo $OUTPUT->notification($string, $notifydeptype);
+}
+
+if ($notifydelete == true) {
+    if ($notifydeletetype == 'notifysuccess') {
+        $string = get_string('formquestiondeleted', 'tool_securityquestions', $notifydeletecontent);
+    } else if ($notifydeletetype == 'notifyerror') {
+        $string = get_string('formquestionnotdeleted', 'tool_securityquestions', $notifydeletecontent);
+    }
+    echo $OUTPUT->notification($string, $notifydeletetype);
 }
 
 echo '<br>';
-echo '<h3>Current Questions</h3>';
+echo $OUTPUT->heading(get_string('formcurrentquestions', 'tool_securityquestions', $qcount), 3);
+if ($qremaining == 0) {
+    echo $OUTPUT->heading(get_string('formstatusactive', 'tool_securityquestions', $qremaining), 4);
+} else {
+    echo $OUTPUT->heading(get_string('formstatusnotactive', 'tool_securityquestions', $qremaining), 4);
+}
 generate_table();
 echo $OUTPUT->footer();
 
@@ -97,23 +144,41 @@ echo $OUTPUT->footer();
 
 function generate_table() {
     // Render table
-    global $DB;
+    global $DB, $OUTPUT;
     // Get records from database for populating table
-    $questions = $DB->get_records('tool_securityquestions');
+    $questions = $DB->get_records('tool_securityquestions', null, 'deprecated ASC, content ASC');
 
     $table = new html_table();
-    $table->head = array('ID', 'Question', 'Deprecated');
-    $table->colclasses = array('centeralign', 'leftalign', 'centeralign');
+    $table->head = array(
+        get_string('formtablequestion', 'tool_securityquestions'),
+        get_string('formtablecount', 'tool_securityquestions'),
+        get_string('formtabledeprecate', 'tool_securityquestions'),
+        get_string('action'),
+    );
+    $table->colclasses = array('centeralign', 'centeralign', 'centeralign', 'centeralign');
 
     foreach ($questions as $question) {
         if ($question->deprecated == 1) {
-            $dep = 'Yes';
+            $dep = get_string('yes');
         } else {
-            $dep = 'No';
+            $dep = get_string('no');
+        }
+        $count = $DB->count_records('tool_securityquestions_res', array('qid' => $question->id));
+
+        // Setup action cell
+        if ($count == 0 && $question->deprecated == 1) {
+            $url = new moodle_url('/admin/tool/securityquestions/set_questions.php', array('delete' => $question->id));
+            $link = html_writer::link($url, get_string('delete'));
+        } else {
+            $url = new moodle_url('/admin/tool/securityquestions/set_questions.php', array('deprecate' => $question->id));
+            $link = html_writer::link($url, get_string('formdeprecate', 'tool_securityquestions'));
         }
 
-        $table->data[] = array($question->id, $question->content, $dep);
+        $table->data[] = array($question->content, $count, $dep, $link);
     }
-    echo html_writer::table($table);
+
+    if (count($questions) != 0) {
+        echo html_writer::table($table);
+    }
 }
 
