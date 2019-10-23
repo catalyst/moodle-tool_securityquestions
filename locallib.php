@@ -370,7 +370,7 @@ function tool_securityquestions_inject_navigation_node($navigation, $user, $user
 
     // If users auth type is external, and they dont have a password, dont inject
     $auth = get_auth_plugin($USER->auth);
-    if ($auth->can_reset_password() == false && $auth->change_password_url() != null) {
+    if ($auth->can_reset_password() == false || $auth->change_password_url() != null) {
         return;
     }
 
@@ -411,7 +411,7 @@ function require_question_responses() {
 
     // If users auth type is external, and they dont have a password, dont redirect
     $auth = get_auth_plugin($USER->auth);
-    if ($auth->can_reset_password() == false && $auth->change_password_url() != null) {
+    if ($auth->can_reset_password() == false || $auth->change_password_url() != null) {
         return;
     }
 
