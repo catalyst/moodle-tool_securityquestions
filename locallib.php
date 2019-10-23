@@ -361,7 +361,7 @@ function tool_securityquestions_pick_questions($user) {
  * @return null Returns null if not on the correct pages to inject
  */
 function tool_securityquestions_inject_navigation_node($navigation, $user, $usercontext, $course, $coursecontext) {
-    global $PAGE, $USER;
+    global $PAGE;
 
     // First check if user has the capability to interact with questions
     if (!has_capability('tool/securityquestions:questionsaccess', $usercontext, $user)) {
@@ -369,8 +369,7 @@ function tool_securityquestions_inject_navigation_node($navigation, $user, $user
     }
 
     // If users auth type is external, and they dont have a password, dont inject
-    $auth = get_auth_plugin($USER->auth);
-    if ($auth->can_reset_password() == false || $auth->change_password_url() != null) {
+    if (!tool_securityquestions_check_external_auth()) {
         return;
     }
 
@@ -410,8 +409,7 @@ function require_question_responses() {
     }
 
     // If users auth type is external, and they dont have a password, dont redirect
-    $auth = get_auth_plugin($USER->auth);
-    if ($auth->can_reset_password() == false || $auth->change_password_url() != null) {
+    if (!tool_securityquestions_check_external_auth()) {
         return;
     }
 
@@ -463,6 +461,26 @@ function require_question_responses() {
                 redirect($url);
             }
         }
+    }
+}
+
+/**
+ * Checks whether a users auth type should interact with Security Questions
+ *
+ * @return bool true if a user can interact with Security Questions, false if not
+ */
+function tool_securityquestions_check_external_auth() {
+    global $USER;
+
+    // If users auth type is external, and they dont have a password, dont redirect
+    $auth = get_auth_plugin($USER->auth);
+    if ($auth->can_reset_password() == false
+        || $auth->change_password_url() != null
+        || !has_capability('moodle/user:changeownpassword', $systemcontext, $USER->id)) {
+
+        return false;
+    } else {
+        return true;
     }
 }
 
