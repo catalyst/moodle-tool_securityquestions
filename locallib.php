@@ -361,10 +361,16 @@ function tool_securityquestions_pick_questions($user) {
  * @return null Returns null if not on the correct pages to inject
  */
 function tool_securityquestions_inject_navigation_node($navigation, $user, $usercontext, $course, $coursecontext) {
-    global $PAGE;
+    global $PAGE, $USER;
 
     // First check if user has the capability to interact with questions
     if (!has_capability('tool/securityquestions:questionsaccess', $usercontext, $user)) {
+        return;
+    }
+
+    // If users auth type is external, and they dont have a password, dont inject
+    $auth = get_auth_plugin($USER->auth);
+    if ($auth->can_reset_password() == false && $auth->change_password_url() != null) {
         return;
     }
 
@@ -400,6 +406,12 @@ function require_question_responses() {
     // First check if user has the capability to interact with questions
     $usercontext = context_user::instance($USER->id);
     if (!has_capability('tool/securityquestions:questionsaccess', $usercontext, $USER)) {
+        return;
+    }
+
+    // If users auth type is external, and they dont have a password, dont redirect
+    $auth = get_auth_plugin($USER->auth);
+    if ($auth->can_reset_password() == false && $auth->change_password_url() != null) {
         return;
     }
 
