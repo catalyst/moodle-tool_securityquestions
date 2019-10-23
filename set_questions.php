@@ -75,7 +75,7 @@ $qcount = count(tool_securityquestions_get_active_questions());
 if (get_config('tool_securityquestions', 'minquestions') - $qcount <= 0) {
     $qremaining = 0;
 } else {
-    $qremaining = (get_config('tool_securityquestions', 'minquestions') - $qcount <= 0);
+    $qremaining = (get_config('tool_securityquestions', 'minquestions') - $qcount);
 }
 
 $prevurl = ($CFG->wwwroot.'/admin/category.php?category=securityquestions');
@@ -151,8 +151,8 @@ function generate_table() {
     $table = new html_table();
     $table->head = array(
         get_string('formtablequestion', 'tool_securityquestions'),
-        get_string('formtabledeprecate', 'tool_securityquestions'),
         get_string('formtablecount', 'tool_securityquestions'),
+        get_string('formtabledeprecate', 'tool_securityquestions'),
         get_string('action'),
     );
     $table->colclasses = array('centeralign', 'centeralign', 'centeralign', 'centeralign');
@@ -174,13 +174,10 @@ function generate_table() {
             $link = html_writer::link($url, get_string('formdeprecate', 'tool_securityquestions'));
         }
 
-        $table->data[] = array($question->content, $dep, $count, $link);
+        $table->data[] = array($question->content, $count, $dep, $link);
     }
 
-    if (count($questions) == 0) {
-        // Dont output empty table
-        echo $OUTPUT->heading(get_string('formnoquestions', 'tool_securityquestions'));
-    } else {
+    if (count($questions) != 0) {
         echo html_writer::table($table);
     }
 }

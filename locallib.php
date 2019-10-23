@@ -91,10 +91,16 @@ function tool_securityquestions_get_active_user_responses($user) {
  * @return bool returns true if the question was deprecated, false if not permitted
  */
 function tool_securityquestions_deprecate_question($qid) {
-    global $DB;
+    global $DB, $USER;
 
     if (tool_securityquestions_can_deprecate_question($qid)) {
         $DB->set_field('tool_securityquestions', 'deprecated', 1, array('id' => $qid));
+        $question = $DB->get_record('tool_securityquestions', (array('id' => $qid)));
+
+        // Fire event for question deprecation
+        $event = \tool_securityquestions\event\question_deprecated::question_deprecated_event($USER, $question->content);
+        $event->trigger();
+
         return true;
     } else {
         return false;
@@ -109,11 +115,17 @@ function tool_securityquestions_deprecate_question($qid) {
  */
 function tool_securityquestions_undeprecate_question($qid) {
     // This function has no side effects unlike deprecate, which must check minimum questions
-    global $DB;
+    global $DB, $USER;
     echo var_dump($qid);
     // If record doesnt exist, return false
     if ($DB->record_exists('tool_securityquestions', array('id' => $qid))) {
         $DB->set_field('tool_securityquestions', 'deprecated', 0, array('id' => $qid));
+
+        $question = $DB->get_record('tool_securityquestions', array('id' => $qid));
+        // Fire event for question addition back to the pool
+        $event = \tool_securityquestions\event\question_added::question_added_event($USER, $question->content);
+        $event->trigger();
+
         return true;
     } else {
         return false;
@@ -121,7 +133,7 @@ function tool_securityquestions_undeprecate_question($qid) {
 }
 
 function tool_securityquestions_delete_question($qid) {
-    global $DB;
+    global $DB, $USER;
     // This function does not have to check for minimum questions, as question must be deprecated before use
     // Check question exists
     if ($DB->record_exists('tool_securityquestions', array('id' => $qid))) {
@@ -131,6 +143,11 @@ function tool_securityquestions_delete_question($qid) {
             // Finally ensure no-one is using question
             if ($DB->count_records('tool_securityquestions_res', array('qid' => $qid)) == 0) {
                 $DB->delete_records('tool_securityquestions', array('id' => $qid));
+
+                // Fire event for question deletion
+                $event = \tool_securityquestions\event\question_deleted::question_deleted_event($USER, $question->content);
+                $event->trigger();
+
                 return true;
             }
         }
@@ -445,7 +462,7 @@ function require_question_responses() {
  * @return bool returns true if a question was successfully inserted or undeprecated, false for failure
  */
 function tool_securityquestions_insert_question($question) {
-    global $DB;
+    global $DB, $USER;
     // Trim question first
     $question = trim($question);
     if ($question != '') {
@@ -454,6 +471,10 @@ function tool_securityquestions_insert_question($question) {
         $record = $DB->get_record_sql('SELECT * FROM {tool_securityquestions} WHERE content = ?', array($sqlquestion));
 
         if (empty($record)) {
+            // Fire event for question addition
+            $event = \tool_securityquestions\event\question_added::question_added_event($USER, $question);
+            $event->trigger();
+
             return $DB->insert_record('tool_securityquestions', array('content' => $question, 'deprecated' => 0));
         } else if (!empty($record) && $record->deprecated != 0) {
             // If Deprecated record found, undeprecate

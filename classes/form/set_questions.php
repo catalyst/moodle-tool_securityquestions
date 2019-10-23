@@ -40,11 +40,5 @@ class set_questions extends \moodleform {
 
         $this->add_action_buttons(true, get_string('formaddquestionbutton', 'tool_securityquestions'));
     }
-
-    public function validation($data, $files) {
-        global $DB;
-
-        $errors = parent::validation($data, $files);
-        return $errors;
-    }
 }
+
