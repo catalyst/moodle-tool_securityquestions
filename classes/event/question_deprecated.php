@@ -98,3 +98,4 @@ class question_deprecated extends \core\event\base {
         return new \moodle_url('/admin/tool/securityquestions/set_questions.php');
     }
 }
+
