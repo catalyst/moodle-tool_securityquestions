@@ -69,10 +69,14 @@ $string['formaddquestionbutton'] = 'Add Question';
 $string['formtablequestion'] = 'Question';
 $string['formtabledeprecate'] = 'Deprecated';
 $string['formnoquestions'] = 'No questions set';
-$string['formcurrentquestions'] = 'Current Questions';
-$string['formquestiondeleted'] = 'Question ID {$a} successfully deprecated.';
+$string['formcurrentquestions'] = 'Current Questions: {$a}';
+$string['formquestiondeleted'] = 'Question ID {$a} successfully deleted.';
 $string['formquestionnotdeleted'] = 'Unable to delete Question {$a}.';
 $string['formtablecount'] = 'Usage Count';
+$string['formstatusactive'] = 'Active - {$a} additional questions required.';
+$string['formstatusnotactive'] = 'Not Active - {$a} additional questions required.';
+$string['formquestionnotdeprecated'] = 'Unable to deprecate Question {$a}.';
+
 
 
 // Setting Strings

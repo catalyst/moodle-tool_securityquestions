@@ -110,6 +110,7 @@ function tool_securityquestions_deprecate_question($qid) {
 function tool_securityquestions_undeprecate_question($qid) {
     // This function has no side effects unlike deprecate, which must check minimum questions
     global $DB;
+    echo var_dump($qid);
     // If record doesnt exist, return false
     if ($DB->record_exists('tool_securityquestions', array('id' => $qid))) {
         $DB->set_field('tool_securityquestions', 'deprecated', 0, array('id' => $qid));
@@ -124,12 +125,12 @@ function tool_securityquestions_delete_question($qid) {
     // This function does not have to check for minimum questions, as question must be deprecated before use
     // Check question exists
     if ($DB->record_exists('tool_securityquestions', array('id' => $qid))) {
-        $question = $DB->get_records('tool_securityquestions', array('id' => $qid));
+        $question = $DB->get_record('tool_securityquestions', array('id' => $qid));
         // Ensure question is deprecated before delete
         if ($question->deprecated == 1) {
             // Finally ensure no-one is using question
             if ($DB->count_records('tool_securityquestions_res', array('qid' => $qid)) == 0) {
-                $DB->delete_record('tool_securityquestions', array('id' => 'qid'));
+                $DB->delete_records('tool_securityquestions', array('id' => $qid));
                 return true;
             }
         }

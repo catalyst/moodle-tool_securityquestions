@@ -38,6 +38,7 @@ $notifyadd = false;
 $notifyaddcontent = '';
 $notifydep = false;
 $notifydepcontent = '';
+$notifydeptype = 'notifyerror';
 $notifydelete = false;
 $notifydeletetype = 'notifyerror';
 $notifydeletecontent = '';
@@ -45,15 +46,20 @@ $notifydeletecontent = '';
 // Deprecate question from action if set
 $deprecate = optional_param('deprecate', 0, PARAM_INT);
 if ($deprecate != 0) {
-    tool_securityquestions_deprecate_question($deprecate);
-    $notifydep = true;
-    $notifydepcontent = $deprecate;
+    if (tool_securityquestions_deprecate_question($deprecate)) {
+        $notifydep = true;
+        $notifydepcontent = $deprecate;
+        $notifydeptype = 'notifysuccess';
+    } else {
+        $notifydep = true;
+        $notifydepcontent = $deprecate;
+    }
 }
 
 // Delete question from action if set
 $delete = optional_param('delete', 0, PARAM_INT);
 if ($delete != 0) {
-    $success = tool_securityquestions_delete_question($deprecate);
+    $success = tool_securityquestions_delete_question($delete);
     // Setup notification for success or failure
     if ($success) {
         $notifydelete = true;
@@ -63,6 +69,13 @@ if ($delete != 0) {
         $notifydelete = true;
         $notifydeletecontent = $delete;
     }
+}
+
+$qcount = count(tool_securityquestions_get_active_questions());
+if (get_config('tool_securityquestions', 'minquestions') - $qcount <= 0) {
+    $qremaining = 0;
+} else {
+    $qremaining = (get_config('tool_securityquestions', 'minquestions') - $qcount <= 0);
 }
 
 $prevurl = ($CFG->wwwroot.'/admin/category.php?category=securityquestions');
@@ -84,6 +97,9 @@ if ($form->is_cancelled()) {
         $notifyaddcontent = $question;
         $notifyadd = true;
     }
+
+    // Redraw page
+    redirect($PAGE->url);
 }
 
 // Build the page output.
@@ -94,12 +110,15 @@ $form->display();
 
 // Echo notifications for actions
 if ($notifyadd == true) {
-    $notifyadd == false;
     echo $OUTPUT->notification(get_string('formquestionadded', 'tool_securityquestions', $notifyaddcontent), 'notifysuccess');
 }
 if ($notifydep == true) {
-    $notifydep == false;
-    echo $OUTPUT->notification(get_string('formquestiondeprecated', 'tool_securityquestions', $notifydepcontent), 'notifysuccess');
+    if ($notifydeptype == 'notifysuccess') {
+        $string = get_string('formquestiondeprecated', 'tool_securityquestions', $notifydepcontent);
+    } else if ($notifydeptype == 'notifyerror') {
+        $string = get_string('formquestionnotdeprecated', 'tool_securityquestions', $notifydepcontent);
+    }
+    echo $OUTPUT->notification($string, $notifydeptype);
 }
 
 if ($notifydelete == true) {
@@ -108,12 +127,16 @@ if ($notifydelete == true) {
     } else if ($notifydeletetype == 'notifyerror') {
         $string = get_string('formquestionnotdeleted', 'tool_securityquestions', $notifydeletecontent);
     }
-    $notifydelete = false;
     echo $OUTPUT->notification($string, $notifydeletetype);
 }
 
 echo '<br>';
-echo $OUTPUT->heading(get_string('formcurrentquestions', 'tool_securityquestions'), 3);
+echo $OUTPUT->heading(get_string('formcurrentquestions', 'tool_securityquestions', $qcount), 3);
+if ($qremaining == 0) {
+    echo $OUTPUT->heading(get_string('formstatusactive', 'tool_securityquestions', $qremaining), 4);
+} else {
+    echo $OUTPUT->heading(get_string('formstatusnotactive', 'tool_securityquestions', $qremaining), 4);
+}
 generate_table();
 echo $OUTPUT->footer();
 
@@ -123,7 +146,7 @@ function generate_table() {
     // Render table
     global $DB, $OUTPUT;
     // Get records from database for populating table
-    $questions = $DB->get_records('tool_securityquestions', null, 'id ASC');
+    $questions = $DB->get_records('tool_securityquestions', null, 'deprecated ASC, content ASC');
 
     $table = new html_table();
     $table->head = array(
