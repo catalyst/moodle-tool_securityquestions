@@ -120,6 +120,9 @@ $string['questionaddedeventname'] = 'Administrator added Security Question.';
 $string['questiondeprecatedeventname'] = 'Administrator deprecated Security Question.';
 $string['questiondeletedeventname'] = 'Administrator deleted Security Question.';
 
+// Injected Element Strings
+$string['injectedquestiontitle'] = 'Security Question {$a->num}: {$a->content}';
+
 // Task Strings
 $string['taskcleantables'] = 'Clean plugin database of deleted users';
 

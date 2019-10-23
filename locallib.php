@@ -188,9 +188,14 @@ function tool_securityquestions_inject_security_questions($mform, $user) {
 
             // Format and display to the user
             $questionnum = $i + 1;
-            $mform->addElement('html', "<h4>Security Question $questionnum: $qcontent</h4>");
+            $contentarray = array('num' => $questionnum, 'content' => $qcontent);
+            $heading = \html_writer::tag('h4', get_string('injectedquestiontitle', 'tool_securityquestions', $contentarray));
+            $mform->addElement('html', $heading);
+
             $mform->addElement('text', "question$i", get_string('formanswerquestion', 'tool_securityquestions', $questionnum));
             $mform->setType("question$i", PARAM_TEXT);
+            $mform->addRule("question$i", get_string('required'), 'required', null, 'client');
+
             $mform->addElement('hidden', "hiddenq$i", $qid);
             $mform->setType("hiddenq$i", PARAM_TEXT);
         }
@@ -476,7 +481,7 @@ function tool_securityquestions_check_external_auth() {
     $auth = get_auth_plugin($USER->auth);
     if ($auth->can_reset_password() == false
         || $auth->change_password_url() != null
-        || !has_capability('moodle/user:changeownpassword', $systemcontext, $USER->id)) {
+        || !has_capability('moodle/user:changeownpassword', context_system::instance(), $USER->id)) {
 
         return false;
     } else {
