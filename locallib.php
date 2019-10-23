@@ -655,6 +655,7 @@ function tool_securityquestions_clear_user_responses($user) {
     global $DB;
 
     $DB->delete_records('tool_securityquestions_res', array('userid' => $user->id));
+    set_user_preference('tool_securityquestions_logintime', time());
 }
 
 // ===========================================TEMPLATE FILE FUNCTIONS======================================
