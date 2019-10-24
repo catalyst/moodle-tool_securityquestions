@@ -42,8 +42,6 @@ $PAGE->set_title('Edit Security Question Responses');
 $PAGE->set_heading(get_string('setresponsespagestring', 'tool_securityquestions'));
 $PAGE->set_cacheable(false);
 
-$success = optional_param('success', -1, PARAM_INT);
-
 // Add navigation menu
 if ($node = $PAGE->settingsnav->find('usercurrentsettings', null)) {
     $PAGE->navbar->add($node->get_content(), $node->action());
@@ -59,38 +57,77 @@ if (!empty($SESSION->wantsurl)) {
     $prevurl = new moodle_url('/user/preferences.php');
 }
 
+$success = optional_param('success', -1, PARAM_INT);
+
+$active = count(tool_securityquestions_get_active_user_responses($USER));
+// If deleting a response, process here
+$delete = optional_param('delete', 0, PARAM_INT);
+if ($delete != 0) {
+    if ($active - 1 < get_config('tool_securityquestions', 'minuserquestions')) {
+            // Unable to delete, not enough responses set
+            $deletestatus = false;
+    } else {
+        if (tool_securityquestions_delete_response($delete)) {
+            $deletestatus = true;
+        } else {
+            // unable to delete (question probably doesnt exist)
+            $deletestatus = false;
+        }
+    }
+}
+
 $form = new \tool_securityquestions\form\set_responses();
 if ($form->is_cancelled()) {
     // Unset wantsurl
     unset($SESSION->wantsurl);
     redirect($prevurl);
 
-} else if ($fromform = $form->get_data()) {
-    $fail = false;
+} else if ($form->no_submit_button_pressed()) {
+    // Delete button pressed somewhere on the form
+    $data = $form->get_submitted_data();
+    $deletes = $data->preset;
+    for ($i = 0; $i < $deletes; $i++) {
+        $name = "delete$i";
+        $qidname = "qid$i";
+        if (!empty($data->$name)) {
+            $url = new moodle_url('/admin/tool/securityquestions/set_responses.php', array('delete' => $data->$qidname));
+            redirect($url);
+        }
+    }
 
-    $num = $fromform->elementnum;
-    for ($i = 1; $i <= $num; $i++) {
+} else if ($fromform = $form->get_data()) {
+    // Check for updated responses
+    $updates = $fromform->preset;
+    for ($i = 0; $i < $updates; $i++) {
+        $name = "preset$i";
+        $qidname = "qid$i";
+        if (!empty($fromform->$name)) {
+            // Update response
+            tool_securityquestions_add_response($fromform->$name, $fromform->$qidname);
+        }
+    }
+
+    // Add new responses
+    $num = $fromform->new;
+    for ($i = 0; $i < $num; $i++) {
         $qname = "questions$i";
         $rname = "response$i";
         $qid = $fromform->$qname;
         $response = $fromform->$rname;
 
-        // Check for failure before moving on
-        if (!tool_securityquestions_add_response($response, $qid)) {
-            $fail = true;
+        if (!empty($response)) {
+            // Check for failure before moving on
+            tool_securityquestions_add_response($response, $qid);
         }
     }
 
+    // Redirect after DB actions
     if (!empty($SESSION->wantsurl)) {
         // Got here from a redirect
         unset($SESSION->wantsurl);
         redirect($prevurl);
     } else {
-        if ($fail) {
-            redirect(new moodle_url($PAGE->url, array('success' => 0)));
-        } else {
-            redirect(new moodle_url($PAGE->url, array('success' => 1)));
-        }
+        redirect($prevurl);
     }
 }
 
@@ -114,7 +151,20 @@ if (!get_config('tool_securityquestions', 'mandatoryquestions') && $logintime !=
     }
 }
 
+if ($active > 0) {
+    // output a notification explaining how questions work when already set
+    echo $OUTPUT->notification(get_string('formquestioninfo', 'tool_securityquestions'), 'notifymessage');
+}
+
 $form->display();
+
+if ($delete != 0) {
+    if ($deletestatus) {
+        echo $OUTPUT->notification(get_string('formresponsedeleted', 'tool_securityquestions'), 'notifysuccess');
+    } else {
+        echo $OUTPUT->notification(get_string('formresponsenotdeleted', 'tool_securityquestions'), 'notifyerror');
+    }
+}
 
 // output notifications for status
 if ($success == 1) {
@@ -125,4 +175,3 @@ if ($success == 0) {
 }
 
 echo $OUTPUT->footer();
-

@@ -31,37 +31,60 @@ require_once(__DIR__.'/../../locallib.php');
 class set_responses extends \moodleform {
 
     public function definition() {
-        global $SESSION, $USER;
+        global $SESSION, $USER, $DB;
         $mform = $this->_form;
 
         // Setup response options
         $qarray = $this->generate_select_array();
 
         // Find number of responses required
-        $responses = count(tool_securityquestions_get_active_user_responses($USER));
-        $numrequired = get_config('tool_securityquestions', 'minuserquestions') - $responses;
-        // Always draw at least 1 box, user probably wants to update a response
-        if ($numrequired <= 0) {
-            $numrequired = 1;
+        $responses = tool_securityquestions_get_active_user_responses($USER);
+        $responsecount = count($responses);
+        $numrequired = get_config('tool_securityquestions', 'minuserquestions');
+
+        if ($responsecount >= $numrequired) {
+            $newquestions = 1;
+        } else {
+            $newquestions = $numrequired - $responsecount;
         }
 
-        // Add repeated form elements
-        for ($i = 1; $i <= $numrequired; $i++) {
+        // Draw all set question responses
+        for ($i = 0; $i < $responsecount; $i++) {
+            $qid = $responses[$i]->qid;
+            $question = $DB->get_record('tool_securityquestions', array('id' => $qid));
+
+            $mform->addElement('header', "presetheader$i", get_string('formquestionnumtext', 'tool_securityquestions', $question->content));
+            $mform->setExpanded("presetheader$i");
+            // Show already answered questions
+            $mform->addElement('text', "preset$i", get_string('formrecordnewresponse', 'tool_securityquestions'), 'size="50"');
+            $mform->setType("preset$i", PARAM_TEXT);
+
+            $mform->addElement('hidden', "qid$i", $qid);
+            $mform->setType("qid$i", PARAM_INT);
+
+            $mform->registerNoSubmitButton("delete$i");
+            $mform->addElement('submit', "delete$i", get_string('formdeleteresponse', 'tool_securityquestions'));
+        }
+
+        for ($i = 0; $i < $newquestions; $i++) {
             // Add an unused key at the start
             $unused = get_string('formselectquestion', 'tool_securityquestions');
             $qarray = array(0 => $unused) + $qarray;
 
-            $mform->addElement('header', "header$i", get_string('formquestionnum', 'tool_securityquestions', $i));
+            $mform->addElement('header', "header$i", get_string('formnewquestion', 'tool_securityquestions'));
+            $mform->setExpanded("header$i");
             $mform->addElement('select', "questions$i", get_string('formresponseselectbox', 'tool_securityquestions'), $qarray);
 
             $mform->addElement('text', "response$i", get_string('formresponseentrybox', 'tool_securityquestions'), 'size="50"');
             $mform->setType("response$i", PARAM_TEXT);
-            $mform->addRule("response$i", get_string('required'), 'required', null, 'client');
         }
 
         // Add hidden to track number of elements
-        $mform->addElement('hidden', 'elementnum', $numrequired);
-        $mform->setType('elementnum', PARAM_INT);
+        $mform->addElement('hidden', 'preset', $responsecount);
+        $mform->setType('preset', PARAM_INT);
+
+        $mform->addElement('hidden', 'new', $newquestions);
+        $mform->setType('new', PARAM_INT);
 
         $buttonarray = array();
         $buttonarray[] =& $mform->createElement('submit', 'submitbutton', get_string('formsaveresponse', 'tool_securityquestions'));
@@ -84,17 +107,19 @@ class set_responses extends \moodleform {
             }
         }
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        $mform->closeHeaderBefore('buttonar');
     }
 
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
+        global $USER;
 
-        $elementnum = $data['elementnum'];
+        $newquestions = $data['new'];
         $questionarray = array();
-        for ($i = 1; $i <= $elementnum; $i++) {
+        for ($i = 0; $i < $newquestions; $i++) {
 
             // Not allowed to answer placeholder
-            if ($data["questions$i"] == 0) {
+            if ($data["questions$i"] == 0 && !empty($data["response$i"])) {
                 $errors["questions$i"] = get_string('formselectquestion', 'tool_securityquestions');
             }
 
@@ -103,6 +128,20 @@ class set_responses extends \moodleform {
                 $errors["questions$i"] = get_string('formduplicateresponse', 'tool_securityquestions');
             } else {
                 $questionarray[] = $data["questions$i"];
+            }
+
+            // Not allowed to answer a question already answered, other way to do that
+            $found = false;
+            $responses = tool_securityquestions_get_active_user_responses($USER);
+            $qid = $data["questions$i"];
+            // Check all set responses for that qid
+            foreach ($responses as $response) {
+                if ($response->qid == $qid) {
+                    $found = true;
+                }
+            }
+            if ($found) {
+                $errors["questions$i"] = get_string('formduplicateresponse', 'tool_securityquestions');
             }
         }
 
@@ -124,4 +163,31 @@ class set_responses extends \moodleform {
 
         return $qarray;
     }
+
+    private function generate_answered_table($mform) {
+        global $DB, $USER;
+
+        $mform->addElement('header', 'alreadyanswered', get_string('formalreadyanswered', 'tool_securityquestions'));
+
+        // Setup table
+        $table = new \html_table();
+        $table->head = array(
+            get_string('formtablequestion', 'tool_securityquestions'),
+            get_string('formdeleteresponse', 'tool_securityquestions'),
+        );
+        $table->colclasses = array('centeralign', 'centeralign');
+
+        // Add response data
+        $responses = tool_securityquestions_get_active_user_responses($USER);
+        foreach ($responses as $response) {
+            $question = $DB->get_record('tool_securityquestions', array('id' => $response->qid));
+            $url = new \moodle_url('/admin/tool/securityquestions/set_responses.php', array('delete' => $question->id));
+            $action = \html_writer::link($url, get_string('delete'));
+
+            $table->data[] = array($question->content, $action);
+        }
+
+        $mform->addElement('html', \html_writer::table($table));
+    }
 }
+

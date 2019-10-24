@@ -71,7 +71,8 @@ function tool_securityquestions_get_active_questions() {
  */
 function tool_securityquestions_get_active_user_responses($user) {
     global $DB;
-    $active = tool_securityquestions_get_active_questions();
+    // Do not use get_active_questions, need different sorting order
+    $active = $DB->get_records('tool_securityquestions', array('deprecated' => 0), 'content ASC');
     $questions = array();
 
     foreach ($active as $question) {
@@ -452,7 +453,7 @@ function require_question_responses() {
 
         // Check whether user has answered enough questions
         $requiredquestions = $config->minuserquestions;
-        $answeredquestions = $DB->get_records('tool_securityquestions_res', array('userid' => $USER->id));
+        $answeredquestions = tool_securityquestions_get_active_user_responses($USER);
         $url = '/admin/tool/securityquestions/set_responses.php';
         if (count($answeredquestions) < $requiredquestions) {
             // Dont redirect if not in browser session
@@ -551,6 +552,24 @@ function tool_securityquestions_add_response($response, $qid) {
             $DB->insert_record('tool_securityquestions_res', array('qid' => $qid, 'userid' => $USER->id, 'response' => $response));
             return true;
         }
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Deletes a response for a user
+ *
+ * @param int $qid the question id to delete a response for
+ * @return bool success if response deleted
+ */
+function tool_securityquestions_delete_response($qid) {
+    global $DB, $USER;
+
+    // First check if question actually exists to set a response for
+    if ($DB->record_exists('tool_securityquestions_res', array('qid' => $qid, 'userid' => $USER->id))) {
+        $DB->delete_records('tool_securityquestions_res', array('qid' => $qid, 'userid' => $USER->id));
+        return true;
     } else {
         return false;
     }
