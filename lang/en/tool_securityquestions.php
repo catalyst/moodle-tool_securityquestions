@@ -40,7 +40,8 @@ $string['formdeprecatenotfound'] = 'Question does not exist';
 $string['formresponseselectbox'] = 'Select Question to respond to:';
 $string['formresponseentrybox'] = 'Enter response to the selected question:';
 $string['formresponsesremaining'] = '{$a} additional responses required.';
-$string['formresponserecorded'] = 'Response successfully recorded for question: {$a}';
+$string['formresponserecorded'] = 'All responses successfully recorded.';
+$string['formresponsenotrecorded'] = 'There was an error when setting responses. Please try again.';
 $string['formresponseempty'] = 'Response cannot be empty.';
 $string['formanswerquestion'] = 'Enter a response to question {$a}:';
 $string['formanswerfailed'] = 'Response does not match recorded response';
@@ -56,7 +57,7 @@ $string['formquestionadded'] = 'Question successfully added: {$a}';
 $string['formdeprecate'] = 'Deprecate Question';
 $string['formquestiondeprecated'] = 'Question ID {$a} successfully deprecated.';
 $string['formremindme'] = 'Remind me on next login';
-$string['formsaveresponse'] = 'Save Response';
+$string['formsaveresponse'] = 'Save Responses';
 $string['formgraceperiodtimerem'] = 'You are currently in a grace period for security questions. In this time, you may choose not to answer security questions, and will be reminded on next login.
                                      After the grace period ends, you must answer security questions before accessing the rest of the system. Grace period duration remaning: {$a}';
 $string['formresetlockout'] = 'Reset Lockout';
@@ -76,6 +77,9 @@ $string['formtablecount'] = 'Usage Count';
 $string['formstatusactive'] = 'Active - {$a} additional questions required.';
 $string['formstatusnotactive'] = 'Not Active - {$a} additional questions required.';
 $string['formquestionnotdeprecated'] = 'Unable to deprecate Question {$a}.';
+$string['formquestionnum'] = 'Question {$a}:';
+$string['formselectquestion'] = 'Select a Question';
+$string['formduplicateresponse'] = 'You may not answer the same question twice.';
 
 
 

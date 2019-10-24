@@ -42,6 +42,8 @@ $PAGE->set_title('Edit Security Question Responses');
 $PAGE->set_heading(get_string('setresponsespagestring', 'tool_securityquestions'));
 $PAGE->set_cacheable(false);
 
+$success = optional_param('success', -1, PARAM_INT);
+
 // Add navigation menu
 if ($node = $PAGE->settingsnav->find('usercurrentsettings', null)) {
     $PAGE->navbar->add($node->get_content(), $node->action());
@@ -64,16 +66,31 @@ if ($form->is_cancelled()) {
     redirect($prevurl);
 
 } else if ($fromform = $form->get_data()) {
-    $qid = $fromform->questions;
-    $response = $fromform->response;
-    tool_securityquestions_add_response($response, $qid);
+    $fail = false;
 
-    // Set flags for display notification
-    $notifysuccess = true;
-    $notifycontent = $DB->get_record('tool_securityquestions', array('id' => $qid))->content;
+    $num = $fromform->elementnum;
+    for ($i = 1; $i <= $num; $i++) {
+        $qname = "questions$i";
+        $rname = "response$i";
+        $qid = $fromform->$qname;
+        $response = $fromform->$rname;
 
-    // Redirect to current form to display updated data
-    redirect($PAGE->url);
+        // Check for failure before moving on
+        if (tool_securityquestions_add_response($response, $qid)) {
+            $fail = true;
+        }  
+    }
+    
+    if (!empty($SESSION->wantsurl)) {
+        // Got here from a redirect
+        redirect($prevurl);
+    } else {
+        if ($fail) {
+            redirect(new moodle_url($PAGE->url, array('success' => 0)));
+        } else {
+            redirect(new moodle_url($PAGE->url, array('success' => 1)));
+        }
+    }
 }
 
 // Build the page output.
@@ -98,17 +115,19 @@ if (!get_config('tool_securityquestions', 'mandatoryquestions') && $logintime !=
 
 $form->display();
 
-// Display notification if successful response recorded
-if ($notifysuccess == true) {
-    $notifysuccess == false;
-    echo $OUTPUT->notification(get_string('formresponserecorded', 'tool_securityquestions', $notifycontent), 'notifysuccess');
+// output notifications for status
+if ($success == 1) {
+    echo $OUTPUT->notification(get_string('formresponserecorded', 'tool_securityquestions'), 'notifysuccess');
+}
+if ($success == 0) {
+    echo $OUTPUT->notification(get_string('formresponsenotrecorded', 'tool_securityquestions'), 'notifyerror');
 }
 
-generate_count_header();
+//generate_count_header();
 echo $OUTPUT->footer();
 
 
-function generate_count_header() {
+/*function generate_count_header() {
     global $DB;
     global $USER;
 
@@ -134,4 +153,5 @@ function generate_count_header() {
 
     // Add display element
     echo("<h4>$displaystring</h4>");
-}
+}*/
+

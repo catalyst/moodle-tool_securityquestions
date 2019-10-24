@@ -34,10 +34,32 @@ class set_responses extends \moodleform {
         global $SESSION, $USER;
         $mform = $this->_form;
 
-        $this->generate_select($mform);
+        // Setup response options
+        $qarray = $this->generate_select_array();
 
-        $mform->addElement('text', 'response', get_string('formresponseentrybox', 'tool_securityquestions'), 'size="50"');
-        $mform->setType('response', PARAM_TEXT);
+        // Find number of responses required
+        $responses = count(tool_securityquestions_get_active_user_responses($USER));
+        $numrequired = get_config('tool_securityquestions', 'minuserquestions') - $responses;
+        // Always draw at least 1 box, user probably wants to update a response
+        if ($numrequired <= 0) {
+            $numrequired == 1;
+        }
+
+        // Add repeated form elements
+        for ($i = 1; $i <= $numrequired; $i++) {
+            // shuffle question array, and add an unused key at the start
+            $unused = get_string('formselectquestion', 'tool_securityquestions');
+            shuffle($qarray);
+            $mform->addElement('header', "header$i", get_string('formquestionnum', 'tool_securityquestions', $i));
+            $mform->addElement('select', "questions$i", get_string('formresponseselectbox', 'tool_securityquestions'), $qarray);
+            $mform->addElement('text', "response$i", get_string('formresponseentrybox', 'tool_securityquestions'), 'size="50"');
+            $mform->setType("response$i", PARAM_TEXT);
+            $mform->addRule("response$i", get_string('required'), 'required', null, 'client');
+        }
+
+        // Add hidden to track number of elements ($i -1 to remove last increment)
+        $mform->addElement('hidden', 'elementnum', $i - 1);
+        $mform->setType('elementnum', PARAM_INT);
 
         $buttonarray = array();
         $buttonarray[] =& $mform->createElement('submit', 'submitbutton', get_string('formsaveresponse', 'tool_securityquestions'));
@@ -63,17 +85,24 @@ class set_responses extends \moodleform {
     }
 
     public function validation($data, $files) {
-
         $errors = parent::validation($data, $files);
-        if ($data['response'] == '') {
-            $errors['response'] = get_string('formresponseempty', 'tool_securityquestions');
+
+        // Check for duplicate responses
+        $elementnum = $data['elementnum'];
+        echo var_dump($elementnum);
+        $questionarray = array();
+        for ($i = 1; $i <= $elementnum; $i++) {
+            if (in_array($data["questions$i"], $questionarray)) {
+                $errors["questions$i"] = get_string('formduplicateresponse', 'tool_securityquestions');
+            } else {
+                $questionarray[] = $data["questions$i"];
+            }
         }
-        return $errors;
     }
 
     // =============================================DISPLAY AND VALIDATION FUNCTIONS======================================
 
-    private function generate_select($mform) {
+    private function generate_select_array() {
         global $DB;
         global $USER;
 
@@ -84,7 +113,6 @@ class set_responses extends \moodleform {
             $qarray[$question->id] = $question->content;
         }
 
-        // Add form element
-        $mform->addElement('select', 'questions', get_string('formresponseselectbox', 'tool_securityquestions'), $qarray);
+        return $qarray;
     }
 }
