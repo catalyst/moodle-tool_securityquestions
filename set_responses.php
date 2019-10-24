@@ -78,11 +78,12 @@ if ($form->is_cancelled()) {
         // Check for failure before moving on
         if (tool_securityquestions_add_response($response, $qid)) {
             $fail = true;
-        }  
+        }
     }
-    
+
     if (!empty($SESSION->wantsurl)) {
         // Got here from a redirect
+        unset($SESSION->wantsurl);
         redirect($prevurl);
     } else {
         if ($fail) {
@@ -123,35 +124,5 @@ if ($success == 0) {
     echo $OUTPUT->notification(get_string('formresponsenotrecorded', 'tool_securityquestions'), 'notifyerror');
 }
 
-//generate_count_header();
 echo $OUTPUT->footer();
-
-
-/*function generate_count_header() {
-    global $DB;
-    global $USER;
-
-    // Get number of additional responses required
-    $answered = $DB->get_records('tool_securityquestions_res', array('userid' => $USER->id));
-
-    // Check all answered questions for how many are currently valid
-    $active = 0;
-    foreach ($answered as $answer) {
-        // Get field and check if deprecated
-        $deprecated = $DB->get_field('tool_securityquestions', 'deprecated', array('id' => $answer->qid));
-        if ($deprecated == 0) {
-            $active++;
-        }
-    }
-
-    $numrequired = get_config('tool_securityquestions', 'minuserquestions');
-    $numremaining = $numrequired - $active;
-    if ($numremaining < 0) {
-        $numremaining = 0;
-    }
-    $displaystring = get_string('formresponsesremaining', 'tool_securityquestions', $numremaining);
-
-    // Add display element
-    echo("<h4>$displaystring</h4>");
-}*/
 
