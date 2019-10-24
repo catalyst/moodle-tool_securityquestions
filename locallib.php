@@ -460,6 +460,12 @@ function require_question_responses() {
                 // If page has URL set, set it to wantsurl for cancel. Avoids issues with dashboard not having PAGE->url set
                 if ($PAGE->has_set_url()) {
                     $SESSION->wantsurl = $PAGE->url;
+                } else {
+                    // attempt to determine if on dashboard without triggering warnings
+                    // HACK
+                    if (preg_match('/my/', $_SERVER['REQUEST_URI'])) {
+                        $SESSION->wantsurl = new moodle_url('/my/');
+                    }
                 }
                 // Set flag for responses being presented
                 $SESSION->presentedresponse = true;

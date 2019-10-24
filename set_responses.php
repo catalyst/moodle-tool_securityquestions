@@ -76,7 +76,7 @@ if ($form->is_cancelled()) {
         $response = $fromform->$rname;
 
         // Check for failure before moving on
-        if (tool_securityquestions_add_response($response, $qid)) {
+        if (!tool_securityquestions_add_response($response, $qid)) {
             $fail = true;
         }
     }

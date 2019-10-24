@@ -59,8 +59,8 @@ class set_responses extends \moodleform {
             $mform->addRule("response$i", get_string('required'), 'required', null, 'client');
         }
 
-        // Add hidden to track number of elements ($i -1 to remove last increment)
-        $mform->addElement('hidden', 'elementnum', $i - 1);
+        // Add hidden to track number of elements
+        $mform->addElement('hidden', 'elementnum', $numrequired);
         $mform->setType('elementnum', PARAM_INT);
 
         $buttonarray = array();
