@@ -45,7 +45,7 @@ $notifydeletecontent = '';
 
 // Deprecate question from action if set
 $deprecate = optional_param('deprecate', 0, PARAM_INT);
-if ($deprecate != 0) {
+if ($deprecate != 0 && confirm_sesskey()) {
     if (tool_securityquestions_deprecate_question($deprecate)) {
         $notifydep = true;
         $notifydepcontent = $deprecate;
@@ -58,7 +58,7 @@ if ($deprecate != 0) {
 
 // Delete question from action if set
 $delete = optional_param('delete', 0, PARAM_INT);
-if ($delete != 0) {
+if ($delete != 0 && confirm_sesskey()) {
     $success = tool_securityquestions_delete_question($delete);
     // Setup notification for success or failure
     if ($success) {
@@ -167,10 +167,10 @@ function generate_table() {
 
         // Setup action cell
         if ($count == 0 && $question->deprecated == 1) {
-            $url = new moodle_url('/admin/tool/securityquestions/set_questions.php', array('delete' => $question->id));
+            $url = new moodle_url('/admin/tool/securityquestions/set_questions.php', array('delete' => $question->id, 'sesskey' => sesskey()));
             $link = html_writer::link($url, get_string('delete'));
         } else {
-            $url = new moodle_url('/admin/tool/securityquestions/set_questions.php', array('deprecate' => $question->id));
+            $url = new moodle_url('/admin/tool/securityquestions/set_questions.php', array('deprecate' => $question->id, 'sesskey' => sesskey()));
             $link = html_writer::link($url, get_string('formdeprecate', 'tool_securityquestions'));
         }
 

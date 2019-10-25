@@ -36,7 +36,7 @@ $prevurl = ($CFG->wwwroot.'/admin/category.php?category=securityquestions');
 $notifyresetsuccess = false;
 $notifyclearsuccess = false;
 
-if ($resetid != 0) {
+if ($resetid != 0 && confirm_sesskey()) {
     // Execute reset of user lockout before regenerating page
     $exists = $DB->record_exists('user', array('id' => $resetid));
     if ($exists) {
@@ -47,7 +47,7 @@ if ($resetid != 0) {
     }
 }
 
-if ($clearid != 0) {
+if ($clearid != 0 && confirm_sesskey()) {
     // Execute clear of user responses before regenerating page
     $exists = $DB->record_exists('user', array('id' => $clearid));
     if ($exists) {
@@ -124,8 +124,8 @@ function generate_table() {
         $user = $DB->get_record('user', array('id' => $userrecord->userid));
 
         // Setup actions cell
-        $reset = new moodle_url('/admin/tool/securityquestions/reset_lockout.php', array('reset' => $userrecord->id));
-        $clearres = new moodle_url('/admin/tool/securityquestions/reset_lockout.php', array('clear' => $userrecord->id));
+        $reset = new moodle_url('/admin/tool/securityquestions/reset_lockout.php', array('reset' => $userrecord->id, 'sesskey' => sesskey()));
+        $clearres = new moodle_url('/admin/tool/securityquestions/reset_lockout.php', array('clear' => $userrecord->id, 'sesskey' => sesskey()));
         $cell = html_writer::link($reset, get_string('formresetlockout', 'tool_securityquestions')).'<br>'.
                 html_writer::link($clearres, get_string('formclearresponsestable', 'tool_securityquestions'));
 
