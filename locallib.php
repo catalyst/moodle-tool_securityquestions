@@ -723,10 +723,11 @@ function tool_securityquestions_read_questions_file($filepath) {
  * Forces use of a template file if the admin config specifies one
  */
 function tool_securityquestions_use_template_file() {
+    global $CFG;
     $file = get_config('tool_securityquestions', 'questionfile');
     if ($file !== '') {
         // If a filepath is set, use that config file
-        $path = __DIR__.'/question/'.$file;
+        $path = $CFG->wwwroot.$file;
         tool_securityquestions_read_questions_file($path);
     }
 }
