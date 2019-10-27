@@ -40,6 +40,7 @@ if (function_exists('require_recent_login')) {
 $PAGE->set_context(context_user::instance($USER->id));
 $PAGE->set_title('Edit Security Question Responses');
 $PAGE->set_heading(get_string('setresponsespagestring', 'tool_securityquestions'));
+$PAGE->set_cacheable(false);
 
 // Add navigation menu
 if ($node = $PAGE->settingsnav->find('usercurrentsettings', null)) {
