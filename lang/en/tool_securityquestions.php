@@ -86,8 +86,7 @@ $string['formresponsedeleted'] = 'Response successfully deleted.';
 $string['formresponsenotdeleted'] = 'Unable to delete response. Add more responses first, or record a new response for the question.';
 $string['formrecordnewresponse'] = 'Record a new response for question:';
 $string['formquestionnumtext'] = 'Question: {$a}';
-$string['formquestioninfo'] = 'Questions that have already been answered do not have text answeres stored, so editing current responses is impossible. To change a response to a question already answered,
-                             simply enter a new response in the text field for that question, and click "Save Responses" at the bottom of the page.';
+$string['formquestioninfo'] = 'For added security, you cannot see the saved responses. You can only save new responses to the questions, or delete the response.';
 
 // Setting Strings
 $string['settingsenablename'] = 'Enable Plugin';

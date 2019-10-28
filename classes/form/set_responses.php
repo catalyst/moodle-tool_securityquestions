@@ -163,31 +163,5 @@ class set_responses extends \moodleform {
 
         return $qarray;
     }
-
-    private function generate_answered_table($mform) {
-        global $DB, $USER;
-
-        $mform->addElement('header', 'alreadyanswered', get_string('formalreadyanswered', 'tool_securityquestions'));
-
-        // Setup table
-        $table = new \html_table();
-        $table->head = array(
-            get_string('formtablequestion', 'tool_securityquestions'),
-            get_string('formdeleteresponse', 'tool_securityquestions'),
-        );
-        $table->colclasses = array('centeralign', 'centeralign');
-
-        // Add response data
-        $responses = tool_securityquestions_get_active_user_responses($USER);
-        foreach ($responses as $response) {
-            $question = $DB->get_record('tool_securityquestions', array('id' => $response->qid));
-            $url = new \moodle_url('/admin/tool/securityquestions/set_responses.php', array('delete' => $question->id));
-            $action = \html_writer::link($url, get_string('delete'));
-
-            $table->data[] = array($question->content, $action);
-        }
-
-        $mform->addElement('html', \html_writer::table($table));
-    }
 }
 
