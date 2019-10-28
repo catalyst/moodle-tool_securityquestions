@@ -40,7 +40,8 @@ $string['formdeprecatenotfound'] = 'Question does not exist';
 $string['formresponseselectbox'] = 'Select Question to respond to:';
 $string['formresponseentrybox'] = 'Enter response to the selected question:';
 $string['formresponsesremaining'] = '{$a} additional responses required.';
-$string['formresponserecorded'] = 'Response successfully recorded for question: {$a}';
+$string['formresponserecorded'] = 'Response(s) successfully recorded.';
+$string['formresponsenotrecorded'] = 'There was an error when setting response(s). Please try again.';
 $string['formresponseempty'] = 'Response cannot be empty.';
 $string['formanswerquestion'] = 'Enter a response to question {$a}:';
 $string['formanswerfailed'] = 'Response does not match recorded response';
@@ -56,7 +57,7 @@ $string['formquestionadded'] = 'Question successfully added: {$a}';
 $string['formdeprecate'] = 'Deprecate Question';
 $string['formquestiondeprecated'] = 'Question ID {$a} successfully deprecated.';
 $string['formremindme'] = 'Remind me on next login';
-$string['formsaveresponse'] = 'Save Response';
+$string['formsaveresponse'] = 'Save Response(s)';
 $string['formgraceperiodtimerem'] = 'You are currently in a grace period for security questions. In this time, you may choose not to answer security questions, and will be reminded on next login.
                                      After the grace period ends, you must answer security questions before accessing the rest of the system. Grace period duration remaning: {$a}';
 $string['formresetlockout'] = 'Reset Lockout';
@@ -76,8 +77,16 @@ $string['formtablecount'] = 'Usage Count';
 $string['formstatusactive'] = 'Active - {$a} additional questions required.';
 $string['formstatusnotactive'] = 'Not Active - {$a} additional questions required.';
 $string['formquestionnotdeprecated'] = 'Unable to deprecate Question {$a}.';
-
-
+$string['formnewquestion'] = ' New Question:';
+$string['formselectquestion'] = 'Select a Question';
+$string['formduplicateresponse'] = 'You may not answer the same question twice.';
+$string['formalreadyanswered'] = 'Questions with Responses Set';
+$string['formdeleteresponse'] = 'Delete Response';
+$string['formresponsedeleted'] = 'Response successfully deleted.';
+$string['formresponsenotdeleted'] = 'Unable to delete response. Add more responses first, or record a new response for the question.';
+$string['formrecordnewresponse'] = 'Record a new response for question:';
+$string['formquestionnumtext'] = 'Question: {$a}';
+$string['formquestioninfo'] = 'For added security, you cannot see the saved responses. You can only save new responses to the questions, or delete the response.';
 
 // Setting Strings
 $string['settingsenablename'] = 'Enable Plugin';
@@ -104,7 +113,6 @@ $string['settingsmandatoryquestionsdesc'] = 'Enable this control to make securit
 $string['settingsgraceperiod'] = 'Response Grace Period';
 $string['settingsgraceperioddesc'] = 'A period of time during which a user can choose to not set question responses, even when mandatory questions are enabled. After this period users who
                                       have not set reponses will be forced to set responses. Set this control to 0 to disable the grace period.';
-
 
 // Template Strings
 $string['forcedconfig'] = 'Settings are read only, configuration is forced in template file: ';

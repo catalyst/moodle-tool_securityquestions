@@ -57,23 +57,78 @@ if (!empty($SESSION->wantsurl)) {
     $prevurl = new moodle_url('/user/preferences.php');
 }
 
+$success = optional_param('success', -1, PARAM_INT);
+
+$active = count(tool_securityquestions_get_active_user_responses($USER));
+// If deleting a response, process here
+$delete = optional_param('delete', 0, PARAM_INT);
+if ($delete != 0) {
+    if ($active - 1 < get_config('tool_securityquestions', 'minuserquestions')) {
+            // Unable to delete, not enough responses set
+            $deletestatus = false;
+    } else {
+        if (tool_securityquestions_delete_response($delete)) {
+            $deletestatus = true;
+        } else {
+            // unable to delete (question probably doesnt exist)
+            $deletestatus = false;
+        }
+    }
+}
+
 $form = new \tool_securityquestions\form\set_responses();
 if ($form->is_cancelled()) {
     // Unset wantsurl
     unset($SESSION->wantsurl);
     redirect($prevurl);
 
+} else if ($form->no_submit_button_pressed()) {
+    // Delete button pressed somewhere on the form
+    $data = $form->get_submitted_data();
+    $deletes = $data->preset;
+    for ($i = 0; $i < $deletes; $i++) {
+        $name = "delete$i";
+        $qidname = "qid$i";
+        if (!empty($data->$name)) {
+            $url = new moodle_url('/admin/tool/securityquestions/set_responses.php', array('delete' => $data->$qidname));
+            redirect($url);
+        }
+    }
+
 } else if ($fromform = $form->get_data()) {
-    $qid = $fromform->questions;
-    $response = $fromform->response;
-    tool_securityquestions_add_response($response, $qid);
+    // Check for updated responses
+    $updates = $fromform->preset;
+    for ($i = 0; $i < $updates; $i++) {
+        $name = "preset$i";
+        $qidname = "qid$i";
+        if (!empty($fromform->$name)) {
+            // Update response
+            tool_securityquestions_add_response($fromform->$name, $fromform->$qidname);
+        }
+    }
 
-    // Set flags for display notification
-    $notifysuccess = true;
-    $notifycontent = $DB->get_record('tool_securityquestions', array('id' => $qid))->content;
+    // Add new responses
+    $num = $fromform->new;
+    for ($i = 0; $i < $num; $i++) {
+        $qname = "questions$i";
+        $rname = "response$i";
+        $qid = $fromform->$qname;
+        $response = $fromform->$rname;
 
-    // Redirect to current form to display updated data
-    redirect($PAGE->url);
+        if (!empty($response)) {
+            // Check for failure before moving on
+            tool_securityquestions_add_response($response, $qid);
+        }
+    }
+
+    // Redirect after DB actions
+    if (!empty($SESSION->wantsurl)) {
+        // Got here from a redirect
+        unset($SESSION->wantsurl);
+        redirect($prevurl);
+    } else {
+        redirect($prevurl);
+    }
 }
 
 // Build the page output.
@@ -96,42 +151,27 @@ if (!get_config('tool_securityquestions', 'mandatoryquestions') && $logintime !=
     }
 }
 
+if ($active > 0) {
+    // output a notification explaining how questions work when already set
+    echo $OUTPUT->notification(get_string('formquestioninfo', 'tool_securityquestions'), 'notifymessage');
+}
+
 $form->display();
 
-// Display notification if successful response recorded
-if ($notifysuccess == true) {
-    $notifysuccess == false;
-    echo $OUTPUT->notification(get_string('formresponserecorded', 'tool_securityquestions', $notifycontent), 'notifysuccess');
+if ($delete != 0) {
+    if ($deletestatus) {
+        echo $OUTPUT->notification(get_string('formresponsedeleted', 'tool_securityquestions'), 'notifysuccess');
+    } else {
+        echo $OUTPUT->notification(get_string('formresponsenotdeleted', 'tool_securityquestions'), 'notifyerror');
+    }
 }
 
-generate_count_header();
+// output notifications for status
+if ($success == 1) {
+    echo $OUTPUT->notification(get_string('formresponserecorded', 'tool_securityquestions'), 'notifysuccess');
+}
+if ($success == 0) {
+    echo $OUTPUT->notification(get_string('formresponsenotrecorded', 'tool_securityquestions'), 'notifyerror');
+}
+
 echo $OUTPUT->footer();
-
-
-function generate_count_header() {
-    global $DB;
-    global $USER;
-
-    // Get number of additional responses required
-    $answered = $DB->get_records('tool_securityquestions_res', array('userid' => $USER->id));
-
-    // Check all answered questions for how many are currently valid
-    $active = 0;
-    foreach ($answered as $answer) {
-        // Get field and check if deprecated
-        $deprecated = $DB->get_field('tool_securityquestions', 'deprecated', array('id' => $answer->qid));
-        if ($deprecated == 0) {
-            $active++;
-        }
-    }
-
-    $numrequired = get_config('tool_securityquestions', 'minuserquestions');
-    $numremaining = $numrequired - $active;
-    if ($numremaining < 0) {
-        $numremaining = 0;
-    }
-    $displaystring = get_string('formresponsesremaining', 'tool_securityquestions', $numremaining);
-
-    // Add display element
-    echo("<h4>$displaystring</h4>");
-}
