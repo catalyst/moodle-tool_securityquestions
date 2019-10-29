@@ -11,6 +11,7 @@ This plugin adds a framework for adding and enforcing security questions for use
 * [Setting Question Responses](#setting-question-responses)
 * [Resetting User Lockouts](#resetting-user-lockouts)
 * [Installation](#installation)
+* [Branches](#branches)
 * [Templates](#templates)
 
 Security Controls
@@ -53,9 +54,11 @@ This control allows users to specify a path for a questions file to use. This pa
 
 Setting Questions
 -----------------
-This page allows an admin to set the security questions for use in the Moodle instance. Entering a question at the top, and clicking Submit Question, will add this questions to the active question pool. Questions by default start not deprecated, until the questions are manually deprecated by an Admin. The plugin will not be enabled until the number of active security questions is equal to or higher than the number set in the 'Minimum number of active security questions' security control.
+This page allows an admin to set the security questions for use in the Moodle instance. Entering a question at the top, and clicking 'Add Question', will add this question to the active question pool. Questions by default start not deprecated, until the questions are manually deprecated by an Admin. The plugin will not be enabled until the number of active security questions is equal to or higher than the number set in the 'Minimum number of active security questions' security control.
 
-At the bottom of this page, there is a field for entering question ID's. When the form is submitted, if that field is populated with a valid question ID, that question will be deprecated. This removes the question from the active questions pool, after which users won't be able to set new responses to this question, and the question won't be able to be used to authenticate. When a question has been deprecated, if any users are now under the amount of required questions answered, they will be prompted to set addition responses. Admins will be unable to deprecate a question if it puts the amount of active questions under the required amount. More questions must be added first to deprecate a question.
+To deprecate a question, click the deprecate question link in the action column of the question to be deprecated. This removes the question from the active questions pool, after which users won't be able to set new responses to this question, and the question won't be able to be used to authenticate. When a question has been deprecated, if any users are now under the amount of required questions answered, they will be prompted to set addition responses. Admins will be unable to deprecate a question if it puts the amount of active questions under the required amount. More questions must be added first to deprecate a question.
+
+Questions that have been deprecated and have no-one actively using them may be deleted, using the delete link in the action column. This is not intended for questions that have been in use, but for questions that were entered into the pool incorrectly, or have a typo for example. Any question that has been responded to by a user may not be deleted to maintain history of questions in use.
 
 Setting Question Responses
 --------------------------
@@ -65,7 +68,7 @@ After initial responses are set, if users wish to add additional responses, or c
 
 Resetting User Lockouts
 -----------------------
-From the Site Administration Menu, navigate to Plugins->Security Questions->Reset Security Question Lockouts. This page allows site administrators to reset accounts that are locked out from resetting their password due to repeated failed security question verification. Administrators can enter an User ID to reset the lockout on that account, and clear the lockout counter, so users will have a fresh set of attempts at answering the prompted questions. There is a checkbox that optionally allows administrators to also clear user responses to the questions, after which users will be prompted set new responses on their next login. If user responses are cleared, they will not be prompted to answer any questions on attempting to reset their password, so they will not be denied from accessing the service due to lack of password and security questions.
+From the Site Administration Menu, navigate to Plugins->Security Questions->Reset Security Question Lockouts. This page allows site administrators to reset accounts that are locked out from resetting their password due to repeated failed security question verification. Administrators can click 'Clear Responses' next to a locked out users name in the table, to clear their responses if necessary, and then click 'Reset Lockout' and clear the lockout counter, so users will have a fresh set of attempts at answering the prompted questions. If a user has their responses cleared, the next time the user logs in, they will be prompted set new responses. They will be able to dismiss this prompt however, and will not be prompted to answer any questions on attempting to reset their password, so they will not be denied from accessing the service due to lack of password and security questions.
 
 Installation
 ------------
@@ -74,7 +77,7 @@ Installation
 
 This plugin will work natively with Moodle from version 3.8 onwards, as this is the version that the hooks required for plugin functionality were added into Moodle core, from tracker MDL-66173. If a previous version is used, the commit from MDL-66173 can be backported to a previous installation, and the plugin will be functional.
 
-Another requirement is for MDL-60470 to be included in the Moodle installation, which was added in Moodle version 3.7. If this commit is not present, users will not be prompted to set their security questions when they login after plugin setup.+
+Another requirement is for MDL-60470 to be included in the Moodle installation, which was added in Moodle version 3.7. If this commit is not present, users will not be prompted to set their security questions when they login after plugin setup.
  
 ### Installation
 
@@ -85,6 +88,12 @@ When the plugin is first installed, it will start disabled. To enable the plugin
 Once enough questions have been set, the admin account will be prompted to set its security questions, which indicates that the plugin is almost active. The last thing to check is to go back to the plugin admin settings, and select all of the pages that users should be prompted security questions on.
 
 For more instructions on installation, visit [the Moodle Plugin Installation Guide](https://docs.moodle.org/37/en/Installing_plugins)
+
+Branches
+--------
+
+For all Moodle versions, use the master branch.
+
 
 Templates
 ---------
