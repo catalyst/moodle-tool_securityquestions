@@ -77,7 +77,14 @@ Installation
 
 This plugin will work natively with Moodle from version 3.8 onwards, as this is the version that the hooks required for plugin functionality were added into Moodle core, from tracker MDL-66173. If a previous version is used, the commit from MDL-66173 can be backported to a previous installation, and the plugin will be functional.
 
+```
+git cherry-pick dc25b71d8bb7ad95aea4510666385c74669316ec
+```
+
 Another requirement is for MDL-60470 to be included in the Moodle installation, which was added in Moodle version 3.7. If this commit is not present, users will not be prompted to set their security questions when they login after plugin setup.
+```
+git cherry-pick bf9f255523e5f8feb7cb39067475389ba260ff4e
+```
  
 ### Installation
 
