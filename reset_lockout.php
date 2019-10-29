@@ -124,8 +124,8 @@ function generate_table() {
         $user = $DB->get_record('user', array('id' => $userrecord->userid));
 
         // Setup actions cell
-        $reset = new moodle_url('/admin/tool/securityquestions/reset_lockout.php', array('reset' => $userrecord->id, 'sesskey' => sesskey()));
-        $clearres = new moodle_url('/admin/tool/securityquestions/reset_lockout.php', array('clear' => $userrecord->id, 'sesskey' => sesskey()));
+        $reset = new moodle_url('/admin/tool/securityquestions/reset_lockout.php', array('reset' => $user->id, 'sesskey' => sesskey()));
+        $clearres = new moodle_url('/admin/tool/securityquestions/reset_lockout.php', array('clear' => $user->id, 'sesskey' => sesskey()));
         $cell = html_writer::link($reset, get_string('formresetlockout', 'tool_securityquestions')).'<br>'.
                 html_writer::link($clearres, get_string('formclearresponsestable', 'tool_securityquestions'));
 
