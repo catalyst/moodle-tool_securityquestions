@@ -437,6 +437,8 @@ function require_question_responses() {
 
     // Do not redirect if already on final page url, prevents redir loops from require_login
     if ($PAGE->has_set_url() && $PAGE->url == $CFG->wwwroot.'/admin/tool/securityquestions/set_responses.php') {
+        // Set flag for responses being presented once we have landed on page.
+        $SESSION->presentedresponse = true;
         return;
     }
 
@@ -468,8 +470,6 @@ function require_question_responses() {
                         $SESSION->wantsurl = new moodle_url('/my/');
                     }
                 }
-                // Set flag for responses being presented
-                $SESSION->presentedresponse = true;
                 redirect($url);
             }
         }
@@ -484,12 +484,10 @@ function require_question_responses() {
 function tool_securityquestions_check_external_auth() {
     global $USER;
 
-    // If users auth type is external, and they dont have a password, dont redirect
     $auth = get_auth_plugin($USER->auth);
-    if ($auth->can_reset_password() == false
-        || $auth->change_password_url() != null
-        || !has_capability('moodle/user:changeownpassword', context_system::instance(), $USER->id)) {
-
+    $hascap = has_capability('moodle/user:changeownpassword', context_system::instance(), $USER->id);
+    // If user cannot reset, or change password internally, or they dont have the capability, dont redir.
+    if (!$auth->can_reset_password() || !$auth->can_change_password() ||  !empty($auth->change_password_url()) || !$hascap) {
         return false;
     } else {
         return true;
