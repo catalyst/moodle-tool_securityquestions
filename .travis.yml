@@ -7,7 +7,7 @@ notifications:
 sudo: false
 
 addons:
-  postgresql: "9.6" 
+  postgresql: "9.6"
 
 services:
   - mysql
@@ -31,13 +31,6 @@ env:
     - MOODLE_BRANCH=master
 
 matrix:
-  include:
-    # Test with MySQL
-    - php: 7.1
-      env: DB=mysqli MOODLE_BRANCH=master
-    # Test with PHP 7.1
-    - php: 7.1
-      env: MOODLE_BRANCH=master
   exclude:
     - php: 7.3
       env: MOODLE_BRANCH=MOODLE_34_STABLE
