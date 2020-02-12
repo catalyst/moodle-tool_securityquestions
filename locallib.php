@@ -423,7 +423,7 @@ function require_question_responses() {
 
     $config = get_config('tool_securityquestions');
     // If questions already presented.
-    if (property_exists($SESSION, 'presentedresponse')) {
+    if (property_exists($SESSION, 'tool_securityquestions_presentedresponse')) {
         if (!$config->mandatory_questions) {
             // Do not redirect if not mandatory.
             return;
@@ -439,8 +439,6 @@ function require_question_responses() {
 
     // Do not redirect if already on final page url, prevents redir loops from require_login.
     if ($PAGE->has_set_url() && $PAGE->url == $CFG->wwwroot.'/admin/tool/securityquestions/set_responses.php') {
-        // Set flag for responses being presented once we have landed on page.
-        $SESSION->presentedresponse = true;
         return;
     }
 

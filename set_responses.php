@@ -37,6 +37,9 @@ if (function_exists('require_recent_login')) {
     require_login();
 }
 
+// Set session variable here PAST require_login, so redirect loops are resolved.
+$SESSION->tool_securityquestions_presentedresponse = true;
+
 $PAGE->set_context(context_user::instance($USER->id));
 $PAGE->set_title('Edit Security Question Responses');
 $PAGE->set_heading(get_string('setresponsespagestring', 'tool_securityquestions'));
@@ -156,9 +159,6 @@ if ($active > 0) {
     echo $OUTPUT->notification(get_string('formquestioninfo', 'tool_securityquestions'), 'notifymessage');
 }
 
-$form->display();
-$PAGE->requires->js_call_amd('tool_securityquestions/hide_selector_question', 'init');
-
 if ($delete != 0) {
     if ($deletestatus) {
         echo $OUTPUT->notification(get_string('formresponsedeleted', 'tool_securityquestions'), 'notifysuccess');
@@ -174,5 +174,8 @@ if ($success == 1) {
 if ($success == 0) {
     echo $OUTPUT->notification(get_string('formresponsenotrecorded', 'tool_securityquestions'), 'notifyerror');
 }
+
+$form->display();
+$PAGE->requires->js_call_amd('tool_securityquestions/hide_selector_question', 'init');
 
 echo $OUTPUT->footer();
