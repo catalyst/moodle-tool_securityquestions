@@ -157,6 +157,7 @@ if ($active > 0) {
 }
 
 $form->display();
+$PAGE->requires->js_call_amd('tool_securityquestions/hide_selector_question', 'init');
 
 if ($delete != 0) {
     if ($deletestatus) {
