@@ -34,10 +34,10 @@ class set_responses extends \moodleform {
         global $SESSION, $USER, $DB;
         $mform = $this->_form;
 
-        // Setup response options
+        // Setup response options.
         $qarray = $this->generate_select_array();
 
-        // Find number of responses required
+        // Find number of responses required.
         $responses = tool_securityquestions_get_active_user_responses($USER);
         $responsecount = count($responses);
         $numrequired = get_config('tool_securityquestions', 'minuserquestions');
@@ -48,14 +48,15 @@ class set_responses extends \moodleform {
             $newquestions = $numrequired - $responsecount;
         }
 
-        // Draw all set question responses
+        // Draw all set question responses.
         for ($i = 0; $i < $responsecount; $i++) {
             $qid = $responses[$i]->qid;
             $question = $DB->get_record('tool_securityquestions', array('id' => $qid));
 
-            $mform->addElement('header', "presetheader$i", get_string('formquestionnumtext', 'tool_securityquestions', $question->content));
+            $mform->addElement('header', "presetheader$i",
+                get_string('formquestionnumtext', 'tool_securityquestions', $question->content));
             $mform->setExpanded("presetheader$i");
-            // Show already answered questions
+            // Show already answered questions.
             $mform->addElement('text', "preset$i", get_string('formrecordnewresponse', 'tool_securityquestions'), 'size="50"');
             $mform->setType("preset$i", PARAM_TEXT);
 
@@ -67,7 +68,7 @@ class set_responses extends \moodleform {
         }
 
         for ($i = 0; $i < $newquestions; $i++) {
-            // Add an unused key at the start
+            // Add an unused key at the start.
             $unused = get_string('formselectquestion', 'tool_securityquestions');
             $qarray = array(0 => $unused) + $qarray;
 
@@ -79,7 +80,7 @@ class set_responses extends \moodleform {
             $mform->setType("response$i", PARAM_TEXT);
         }
 
-        // Add hidden to track number of elements
+        // Add hidden to track number of elements.
         $mform->addElement('hidden', 'preset', $responsecount);
         $mform->setType('preset', PARAM_INT);
 
@@ -89,20 +90,23 @@ class set_responses extends \moodleform {
         $buttonarray = array();
         $buttonarray[] =& $mform->createElement('submit', 'submitbutton', get_string('formsaveresponse', 'tool_securityquestions'));
 
-        // If questions aren't mandatory, or user is within the grace period
-        if (isset($SESSION->presentedresponse) && (!get_config('tool_securityquestions', 'mandatory_questions')) ||
-                get_user_preferences('tool_securityquestions_logintime') + get_config('tool_securityquestions', 'graceperiod') >= time()) {
-            // If user is allowed to navigate away, build custom buttons
+        // If questions aren't mandatory, or user is within the grace period.
+        $graceperiod = get_config('tool_securityquestions', 'graceperiod');
+        if (isset($SESSION->presentedresponse)
+                && (!get_config('tool_securityquestions', 'mandatory_questions'))
+                || get_user_preferences('tool_securityquestions_logintime') + $graceperiod >= time()) {
+            // If user is allowed to navigate away, build custom buttons.
 
             if (!empty($SESSION->wantsurl)) {
-                // User got here from a redirect
+                // User got here from a redirect.
                 $buttonarray[] =& $mform->createElement('cancel', 'cancel', get_string('formremindme', 'tool_securityquestions'));
             } else {
                 $buttonarray[] =& $mform->createElement('cancel', 'cancel', get_string('cancel'));
             }
         } else {
-            // If user must answer questions, dont show cancel button until enough answered
-            if (count(tool_securityquestions_get_active_user_responses($USER)) >= get_config('tool_securityquestions', 'minuserquestions')) {
+            $minquestions = get_config('tool_securityquestions', 'minuserquestions');
+            // If user must answer questions, dont show cancel button until enough answered.
+            if (count(tool_securityquestions_get_active_user_responses($USER)) >= $minquestions) {
                 $buttonarray[] =& $mform->createElement('cancel', 'cancel', get_string('cancel'));
             }
         }
@@ -118,23 +122,23 @@ class set_responses extends \moodleform {
         $questionarray = array();
         for ($i = 0; $i < $newquestions; $i++) {
 
-            // Not allowed to answer placeholder
+            // Not allowed to answer placeholder.
             if ($data["questions$i"] == 0 && !empty($data["response$i"])) {
                 $errors["questions$i"] = get_string('formselectquestion', 'tool_securityquestions');
             }
 
-            // Check for duplicate responses
+            // Check for duplicate responses.
             if (in_array($data["questions$i"], $questionarray)) {
                 $errors["questions$i"] = get_string('formduplicateresponse', 'tool_securityquestions');
             } else {
                 $questionarray[] = $data["questions$i"];
             }
 
-            // Not allowed to answer a question already answered, other way to do that
+            // Not allowed to answer a question already answered, other way to do that.
             $found = false;
             $responses = tool_securityquestions_get_active_user_responses($USER);
             $qid = $data["questions$i"];
-            // Check all set responses for that qid
+            // Check all set responses for that qid.
             foreach ($responses as $response) {
                 if ($response->qid == $qid) {
                     $found = true;
@@ -148,13 +152,13 @@ class set_responses extends \moodleform {
         return $errors;
     }
 
-    // =============================================DISPLAY AND VALIDATION FUNCTIONS======================================
+    // Display and Validation functions.
 
     private function generate_select_array() {
         global $DB;
         global $USER;
 
-        // Generate array for questions
+        // Generate array for questions.
         $questions = $DB->get_records('tool_securityquestions', array('deprecated' => 0));
         $qarray = array();
         foreach ($questions as $question) {
@@ -164,4 +168,3 @@ class set_responses extends \moodleform {
         return $qarray;
     }
 }
-

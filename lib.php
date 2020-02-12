@@ -55,9 +55,8 @@ function tool_securityquestions_validate_extend_set_password_form($data, $user) 
 
 function tool_securityquestions_post_set_password_requests($data, $user) {
     if (get_config('tool_securityquestions', 'enable_plugin')) {
-        // If password reset is successful, reset counter to 0
+        // If password reset is successful, reset counter to 0.
         require_once(__DIR__.'/locallib.php');
         tool_securityquestions_reset_lockout_counter($user);
     }
 }
-

@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// Settings menu strings
+// Settings menu strings.
 $string['pluginname'] = 'Security Questions';
 $string['setquestionspagename'] = 'Modify Security Questions';
 $string['securityquestionssettings'] = 'Security Questions Settings';
@@ -32,7 +32,7 @@ $string['setresponsespagestring'] = 'Set Answers to Security Questions';
 $string['setresponsessettingsmenu'] = 'Security Question Responses';
 $string['resetuserpagename'] = 'Reset Security Question Lockouts';
 
-// Form Strings
+// Form Strings.
 $string['formselectquestion'] = 'Select Question to Modify';
 $string['formquestionentry'] = 'Enter a question to add to the question pool:';
 $string['formdeprecateentry'] = 'Enter a question ID to deprecate:';
@@ -88,7 +88,7 @@ $string['formrecordnewresponse'] = 'Record a new response for question:';
 $string['formquestionnumtext'] = 'Question: {$a}';
 $string['formquestioninfo'] = 'For added security, you cannot see the saved responses. You can only save new responses to the questions, or delete the response.';
 
-// Setting Strings
+// Setting Strings.
 $string['settingsenablename'] = 'Enable Plugin';
 $string['settingsenabledesc'] = 'Check to enable security question validation';
 $string['settingsminquestions'] = 'Minimum number of active security questions';
@@ -114,27 +114,27 @@ $string['settingsgraceperiod'] = 'Response Grace Period';
 $string['settingsgraceperioddesc'] = 'A period of time during which a user can choose to not set question responses, even when mandatory questions are enabled. After this period users who
                                       have not set reponses will be forced to set responses. Set this control to 0 to disable the grace period.';
 
-// Template Strings
+// Template Strings.
 $string['forcedconfig'] = 'Settings are read only, configuration is forced in template file: ';
 $string['badconfigload'] = 'Unable to load template configuration file. Check variables are correct, and that template is inside the templates folder. - ';
 $string['configloc'] = ' at location: ';
 $string['configpath'] = '/config_policies/{$a}.php';
 $string['templateforced-on'] = 'This template enforces the default settings for the security controls, and ensures that users will always have enough questions to respond to, and enough responses to use for validation.';
 
-// Event Strings
+// Event Strings.
 $string['userlockedeventname'] = 'User locked from resetting password due to failed question attempts.';
 $string['userunlockedeventname'] = 'User unlocked from resetting password by an Administrator.';
 $string['questionaddedeventname'] = 'Administrator added Security Question.';
 $string['questiondeprecatedeventname'] = 'Administrator deprecated Security Question.';
 $string['questiondeletedeventname'] = 'Administrator deleted Security Question.';
 
-// Injected Element Strings
+// Injected Element Strings.
 $string['injectedquestiontitle'] = 'Security Question {$a->num}: {$a->content}';
 
-// Task Strings
+// Task Strings.
 $string['taskcleantables'] = 'Clean plugin database of deleted users';
 
-// Privacy API Strings
+// Privacy API Strings.
 $string['privacy:metadata:tool_securityquestions_res'] = 'This table stores information about user responses to security questions, including hashed responses, and which questions have been responded to.';
 $string['privacy:metadata:tool_securityquestions_res:userid'] = 'The ID of the user with this response.';
 $string['privacy:metadata:tool_securityquestions_res:response'] = 'The securely hashed response that a user has entered as a response to a question.';
@@ -152,5 +152,5 @@ $string['privacy:metadata:tool_securityquestions_ans:timecreated'] = 'The time t
 
 $string['privacy:metadata:tool_securityquestions'] = 'Security Questions Data';
 
-// Capability String
+// Capability String.
 $string['securityquestions:questionsaccess'] = 'Security Questions Interaction';

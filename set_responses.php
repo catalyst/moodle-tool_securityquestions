@@ -25,13 +25,13 @@
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once(__DIR__.'/locallib.php');
 
-// PAGE->seturl must be set before require_login to avoid infinite redir loop
+// PAGE->seturl must be set before require_login to avoid infinite redir loop.
 $url = new moodle_url('/admin/tool/securityquestions/set_responses.php');
 $PAGE->set_url($url);
 
-// First, check if the require_recent_login function exists
+// First, check if the require_recent_login function exists.
 if (function_exists('require_recent_login')) {
-    // Require recent login to edit responses to questions
+    // Require recent login to edit responses to questions.
     require_recent_login();
 } else {
     require_login();
@@ -42,7 +42,7 @@ $PAGE->set_title('Edit Security Question Responses');
 $PAGE->set_heading(get_string('setresponsespagestring', 'tool_securityquestions'));
 $PAGE->set_cacheable(false);
 
-// Add navigation menu
+// Add navigation menu.
 if ($node = $PAGE->settingsnav->find('usercurrentsettings', null)) {
     $PAGE->navbar->add($node->get_content(), $node->action());
 }
@@ -60,17 +60,17 @@ if (!empty($SESSION->wantsurl)) {
 $success = optional_param('success', -1, PARAM_INT);
 
 $active = count(tool_securityquestions_get_active_user_responses($USER));
-// If deleting a response, process here
+// If deleting a response, process here.
 $delete = optional_param('delete', 0, PARAM_INT);
 if ($delete != 0) {
     if ($active - 1 < get_config('tool_securityquestions', 'minuserquestions')) {
-            // Unable to delete, not enough responses set
+            // Unable to delete, not enough responses set.
             $deletestatus = false;
     } else {
         if (tool_securityquestions_delete_response($delete)) {
             $deletestatus = true;
         } else {
-            // unable to delete (question probably doesnt exist)
+            // Unable to delete (question probably doesnt exist).
             $deletestatus = false;
         }
     }
@@ -78,12 +78,12 @@ if ($delete != 0) {
 
 $form = new \tool_securityquestions\form\set_responses();
 if ($form->is_cancelled()) {
-    // Unset wantsurl
+    // Unset wantsurl.
     unset($SESSION->wantsurl);
     redirect($prevurl);
 
 } else if ($form->no_submit_button_pressed()) {
-    // Delete button pressed somewhere on the form
+    // Delete button pressed somewhere on the form.
     $data = $form->get_submitted_data();
     $deletes = $data->preset;
     for ($i = 0; $i < $deletes; $i++) {
@@ -96,18 +96,18 @@ if ($form->is_cancelled()) {
     }
 
 } else if ($fromform = $form->get_data()) {
-    // Check for updated responses
+    // Check for updated responses.
     $updates = $fromform->preset;
     for ($i = 0; $i < $updates; $i++) {
         $name = "preset$i";
         $qidname = "qid$i";
         if (!empty($fromform->$name)) {
-            // Update response
+            // Update response.
             tool_securityquestions_add_response($fromform->$name, $fromform->$qidname);
         }
     }
 
-    // Add new responses
+    // Add new responses.
     $num = $fromform->new;
     for ($i = 0; $i < $num; $i++) {
         $qname = "questions$i";
@@ -116,14 +116,14 @@ if ($form->is_cancelled()) {
         $response = $fromform->$rname;
 
         if (!empty($response)) {
-            // Check for failure before moving on
+            // Check for failure before moving on.
             tool_securityquestions_add_response($response, $qid);
         }
     }
 
-    // Redirect after DB actions
+    // Redirect after DB actions.
     if (!empty($SESSION->wantsurl)) {
-        // Got here from a redirect
+        // Got here from a redirect.
         unset($SESSION->wantsurl);
         redirect($prevurl);
     } else {
@@ -136,15 +136,15 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('setresponsespagestring', 'tool_securityquestions'));
 echo '<br>';
 
-// Output a notification for grace period time remaining, if set
+// Output a notification for grace period time remaining, if set.
 $logintime = get_user_preferences('tool_securityquestions_logintime', null);
 if (!get_config('tool_securityquestions', 'mandatoryquestions') && $logintime != null
     && get_config('tool_securityquestions', 'graceperiod')) {
 
-    // Find remaining time in grace period, and output it formatted nicely
+    // Find remaining time in grace period, and output it formatted nicely.
     $timerem = ($logintime + get_config('tool_securityquestions', 'graceperiod')) - time();
 
-    // Check if there is time left
+    // Check if there is time left.
     if ($timerem > 0) {
         $duration = sprintf('%02d:%02d:%02d', ($timerem / HOURSECS), (($timerem / MINSECS) % MINSECS), $timerem % MINSECS);
         echo $OUTPUT->notification(get_string('formgraceperiodtimerem', 'tool_securityquestions', $duration), 'notifymessage');
@@ -152,7 +152,7 @@ if (!get_config('tool_securityquestions', 'mandatoryquestions') && $logintime !=
 }
 
 if ($active > 0) {
-    // output a notification explaining how questions work when already set
+    // Output a notification explaining how questions work when already set.
     echo $OUTPUT->notification(get_string('formquestioninfo', 'tool_securityquestions'), 'notifymessage');
 }
 
@@ -167,7 +167,7 @@ if ($delete != 0) {
     }
 }
 
-// output notifications for status
+// Output notifications for status.
 if ($success == 1) {
     echo $OUTPUT->notification(get_string('formresponserecorded', 'tool_securityquestions'), 'notifysuccess');
 }

@@ -30,10 +30,10 @@ defined('MOODLE_INTERNAL') || die();
 
 admin_externalpage_setup('tool_securityquestions_setform');
 
-// If a template is in use, apply it
+// If a template is in use, apply it.
 tool_securityquestions_use_template_file();
 
-// Setup notification block
+// Setup notification block.
 $notifyadd = false;
 $notifyaddcontent = '';
 $notifydep = false;
@@ -43,7 +43,7 @@ $notifydelete = false;
 $notifydeletetype = 'notifyerror';
 $notifydeletecontent = '';
 
-// Deprecate question from action if set
+// Deprecate question from action if set.
 $deprecate = optional_param('deprecate', 0, PARAM_INT);
 if ($deprecate != 0 && confirm_sesskey()) {
     if (tool_securityquestions_deprecate_question($deprecate)) {
@@ -56,11 +56,11 @@ if ($deprecate != 0 && confirm_sesskey()) {
     }
 }
 
-// Delete question from action if set
+// Delete question from action if set.
 $delete = optional_param('delete', 0, PARAM_INT);
 if ($delete != 0 && confirm_sesskey()) {
     $success = tool_securityquestions_delete_question($delete);
-    // Setup notification for success or failure
+    // Setup notification for success or failure.
     if ($success) {
         $notifydelete = true;
         $notifydeletecontent = $delete;
@@ -87,18 +87,18 @@ if ($form->is_cancelled()) {
 } else if ($fromform = $form->get_data()) {
     global $DB;
 
-    // Check if there is a question to be added
+    // Check if there is a question to be added.
     $question = $fromform->questionentry;
     if ($question != '') {
-        // Check whether record with that question exists
+        // Check whether record with that question exists.
         tool_securityquestions_insert_question($question);
 
-        // Setup success notification
+        // Setup success notification.
         $notifyaddcontent = $question;
         $notifyadd = true;
     }
 
-    // Redraw page
+    // Redraw page.
     redirect($PAGE->url);
 }
 
@@ -108,7 +108,7 @@ echo $OUTPUT->heading(get_string('setsecurityquestionspagestring', 'tool_securit
 echo '<br>';
 $form->display();
 
-// Echo notifications for actions
+// Echo notifications for actions.
 if ($notifyadd == true) {
     echo $OUTPUT->notification(get_string('formquestionadded', 'tool_securityquestions', $notifyaddcontent), 'notifysuccess');
 }
@@ -140,12 +140,10 @@ if ($qremaining == 0) {
 generate_table();
 echo $OUTPUT->footer();
 
-// =============================================DISPLAY AND VALIDATION FUNCTIONS=========================================
-
 function generate_table() {
-    // Render table
-    global $DB, $OUTPUT;
-    // Get records from database for populating table
+    // Render table.
+    global $DB;
+    // Get records from database for populating table.
     $questions = $DB->get_records('tool_securityquestions', null, 'deprecated ASC, content ASC');
 
     $table = new html_table();
@@ -165,12 +163,14 @@ function generate_table() {
         }
         $count = $DB->count_records('tool_securityquestions_res', array('qid' => $question->id));
 
-        // Setup action cell
+        // Setup action cell.
         if ($count == 0 && $question->deprecated == 1) {
-            $url = new moodle_url('/admin/tool/securityquestions/set_questions.php', array('delete' => $question->id, 'sesskey' => sesskey()));
+            $url = new moodle_url('/admin/tool/securityquestions/set_questions.php',
+                array('delete' => $question->id, 'sesskey' => sesskey()));
             $link = html_writer::link($url, get_string('delete'));
         } else {
-            $url = new moodle_url('/admin/tool/securityquestions/set_questions.php', array('deprecate' => $question->id, 'sesskey' => sesskey()));
+            $url = new moodle_url('/admin/tool/securityquestions/set_questions.php',
+                array('deprecate' => $question->id, 'sesskey' => sesskey()));
             $link = html_writer::link($url, get_string('formdeprecate', 'tool_securityquestions'));
         }
 
@@ -181,4 +181,3 @@ function generate_table() {
         echo html_writer::table($table);
     }
 }
-
