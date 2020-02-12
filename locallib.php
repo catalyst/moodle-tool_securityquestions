@@ -234,21 +234,25 @@ function tool_securityquestions_validate_injected_questions($data, $user) {
             $response = $data["$name"];
             $qid = $data["$hiddenname"];
 
-            $qcontent = $DB->get_record('tool_securityquestions', array('id' => $qid));
             // Execute DB query with data
             $setresponse = $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $user->id, 'qid' => $qid));
             // Hash response and compare to the database
             $response = tool_securityquestions_hash_response($response, $user);
             if ($response != $setresponse) {
-                $errors[$name] = get_string('formanswerfailed', 'tool_securityquestions');
                 $errorfound = true;
             }
 
-            // If locked out, always respond with the lockout message
-            if (tool_securityquestions_is_locked_out($user)) {
-                $errors[$name] = get_string('formlockedout', 'tool_securityquestions');
-            }
+            // Keep track of list field to display validation error.
+            $lastfield = $name;
         }
+
+        // If locked out, always respond with the lockout message
+        if (tool_securityquestions_is_locked_out($user)) {
+            $errors[$lastfield] = get_string('formlockedout', 'tool_securityquestions');
+        } else if ($errorfound) {
+            $errors[$lastfield] = get_string('formanswerfailed', 'tool_securityquestions');
+        }
+
 
         if ($errorfound && !tool_securityquestions_is_locked_out($user)) {
             // If an error was found, increment lockout counter
@@ -258,14 +262,13 @@ function tool_securityquestions_validate_injected_questions($data, $user) {
             // If counter is now over the specified count, lock account
             if (tool_securityquestions_get_lockout_counter($user) >= $lockoutamount && $lockoutamount > 0) {
                 tool_securityquestions_lock_user($user);
+
+                //Output a notification to display to the user.
+                \core\notification::error(get_string('formlockedout', 'tool_securityquestions'));
             }
         }
-
-        // Lastly, return the errors array
-        return $errors;
-    } else {
-        return $errors;
     }
+    return $errors;
 }
 
 // =============================================QUESTION SETUP=========================================================

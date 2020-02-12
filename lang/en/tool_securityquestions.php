@@ -44,7 +44,7 @@ $string['formresponserecorded'] = 'Response(s) successfully recorded.';
 $string['formresponsenotrecorded'] = 'There was an error when setting response(s). Please try again.';
 $string['formresponseempty'] = 'Response cannot be empty.';
 $string['formanswerquestion'] = 'Enter a response to question {$a}:';
-$string['formanswerfailed'] = 'Response does not match recorded response';
+$string['formanswerfailed'] = 'Responses do not match recorded responses.';
 $string['formlockedout'] = 'Account is locked from resetting password. Please contact System Administrators for further assistance.';
 $string['formresetid'] = 'Enter account ID to be unlocked:';
 $string['formresetnotnumber'] = 'ID must be a number';
@@ -154,4 +154,3 @@ $string['privacy:metadata:tool_securityquestions'] = 'Security Questions Data';
 
 // Capability String
 $string['securityquestions:questionsaccess'] = 'Security Questions Interaction';
-
