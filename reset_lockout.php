@@ -37,7 +37,7 @@ $notifyresetsuccess = false;
 $notifyclearsuccess = false;
 
 if ($resetid != 0 && confirm_sesskey()) {
-    // Execute reset of user lockout before regenerating page
+    // Execute reset of user lockout before regenerating page.
     $exists = $DB->record_exists('user', array('id' => $resetid));
     if ($exists) {
         $user = $DB->get_record('user', array('id' => $resetid));
@@ -48,7 +48,7 @@ if ($resetid != 0 && confirm_sesskey()) {
 }
 
 if ($clearid != 0 && confirm_sesskey()) {
-    // Execute clear of user responses before regenerating page
+    // Execute clear of user responses before regenerating page.
     $exists = $DB->record_exists('user', array('id' => $clearid));
     if ($exists) {
         $user = $DB->get_record('user', array('id' => $clearid));
@@ -65,14 +65,14 @@ if ($form->is_cancelled()) {
 } else if ($fromform = $form->get_data()) {
 
     $foundusers = $DB->get_records('user', array('username' => ($fromform->clearresponses)));
-    // User is guaranteed to exist here due to validation
+    // User is guaranteed to exist here due to validation.
     if (!empty($foundusers)) {
-        // Get first matching username record
+        // Get first matching username record.
         $user = reset($foundusers);
     } else {
         $foundusers = $DB->get_records('user', array('email' => ($fromform->clearresponses)));
         if (!empty($foundusers)) {
-            // Get first matching email record (should be unique)
+            // Get first matching email record (should be unique).
             $user = reset($foundusers);
         }
     }
@@ -102,12 +102,10 @@ echo $OUTPUT->heading(get_string('formlockedoutusers', 'tool_securityquestions')
 generate_table();
 echo $OUTPUT->footer();
 
-// =======================================DISPLAY AND VALIDATION FUNCTIONS ====================================
-
 function generate_table() {
-    // Render table
+    // Render table.
     global $DB, $OUTPUT;
-    // Get records from database for populating table
+    // Get records from database for populating table.
     $lockedusers = $DB->get_records('tool_securityquestions_loc', array('locked' => 1));
 
     $table = new html_table();
@@ -123,9 +121,12 @@ function generate_table() {
     foreach ($lockedusers as $userrecord) {
         $user = $DB->get_record('user', array('id' => $userrecord->userid));
 
-        // Setup actions cell
-        $reset = new moodle_url('/admin/tool/securityquestions/reset_lockout.php', array('reset' => $user->id, 'sesskey' => sesskey()));
-        $clearres = new moodle_url('/admin/tool/securityquestions/reset_lockout.php', array('clear' => $user->id, 'sesskey' => sesskey()));
+        // Setup actions cell.
+        $reset = new moodle_url('/admin/tool/securityquestions/reset_lockout.php',
+            array('reset' => $user->id, 'sesskey' => sesskey()));
+        $clearres = new moodle_url('/admin/tool/securityquestions/reset_lockout.php',
+            array('clear' => $user->id, 'sesskey' => sesskey()));
+
         $cell = html_writer::link($reset, get_string('formresetlockout', 'tool_securityquestions')).'<br>'.
                 html_writer::link($clearres, get_string('formclearresponsestable', 'tool_securityquestions'));
 
@@ -137,11 +138,10 @@ function generate_table() {
             $cell,
         );
     }
-    // Dont output table if it is empty
+    // Dont output table if it is empty.
     if (count($lockedusers) != 0) {
         echo html_writer::table($table);
     } else {
         echo $OUTPUT->heading(get_string('formnolockedusers', 'tool_securityquestions'), 4);
     }
 }
-

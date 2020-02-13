@@ -24,8 +24,7 @@
 defined('MOODLE_INTERNAL') || die;
 require_once(__DIR__.'/classes/event/user_locked.php');
 
-// =============================================DEPRECATION FUNCTIONS============================================
-
+// Deprecation Functions.
 /**
  * Returns whether a question can be deprecated
  *
@@ -71,7 +70,7 @@ function tool_securityquestions_get_active_questions() {
  */
 function tool_securityquestions_get_active_user_responses($user) {
     global $DB;
-    // Do not use get_active_questions, need different sorting order
+    // Do not use get_active_questions, need different sorting order.
     $active = $DB->get_records('tool_securityquestions', array('deprecated' => 0), 'content ASC');
     $questions = array();
 
@@ -98,7 +97,7 @@ function tool_securityquestions_deprecate_question($qid) {
         $DB->set_field('tool_securityquestions', 'deprecated', 1, array('id' => $qid));
         $question = $DB->get_record('tool_securityquestions', (array('id' => $qid)));
 
-        // Fire event for question deprecation
+        // Fire event for question deprecation.
         $event = \tool_securityquestions\event\question_deprecated::question_deprecated_event($USER, $question->content);
         $event->trigger();
 
@@ -115,15 +114,15 @@ function tool_securityquestions_deprecate_question($qid) {
  * @return bool returns true if the question was undeprecated, false if question couldn't be found
  */
 function tool_securityquestions_undeprecate_question($qid) {
-    // This function has no side effects unlike deprecate, which must check minimum questions
+    // This function has no side effects unlike deprecate, which must check minimum questions.
     global $DB, $USER;
     echo var_dump($qid);
-    // If record doesnt exist, return false
+    // If record doesnt exist, return false.
     if ($DB->record_exists('tool_securityquestions', array('id' => $qid))) {
         $DB->set_field('tool_securityquestions', 'deprecated', 0, array('id' => $qid));
 
         $question = $DB->get_record('tool_securityquestions', array('id' => $qid));
-        // Fire event for question addition back to the pool
+        // Fire event for question addition back to the pool.
         $event = \tool_securityquestions\event\question_added::question_added_event($USER, $question->content);
         $event->trigger();
 
@@ -135,17 +134,17 @@ function tool_securityquestions_undeprecate_question($qid) {
 
 function tool_securityquestions_delete_question($qid) {
     global $DB, $USER;
-    // This function does not have to check for minimum questions, as question must be deprecated before use
-    // Check question exists
+    // This function does not have to check for minimum questions, as question must be deprecated before use.
+    // Check question exists.
     if ($DB->record_exists('tool_securityquestions', array('id' => $qid))) {
         $question = $DB->get_record('tool_securityquestions', array('id' => $qid));
-        // Ensure question is deprecated before delete
+        // Ensure question is deprecated before delete.
         if ($question->deprecated == 1) {
-            // Finally ensure no-one is using question
+            // Finally ensure no-one is using question.
             if ($DB->count_records('tool_securityquestions_res', array('qid' => $qid)) == 0) {
                 $DB->delete_records('tool_securityquestions', array('id' => $qid));
 
-                // Fire event for question deletion
+                // Fire event for question deletion.
                 $event = \tool_securityquestions\event\question_deleted::question_deleted_event($USER, $question->content);
                 $event->trigger();
 
@@ -153,11 +152,11 @@ function tool_securityquestions_delete_question($qid) {
             }
         }
     }
-    // Wasnt able to delete
+    // Wasnt able to delete.
     return false;
 }
 
-// ================================================FORM INJECTION FUNCTIONS============================================
+// Form Injection Functions.
 
 /**
  * Injects security question elements into a form
@@ -167,27 +166,26 @@ function tool_securityquestions_delete_question($qid) {
  */
 function tool_securityquestions_inject_security_questions($mform, $user) {
 
-    // First check if user has the capability to interact with questions
+    // First check if user has the capability to interact with questions.
     $usercontext = context_user::instance($user->id);
     if (!has_capability('tool/securityquestions:questionsaccess', $usercontext, $user)) {
         return;
     }
 
-    // Check that enough questions have been answered by the user to enable securityquestions
-    if (count(tool_securityquestions_get_active_user_responses($user)) >= get_config('tool_securityquestions', 'minuserquestions')) {
+    // Check that enough questions have been answered by the user to enable securityquestions.
+    $minquestions = get_config('tool_securityquestions', 'minuserquestions');
+    if (count(tool_securityquestions_get_active_user_responses($user)) >= $minquestions) {
         global $DB;
-        global $USER;
 
         $numquestions = get_config('tool_securityquestions', 'answerquestions');
-
         $inputarr = tool_securityquestions_pick_questions($user);
 
         for ($i = 0; $i < $numquestions; $i++) {
-            // get qid from inputarr
+            // Get qid from inputarr.
             $qid = $inputarr[$i];
             $qcontent = $DB->get_field('tool_securityquestions', 'content', array('id' => $qid));
 
-            // Format and display to the user
+            // Format and display to the user.
             $questionnum = $i + 1;
             $contentarray = array('num' => $questionnum, 'content' => $qcontent);
             $heading = \html_writer::tag('h4', get_string('injectedquestiontitle', 'tool_securityquestions', $contentarray));
@@ -214,61 +212,64 @@ function tool_securityquestions_inject_security_questions($mform, $user) {
 function tool_securityquestions_validate_injected_questions($data, $user) {
     $errors = array();
 
-    // First check if user has the capability to interact with questions
+    // First check if user has the capability to interact with questions.
     $usercontext = context_user::instance($user->id);
     if (!has_capability('tool/securityquestions:questionsaccess', $usercontext, $user)) {
         return $errors;
     }
 
-    // Check that enough questions have been answered by the user to enable securityquestions
-    if (count(tool_securityquestions_get_active_user_responses($user)) >= get_config('tool_securityquestions', 'minuserquestions')) {
-        global $DB;
+    // Check that enough questions have been answered by the user to enable securityquestions.
+    $minquestions = get_config('tool_securityquestions', 'minuserquestions');
+    if (count(tool_securityquestions_get_active_user_responses($user)) >= $minquestions) {
 
+        global $DB;
         $numquestions = get_config('tool_securityquestions', 'answerquestions');
         $errorfound = false;
-        // For each question field, check response against database
+        // For each question field, check response against database.
         for ($i = 0; $i < $numquestions; $i++) {
-            // Get question response for database
+            // Get question response for database.
             $name = 'question'.$i;
             $hiddenname = 'hiddenq'.$i;
             $response = $data["$name"];
             $qid = $data["$hiddenname"];
 
-            $qcontent = $DB->get_record('tool_securityquestions', array('id' => $qid));
-            // Execute DB query with data
+            // Execute DB query with data.
             $setresponse = $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $user->id, 'qid' => $qid));
-            // Hash response and compare to the database
+            // Hash response and compare to the database.
             $response = tool_securityquestions_hash_response($response, $user);
             if ($response != $setresponse) {
-                $errors[$name] = get_string('formanswerfailed', 'tool_securityquestions');
                 $errorfound = true;
             }
 
-            // If locked out, always respond with the lockout message
-            if (tool_securityquestions_is_locked_out($user)) {
-                $errors[$name] = get_string('formlockedout', 'tool_securityquestions');
-            }
+            // Keep track of list field to display validation error.
+            $lastfield = $name;
+        }
+
+        // If locked out, always respond with the lockout message.
+        if (tool_securityquestions_is_locked_out($user)) {
+            $errors[$lastfield] = get_string('formlockedout', 'tool_securityquestions');
+        } else if ($errorfound) {
+            $errors[$lastfield] = get_string('formanswerfailed', 'tool_securityquestions');
         }
 
         if ($errorfound && !tool_securityquestions_is_locked_out($user)) {
-            // If an error was found, increment lockout counter
+            // If an error was found, increment lockout counter.
             tool_securityquestions_increment_lockout_counter($user);
 
             $lockoutamount = get_config('tool_securityquestions', 'lockoutnum');
-            // If counter is now over the specified count, lock account
+            // If counter is now over the specified count, lock account.
             if (tool_securityquestions_get_lockout_counter($user) >= $lockoutamount && $lockoutamount > 0) {
                 tool_securityquestions_lock_user($user);
+
+                // Output a notification to display to the user.
+                \core\notification::error(get_string('formlockedout', 'tool_securityquestions'));
             }
         }
-
-        // Lastly, return the errors array
-        return $errors;
-    } else {
-        return $errors;
     }
+    return $errors;
 }
 
-// =============================================QUESTION SETUP=========================================================
+// Question Setup.
 /**
  * Picks questions for a user to respond to
  *
@@ -281,13 +282,13 @@ function tool_securityquestions_pick_questions($user) {
 
     $numquestions = get_config('tool_securityquestions', 'answerquestions');
 
-    // First, check if user has had questions selected in the last 5 mins
+    // First, check if user has had questions selected in the last 5 mins.
     $currentquestions = $DB->get_records('tool_securityquestions_ans', array('userid' => $user->id), 'id ASC');
 
-    // Get array of questions less than 5 mins old
+    // Get array of questions less than 5 mins old.
     $temparray = array();
     foreach ($currentquestions as $question) {
-        // Check if timecreated is <5 mins ago
+        // Check if timecreated is <5 mins ago.
         $period = get_config('tool_securityquestions', 'questionduration');
         $currenttime = time();
         if ($question->timecreated >= ($currenttime - $period)) {
@@ -295,16 +296,16 @@ function tool_securityquestions_pick_questions($user) {
         }
     }
 
-    // If found, perform data manipulation, if not, pick new questions and store them
+    // If found, perform data manipulation, if not, pick new questions and store them.
     if (count($temparray) >= $numquestions) {
-        // if questions found, Make sure the length of current array is what you are expecting, if not, get first n of array
+        // If questions found, Make sure the length of current array is what you are expecting, if not, get first n of array.
         if (count($temparray) > $numquestions) {
             $temparray = array_slice($temparray, 0, $numquestions);
         }
 
         $inputarr = array();
         $i = 0;
-        // Change array to be the format required for form injection
+        // Change array to be the format required for form injection.
         foreach ($temparray as $question) {
             $inputarr[$i] = $question->qid;
             $i++;
@@ -314,10 +315,10 @@ function tool_securityquestions_pick_questions($user) {
 
     } else {
 
-        // Get all questions with responses
+        // Get all questions with responses.
         $answeredquestions = $DB->get_records('tool_securityquestions_res', array('userid' => $user->id), 'qid ASC');
 
-        // Filter for questions that are currently active
+        // Filter for questions that are currently active.
         $answeredactive = array();
 
         $j = 0;
@@ -329,10 +330,10 @@ function tool_securityquestions_pick_questions($user) {
             }
         }
 
-        // Randomly pick n questions to be answered
+        // Randomly pick n questions to be answered.
         $pickedkeys = array_rand($answeredactive, $numquestions);
 
-        // Create array to pass questions ids to the form
+        // Create array to pass questions ids to the form.
         $inputarr = array();
         $i = 0;
         foreach ($pickedkeys as $key) {
@@ -340,14 +341,15 @@ function tool_securityquestions_pick_questions($user) {
             $i++;
         }
 
-        // Now questions have been picked, delete all records from table for user
+        // Now questions have been picked, delete all records from table for user.
         $DB->delete_records('tool_securityquestions_ans', array('userid' => $user->id));
 
-        // Now add current records for picked questions
+        // Now add current records for picked questions.
         $j = 0;
         foreach ($inputarr as $question) {
             $time = time();
-            $DB->insert_record('tool_securityquestions_ans', array('userid' => $user->id, 'qid' => $inputarr[$j], 'timecreated' => $time));
+            $DB->insert_record('tool_securityquestions_ans',
+                array('userid' => $user->id, 'qid' => $inputarr[$j], 'timecreated' => $time));
             $j++;
         }
 
@@ -355,7 +357,7 @@ function tool_securityquestions_pick_questions($user) {
     }
 }
 
-// ==========================================NAVIGATION INJECTION====================================================
+// Navigation Injection.
 /**
  * Injects a navigation node onto a user's preferences page to edit/set responses to security questions
  *
@@ -369,28 +371,28 @@ function tool_securityquestions_pick_questions($user) {
 function tool_securityquestions_inject_navigation_node($navigation, $user, $usercontext, $course, $coursecontext) {
     global $PAGE;
 
-    // First check if user has the capability to interact with questions
+    // First check if user has the capability to interact with questions.
     if (!has_capability('tool/securityquestions:questionsaccess', $usercontext, $user)) {
         return;
     }
 
-    // If users auth type is external, and they dont have a password, dont inject
+    // If users auth type is external, and they dont have a password, dont inject.
     if (!tool_securityquestions_check_external_auth()) {
         return;
     }
 
-    // Only inject if user is on the preferences page
+    // Only inject if user is on the preferences page.
     $onpreferencepage = $PAGE->url->compare(new moodle_url('/user/preferences.php'), URL_MATCH_BASE);
     if (!$onpreferencepage) {
         return null;
     }
 
-    // Only inject if the plugin is enabled
+    // Only inject if the plugin is enabled.
     if (!get_config('tool_securityquestions', 'enable_plugin')) {
         return null;
     }
 
-    // Dont inject if not enough questions are set
+    // Dont inject if not enough questions are set.
     if (count(tool_securityquestions_get_active_questions()) < get_config('tool_securityquestions', 'minquestions')) {
         return null;
     }
@@ -408,64 +410,62 @@ function tool_securityquestions_inject_navigation_node($navigation, $user, $user
 function require_question_responses() {
     global $USER, $DB, $SESSION, $PAGE, $CFG;
 
-    // First check if user has the capability to interact with questions
+    // First check if user has the capability to interact with questions.
     $usercontext = context_user::instance($USER->id);
     if (!has_capability('tool/securityquestions:questionsaccess', $usercontext, $USER)) {
         return;
     }
 
-    // If users auth type is external, and they dont have a password, dont redirect
+    // If users auth type is external, and they dont have a password, dont redirect.
     if (!tool_securityquestions_check_external_auth()) {
         return;
     }
 
     $config = get_config('tool_securityquestions');
-    // If questions already presented
-    if (property_exists($SESSION, 'presentedresponse')) {
+    // If questions already presented.
+    if (property_exists($SESSION, 'tool_securityquestions_presentedresponse')) {
         if (!$config->mandatory_questions) {
-            // Do not redirect if not mandatory
+            // Do not redirect if not mandatory.
             return;
         } else if ($config->graceperiod != 0) {
             $logintime = get_user_preferences('tool_securityquestions_logintime', null);
-            // Check user time logged in since questions active
+            // Check user time logged in since questions active.
             if ($logintime + $config->graceperiod >= time()) {
-                // If still in grace period, return
+                // If still in grace period, return.
                 return;
             }
         }
     }
 
-    // Do not redirect if already on final page url, prevents redir loops from require_login
+    // Do not redirect if already on final page url, prevents redir loops from require_login.
     if ($PAGE->has_set_url() && $PAGE->url == $CFG->wwwroot.'/admin/tool/securityquestions/set_responses.php') {
-        // Set flag for responses being presented once we have landed on page.
-        $SESSION->presentedresponse = true;
         return;
     }
 
-    // Check whether enough questions are set to make the plugin active
+    // Check whether enough questions are set to make the plugin active.
     $setquestions = $DB->get_records('tool_securityquestions', array('deprecated' => 0));
     $requiredset = $config->minquestions;
 
     if (count($setquestions) >= $requiredset) {
 
-        // Set user preference for first time being presented questions
+        // Set user preference for first time being presented questions.
         if (get_user_preferences('tool_securityquestions_logintime', null) == null) {
             set_user_preference('tool_securityquestions_logintime', time());
         }
 
-        // Check whether user has answered enough questions
+        // Check whether user has answered enough questions.
         $requiredquestions = $config->minuserquestions;
         $answeredquestions = tool_securityquestions_get_active_user_responses($USER);
         $url = '/admin/tool/securityquestions/set_responses.php';
         if (count($answeredquestions) < $requiredquestions) {
-            // Dont redirect if not in browser session
+            // Dont redirect if not in browser session.
             if (!CLI_SCRIPT && !AJAX_SCRIPT) {
-                // If page has URL set, set it to wantsurl for cancel. Avoids issues with dashboard not having PAGE->url set
+                // If page has URL set, set it to wantsurl for cancel. Avoids issues with dashboard not having PAGE->url set.
                 if ($PAGE->has_set_url()) {
                     $SESSION->wantsurl = $PAGE->url;
                 } else {
-                    // attempt to determine if on dashboard without triggering warnings
-                    // HACK
+                    // Attempt to determine if on dashboard without triggering warnings.
+                    // HACK.
                     if (preg_match('/my/', $_SERVER['REQUEST_URI'])) {
                         $SESSION->wantsurl = new moodle_url('/my/');
                     }
@@ -494,7 +494,7 @@ function tool_securityquestions_check_external_auth() {
     }
 }
 
-// =============================================SET QUESTIONS AND RESPONSES============================================
+// Set Questions and Responses.
 /**
  * Inserts a question into the database
  *
@@ -503,21 +503,21 @@ function tool_securityquestions_check_external_auth() {
  */
 function tool_securityquestions_insert_question($question) {
     global $DB, $USER;
-    // Trim question first
+    // Trim question first.
     $question = trim($question);
     if ($question != '') {
-        // Construct query and determine if question already exists
+        // Construct query and determine if question already exists.
         $sqlquestion = $DB->sql_compare_text($question, strlen($question));
         $record = $DB->get_record_sql('SELECT * FROM {tool_securityquestions} WHERE content = ?', array($sqlquestion));
 
         if (empty($record)) {
-            // Fire event for question addition
+            // Fire event for question addition.
             $event = \tool_securityquestions\event\question_added::question_added_event($USER, $question);
             $event->trigger();
 
             return $DB->insert_record('tool_securityquestions', array('content' => $question, 'deprecated' => 0));
         } else if (!empty($record) && $record->deprecated != 0) {
-            // If Deprecated record found, undeprecate
+            // If Deprecated record found, undeprecate.
             return tool_securityquestions_undeprecate_question($record->id);
         } else {
             return false;
@@ -538,11 +538,11 @@ function tool_securityquestions_add_response($response, $qid) {
     global $USER;
     global $DB;
 
-    // First check if question actually exists to set a response for
+    // First check if question actually exists to set a response for.
     if ($DB->record_exists('tool_securityquestions', array('id' => $qid))) {
-        // Hash response
+        // Hash response.
         $response = tool_securityquestions_hash_response($response, $USER);
-        // Check if response to question already exists, if so update, else, create record
+        // Check if response to question already exists, if so update, else, create record.
         if ($DB->record_exists('tool_securityquestions_res', array('qid' => $qid, 'userid' => $USER->id))) {
             $DB->set_field('tool_securityquestions_res', 'response', $response, array('qid' => $qid, 'userid' => $USER->id));
             return true;
@@ -564,7 +564,7 @@ function tool_securityquestions_add_response($response, $qid) {
 function tool_securityquestions_delete_response($qid) {
     global $DB, $USER;
 
-    // First check if question actually exists to set a response for
+    // First check if question actually exists to set a response for.
     if ($DB->record_exists('tool_securityquestions_res', array('qid' => $qid, 'userid' => $USER->id))) {
         $DB->delete_records('tool_securityquestions_res', array('qid' => $qid, 'userid' => $USER->id));
         return true;
@@ -582,7 +582,7 @@ function tool_securityquestions_delete_response($qid) {
  */
 function tool_securityquestions_hash_response($response, $user) {
 
-    // username is guaranteed to always be consistent. Use this for salting responses
+    // Username is guaranteed to always be consistent. Use this for salting responses.
     $salt = hash('sha1', $user->username);
 
     $temp = mb_strtolower(trim($response));
@@ -590,7 +590,7 @@ function tool_securityquestions_hash_response($response, $user) {
 
 }
 
-// ======================================LOCKOUT INTERACTION FUNCTIONS=============================================
+// Lockout Interaction Functions.
 /**
  * Increments the lockout counter for a user
  *
@@ -599,10 +599,10 @@ function tool_securityquestions_hash_response($response, $user) {
 function tool_securityquestions_increment_lockout_counter($user) {
     global $DB;
 
-    // First ensure the user is initialised in the table
+    // First ensure the user is initialised in the table.
     tool_securityquestions_initialise_lockout_counter($user);
 
-    // If already initialised, increment counter
+    // If already initialised, increment counter.
     $count = $DB->get_field('tool_securityquestions_loc', 'counter', array('userid' => $user->id));
     $DB->set_field('tool_securityquestions_loc', 'counter', ($count + 1), array('userid' => $user->id));
 }
@@ -616,9 +616,9 @@ function tool_securityquestions_increment_lockout_counter($user) {
 function tool_securityquestions_initialise_lockout_counter($user) {
     global $DB;
 
-    // Check if user exists in the lockout table
+    // Check if user exists in the lockout table.
     if (!$DB->record_exists('tool_securityquestions_loc', array('userid' => $user->id))) {
-        // If not, create entry for user, not locked out, counter 0
+        // If not, create entry for user, not locked out, counter 0.
         $DB->insert_record('tool_securityquestions_loc', array('userid' => $user->id, 'locked' => 0, 'counter' => 0));
         return true;
     } else {
@@ -634,7 +634,7 @@ function tool_securityquestions_initialise_lockout_counter($user) {
  */
 function tool_securityquestions_is_locked_out($user) {
     global $DB;
-    // First ensure that the user is initialised in the table
+    // First ensure that the user is initialised in the table.
     tool_securityquestions_initialise_lockout_counter($user);
 
     $lock = $DB->get_field('tool_securityquestions_loc', 'locked', array('userid' => $user->id));
@@ -652,11 +652,11 @@ function tool_securityquestions_is_locked_out($user) {
  */
 function tool_securityquestions_lock_user($user) {
     global $DB;
-    // First ensure that the user is initialised in the table (should never be uninitialised here)
+    // First ensure that the user is initialised in the table (should never be uninitialised here).
     tool_securityquestions_initialise_lockout_counter($user);
     $DB->set_field('tool_securityquestions_loc', 'locked', 1, array('userid' => $user->id));
 
-    // Add event for logging locked user
+    // Add event for logging locked user.
     $event = \tool_securityquestions\event\locked_out::locked_out_event($user);
     $event->trigger();
 }
@@ -668,13 +668,13 @@ function tool_securityquestions_lock_user($user) {
  */
 function tool_securityquestions_unlock_user($unlockuser) {
     global $DB, $USER;
-    // First ensure that the user is initialised in the table (should never be uninitialised here)
+    // First ensure that the user is initialised in the table (should never be uninitialised here).
     tool_securityquestions_initialise_lockout_counter($unlockuser);
-    // Set lockout to false, and reset counter to 0
+    // Set lockout to false, and reset counter to 0.
     $DB->set_field('tool_securityquestions_loc', 'locked', 0, array('userid' => $unlockuser->id));
     $DB->set_field('tool_securityquestions_loc', 'counter', 0, array('userid' => $unlockuser->id));
 
-    // Fire an unlocked event for the user
+    // Fire an unlocked event for the user.
     $event = \tool_securityquestions\event\user_unlocked::user_unlocked_event($USER, $unlockuser);
     $event->trigger();
 }
@@ -687,7 +687,7 @@ function tool_securityquestions_unlock_user($unlockuser) {
  */
 function tool_securityquestions_get_lockout_counter($user) {
     global $DB;
-    // First ensure that the user is initialised in the table (should never be uninitialised here)
+    // First ensure that the user is initialised in the table (should never be uninitialised here).
     tool_securityquestions_initialise_lockout_counter($user);
     return $DB->get_field('tool_securityquestions_loc', 'counter', array('userid' => $user->id));
 }
@@ -699,7 +699,7 @@ function tool_securityquestions_get_lockout_counter($user) {
  */
 function tool_securityquestions_reset_lockout_counter($user) {
     global $DB;
-    // First ensure that the user is initialised in the table (should never be uninitialised here)
+    // First ensure that the user is initialised in the table (should never be uninitialised here).
     tool_securityquestions_initialise_lockout_counter($user);
     $DB->set_field('tool_securityquestions_loc', 'counter', 0, array('userid' => $user->id));
 }
@@ -716,7 +716,7 @@ function tool_securityquestions_clear_user_responses($user) {
     set_user_preference('tool_securityquestions_logintime', time());
 }
 
-// ===========================================TEMPLATE FILE FUNCTIONS======================================
+// Template File Functions.
 /**
  * Reads a question template file, and inserts all questions
  *
@@ -749,7 +749,7 @@ function tool_securityquestions_use_template_file() {
     global $CFG;
     $file = get_config('tool_securityquestions', 'questionfile');
     if ($file !== '') {
-        // If a filepath is set, use that config file
+        // If a filepath is set, use that config file.
         $path = $CFG->wwwroot.$file;
         tool_securityquestions_read_questions_file($path);
     }

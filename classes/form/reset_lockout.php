@@ -32,12 +32,12 @@ class reset_lockout extends \moodleform {
     public function definition() {
         $mform = $this->_form;
 
-        // Text box for ID entry
+        // Text box for ID entry.
         $mform->addElement('text', 'clearresponses', get_string('formclearresponses', 'tool_securityquestions'),
             array('placeholder' => 'Username or Email'));
         $mform->setType('clearresponses', PARAM_TEXT);
 
-        // Description label
+        // Description label.
         $mform->addElement('static', 'clearresponsesdesc', get_string('formclearresponsesdesc', 'tool_securityquestions'));
 
         $this->add_action_buttons(true, get_string('formresetbutton', 'tool_securityquestions'));
@@ -47,15 +47,15 @@ class reset_lockout extends \moodleform {
         global $DB;
         $errors = parent::validation($data, $files);
 
-        // Validation for ensuring user account exists to clear responses for
+        // Validation for ensuring user account exists to clear responses for.
         $foundusers = $DB->get_records('user', array('username' => ($data['clearresponses'])));
         if (!empty($foundusers)) {
-            // Get first matching username record
+            // Get first matching username record.
             $user = reset($foundusers);
         } else {
             $foundusers = $DB->get_records('user', array('email' => ($data['clearresponses'])));
             if (!empty($foundusers)) {
-                // Get first matching email record (should be unique)
+                // Get first matching email record (should be unique).
                 $user = reset($foundusers);
             }
         }

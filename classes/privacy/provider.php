@@ -29,6 +29,8 @@ use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\writer;
 use core_privacy\local\request\transform;
 
+defined('MOODLE_INTERNAL') || die();
+
 class provider implements
         // This plugin does store personal user data.
         \core_privacy\local\metadata\provider,
@@ -88,7 +90,7 @@ class provider implements
      */
     public static function get_users_in_context(userlist $userlist) {
         $context = $userlist->get_context();
-        // If current context is system, all users are contained within, get all users
+        // If current context is system, all users are contained within, get all users.
         if ($context->contextlevel == CONTEXT_SYSTEM) {
             $sql = "
             SELECT *
@@ -112,12 +114,12 @@ class provider implements
         $userid = $contextlist->get_user()->id;
         foreach ($contextlist as $context) {
 
-            // if not in system context, exit loop
+            // If not in system context, exit loop.
             if ($context->contextlevel == CONTEXT_SYSTEM) {
 
                 $parentclass = array();
 
-                // Get records for user ID
+                // Get records for user ID.
                 $ans = $DB->get_records('tool_securityquestions_ans', array('userid' => $userid));
                 $loc = $DB->get_records('tool_securityquestions_loc', array('userid' => $userid));
                 $res = $DB->get_records('tool_securityquestions_res', array('userid' => $userid));
@@ -127,7 +129,8 @@ class provider implements
                     foreach ($ans as $answer) {
                         $parentclass['Answer'][$i]['userid'] = $answer->userid;
                         $parentclass['Answer'][$i]['qid'] = $answer->qid;
-                        $parentclass['Answer'][$i]['timecreated'] = \core_privacy\local\request\transform::datetime($answer->timecreated);
+                        $time = \core_privacy\local\request\transform::datetime($answer->timecreated);
+                        $parentclass['Answer'][$i]['timecreated'] = $time;
                         $i++;
                     }
                 }
@@ -162,7 +165,7 @@ class provider implements
     public static function delete_data_for_all_users_in_context(\context $context) {
         global $DB;
 
-        // if not in user context, exit loop
+        // If not in user context, exit loop.
         if ($context->contextlevel == CONTEXT_SYSTEM) {
             $sql = "
             DELETE
@@ -187,7 +190,7 @@ class provider implements
 
         foreach ($contextlist as $context) {
 
-            // if not in user context, exit loop
+            // If not in user context, exit loop.
             if ($context->contextlevel == CONTEXT_SYSTEM) {
 
                 $sql = "
@@ -214,4 +217,3 @@ class provider implements
         }
     }
 }
-

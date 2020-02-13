@@ -32,7 +32,7 @@ class set_questions extends \moodleform {
     public function definition() {
         $mform = $this->_form;
 
-        // Add Question entry
+        // Add Question entry.
         $mform->addElement('html', '<h4>Add Question</h4>');
         $mform->addElement('text', 'questionentry', get_string('formquestionentry', 'tool_securityquestions'));
         $mform->setType('questionentry', PARAM_TEXT);
@@ -41,4 +41,3 @@ class set_questions extends \moodleform {
         $this->add_action_buttons(true, get_string('formaddquestionbutton', 'tool_securityquestions'));
     }
 }
-
