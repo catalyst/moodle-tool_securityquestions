@@ -80,6 +80,14 @@ if ($delete != 0) {
 }
 
 $form = new \tool_securityquestions\form\set_responses();
+// Get currently answered questions content for JS.
+$active = tool_securityquestions_get_active_user_responses($USER);
+$questions = array_map(function($element) {
+    global $DB;
+    $question = $DB->get_record('tool_securityquestions', array('id' => $element->qid));
+    return $question->content;
+}, $active);
+
 if ($form->is_cancelled()) {
     // Unset wantsurl.
     unset($SESSION->wantsurl);
@@ -176,6 +184,6 @@ if ($success == 0) {
 }
 
 $form->display();
-$PAGE->requires->js_call_amd('tool_securityquestions/hide_selector_question', 'init');
+$PAGE->requires->js_call_amd('tool_securityquestions/hide_selector_question', 'init', array($questions));
 
 echo $OUTPUT->footer();
