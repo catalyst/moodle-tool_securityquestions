@@ -456,7 +456,7 @@ function require_question_responses() {
         // Check whether user has answered enough questions.
         $requiredquestions = $config->minuserquestions;
         $answeredquestions = tool_securityquestions_get_active_user_responses($USER);
-        $url = '/admin/tool/securityquestions/set_responses.php';
+        $url = new moodle_url('/admin/tool/securityquestions/set_responses.php');
         if (count($answeredquestions) < $requiredquestions) {
             // Dont redirect if not in browser session.
             if (!CLI_SCRIPT && !AJAX_SCRIPT) {
@@ -753,4 +753,20 @@ function tool_securityquestions_use_template_file() {
         $path = $CFG->wwwroot.$file;
         tool_securityquestions_read_questions_file($path);
     }
+}
+
+/**
+ * Generates the select array for use in setting resposes.
+ */
+function tool_securityquestions_generate_select_array() {
+    global $DB;
+
+    // Generate array for questions.
+    $questions = tool_securityquestions_get_active_questions();
+    $qarray = array();
+    foreach ($questions as $question) {
+        $qarray[$question->id] = $question->content;
+    }
+
+    return $qarray;
 }

@@ -35,7 +35,7 @@ class set_responses extends \moodleform {
         $mform = $this->_form;
 
         // Setup response options.
-        $qarray = $this->generate_select_array();
+        $qarray = tool_securityquestions_generate_select_array();
 
         // Find number of responses required.
         $responses = tool_securityquestions_get_active_user_responses($USER);
@@ -150,21 +150,5 @@ class set_responses extends \moodleform {
         }
 
         return $errors;
-    }
-
-    // Display and Validation functions.
-
-    private function generate_select_array() {
-        global $DB;
-        global $USER;
-
-        // Generate array for questions.
-        $questions = $DB->get_records('tool_securityquestions', array('deprecated' => 0));
-        $qarray = array();
-        foreach ($questions as $question) {
-            $qarray[$question->id] = $question->content;
-        }
-
-        return $qarray;
     }
 }
