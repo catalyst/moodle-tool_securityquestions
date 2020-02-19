@@ -15,8 +15,8 @@ define([''], function(){
                 selects.forEach(function(select) {
                     for (var i = 0; i < select.options.length; i++) {
                         var option = select.options[i];
-                        if (option.index !== select.selectedIndex && (values.includes(option.index)
-                            || answered.includes(option.value))) {
+                        if ((option.index !== select.selectedIndex) && (values.includes(option.index)
+                            || answered.includes(option.innerText))) {
                             option.style.display = 'none';
                         } else {
                             option.style.display = '';
@@ -25,11 +25,11 @@ define([''], function(){
                 });
             };
 
-            // Bind to change and load events.
+            // Bind event to change, and fire function when loaded.
             selects.forEach(function(select) {
-                select.addEventListener('change', eventfunction());
-                select.addEventListener('load', eventfunction());
+                select.addEventListener('change', eventfunction);
             });
+            eventfunction();
         }
     };
 });
