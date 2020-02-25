@@ -153,5 +153,7 @@ $string['privacy:metadata:tool_securityquestions_ans:timecreated'] = 'The time t
 
 $string['privacy:metadata:tool_securityquestions'] = 'Security Questions Data';
 
+$string['privacy:metadata:preference:tool_securityquestions_logintime'] = 'The time that a user first logged in, and triggered the security question responses grace period.';
+
 // Capability String.
 $string['securityquestions:questionsaccess'] = 'Security Questions Interaction';
