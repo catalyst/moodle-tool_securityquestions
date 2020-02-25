@@ -116,7 +116,7 @@ function tool_securityquestions_deprecate_question($qid) {
 function tool_securityquestions_undeprecate_question($qid) {
     // This function has no side effects unlike deprecate, which must check minimum questions.
     global $DB, $USER;
-    echo var_dump($qid);
+
     // If record doesnt exist, return false.
     if ($DB->record_exists('tool_securityquestions', array('id' => $qid))) {
         $DB->set_field('tool_securityquestions', 'deprecated', 0, array('id' => $qid));
