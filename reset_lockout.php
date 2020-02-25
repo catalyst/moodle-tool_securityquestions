@@ -99,49 +99,12 @@ if ($notifyclearsuccess == true) {
 
 echo '<br>';
 echo $OUTPUT->heading(get_string('formlockedoutusers', 'tool_securityquestions'), 3);
-generate_table();
-echo $OUTPUT->footer();
-
-function generate_table() {
-    // Render table.
-    global $DB, $OUTPUT;
-    // Get records from database for populating table.
-    $lockedusers = $DB->get_records('tool_securityquestions_loc', array('locked' => 1));
-
-    $table = new html_table();
-    $table->head = array(
-        get_string('userid', 'grades'),
-        get_string('username'),
-        get_string('email'),
-        get_string('fullname'),
-        get_string('actions'),
-    );
-    $table->colclasses = array('centeralign', 'centeralign', 'centeralign', 'centeralign', 'centeralign');
-
-    foreach ($lockedusers as $userrecord) {
-        $user = $DB->get_record('user', array('id' => $userrecord->userid));
-
-        // Setup actions cell.
-        $reset = new moodle_url('/admin/tool/securityquestions/reset_lockout.php',
-            array('reset' => $user->id, 'sesskey' => sesskey()));
-        $clearres = new moodle_url('/admin/tool/securityquestions/reset_lockout.php',
-            array('clear' => $user->id, 'sesskey' => sesskey()));
-
-        $cell = html_writer::link($reset, get_string('formresetlockout', 'tool_securityquestions')).'<br>'.
-                html_writer::link($clearres, get_string('formclearresponsestable', 'tool_securityquestions'));
-
-        $table->data[] = array(
-            $user->id,
-            $user->username,
-            $user->email,
-            fullname($user),
-            $cell,
-        );
-    }
-    // Dont output table if it is empty.
-    if (count($lockedusers) != 0) {
-        echo html_writer::table($table);
-    } else {
-        echo $OUTPUT->heading(get_string('formnolockedusers', 'tool_securityquestions'), 4);
-    }
+// Output locked users table if there are locked users.
+$table = \tool_securityquestions\local\table_manager::get_lockout_table();
+if ($table) {
+    echo $table;
+} else {
+    echo $OUTPUT->heading(get_string('formnolockedusers', 'tool_securityquestions'), 4);
 }
+
+echo $OUTPUT->footer();

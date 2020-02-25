@@ -137,47 +137,11 @@ if ($qremaining == 0) {
 } else {
     echo $OUTPUT->heading(get_string('formstatusnotactive', 'tool_securityquestions', $qremaining), 4);
 }
-generate_table();
-echo $OUTPUT->footer();
 
-function generate_table() {
-    // Render table.
-    global $DB;
-    // Get records from database for populating table.
-    $questions = $DB->get_records('tool_securityquestions', null, 'deprecated ASC, content ASC');
-
-    $table = new html_table();
-    $table->head = array(
-        get_string('formtablequestion', 'tool_securityquestions'),
-        get_string('formtablecount', 'tool_securityquestions'),
-        get_string('formtabledeprecate', 'tool_securityquestions'),
-        get_string('action'),
-    );
-    $table->colclasses = array('centeralign', 'centeralign', 'centeralign', 'centeralign');
-
-    foreach ($questions as $question) {
-        if ($question->deprecated == 1) {
-            $dep = get_string('yes');
-        } else {
-            $dep = get_string('no');
-        }
-        $count = $DB->count_records('tool_securityquestions_res', array('qid' => $question->id));
-
-        // Setup action cell.
-        if ($count == 0 && $question->deprecated == 1) {
-            $url = new moodle_url('/admin/tool/securityquestions/set_questions.php',
-                array('delete' => $question->id, 'sesskey' => sesskey()));
-            $link = html_writer::link($url, get_string('delete'));
-        } else {
-            $url = new moodle_url('/admin/tool/securityquestions/set_questions.php',
-                array('deprecate' => $question->id, 'sesskey' => sesskey()));
-            $link = html_writer::link($url, get_string('formdeprecate', 'tool_securityquestions'));
-        }
-
-        $table->data[] = array($question->content, $count, $dep, $link);
-    }
-
-    if (count($questions) != 0) {
-        echo html_writer::table($table);
-    }
+// Output questionst table if questions are set.
+$table = \tool_securityquestions\local\table_manager::get_questions_table();
+if ($table) {
+    echo $table;
 }
+
+echo $OUTPUT->footer();
