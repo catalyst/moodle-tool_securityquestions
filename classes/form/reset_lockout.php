@@ -34,7 +34,7 @@ class reset_lockout extends \moodleform {
 
         // Text box for ID entry.
         $mform->addElement('text', 'clearresponses', get_string('formclearresponses', 'tool_securityquestions'),
-            array('placeholder' => 'Username or Email'));
+            array('placeholder' => get_string('formusernameplaceholder', 'tool_securityquestions')));
         $mform->setType('clearresponses', PARAM_TEXT);
 
         // Description label.
