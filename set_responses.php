@@ -65,7 +65,7 @@ $success = optional_param('success', -1, PARAM_INT);
 $active = count(tool_securityquestions_get_active_user_responses($USER));
 // If deleting a response, process here.
 $delete = optional_param('delete', 0, PARAM_INT);
-if ($delete != 0) {
+if ($delete != 0 && confirm_sesskey()) {
     if ($active - 1 < get_config('tool_securityquestions', 'minuserquestions')) {
             // Unable to delete, not enough responses set.
             $deletestatus = false;
@@ -101,7 +101,8 @@ if ($form->is_cancelled()) {
         $name = "delete$i";
         $qidname = "qid$i";
         if (!empty($data->$name)) {
-            $url = new moodle_url('/admin/tool/securityquestions/set_responses.php', array('delete' => $data->$qidname));
+            $url = new moodle_url('/admin/tool/securityquestions/set_responses.php',
+                array('delete' => $data->$qidname, 'sesskey' => sesskey()));
             redirect($url);
         }
     }
