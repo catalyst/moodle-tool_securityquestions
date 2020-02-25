@@ -4,7 +4,7 @@
 
 # Security Questions 2FA
 
-This plugin adds a framework for adding and enforcing security questions for users to perform certain account security actions, such as changing or recovering passwords. Currently it only operates on the Moodle Password reset page, however it is easily extensible to other forms.
+This plugin adds a framework for adding and enforcing security questions for users to perform a password reset. Currently it only operates on the Moodle Password reset page at `login/forgot_password`, however it is easily extensible to other forms.
 
 * [Security Controls](#security-controls)
 * [Setting Questions](#setting-questions)
@@ -85,14 +85,14 @@ Another requirement is for MDL-60470 to be included in the Moodle installation, 
 ```
 git cherry-pick bf9f255523e5f8feb7cb39067475389ba260ff4e
 ```
- 
+
 ### Installation
 
 To install the plugin simply drop it into the /path/to/moodle/admin/tool/securityquestions directory. When moodle is accessed it will prompt for installation of the plugin. Press upgrade database now, and the plugin will be installed.
 
 When the plugin is first installed, it will start disabled. To enable the plugin, setup steps must be performed. First, the admin settings must be configured to, with each [Security Control](#security-controls) set to a value. The defaults generally provide a sane baseline. After this, security questions must be set, for users to respond to. It is highly recommended to create **original questions**, and avoid common security questions such as "What is your mother's maiden name?".
 
-Once enough questions have been set, the admin account will be prompted to set its security questions, which indicates that the plugin is almost active. The last thing to check is to go back to the plugin admin settings, and select all of the pages that users should be prompted security questions on.
+Once enough questions have been set, the admin account will be prompted to set its security questions, which indicates that the plugin is active.
 
 For more instructions on installation, visit [the Moodle Plugin Installation Guide](https://docs.moodle.org/37/en/Installing_plugins)
 

@@ -66,7 +66,7 @@ $string['formclearresponsestable'] = 'Clear responses';
 $string['formclearresponsesdesc'] = 'Enter a username or email to clear responses for user.';
 $string['formnolockedusers'] = 'No locked users found';
 $string['formlockedoutusers'] = 'Locked out users';
-$string['formaddquestionbutton'] = 'Add question';
+$string['formaddquestion'] = 'Add question';
 $string['formtablequestion'] = 'Question';
 $string['formtabledeprecate'] = 'Deprecated';
 $string['formnoquestions'] = 'No questions set';
@@ -87,6 +87,7 @@ $string['formresponsenotdeleted'] = 'Unable to delete response. Add more respons
 $string['formrecordnewresponse'] = 'Record a new response for question:';
 $string['formquestionnumtext'] = 'Question: {$a}';
 $string['formquestioninfo'] = 'For added security, you cannot see the saved responses. You can only save new responses to the questions, or delete the response.';
+$string['formusernameplaceholder'] = 'Username or Email';
 
 // Setting Strings.
 $string['settingsenablename'] = 'Enable plugin';
@@ -151,6 +152,8 @@ $string['privacy:metadata:tool_securityquestions_ans:qid'] = 'The question ID of
 $string['privacy:metadata:tool_securityquestions_ans:timecreated'] = 'The time that this question was picked for a user.';
 
 $string['privacy:metadata:tool_securityquestions'] = 'Security questions data';
+
+$string['privacy:metadata:preference:tool_securityquestions_logintime'] = 'The time that a user first logged in, and triggered the security question responses grace period.';
 
 // Capability String.
 $string['securityquestions:questionsaccess'] = 'Security questions interaction';
