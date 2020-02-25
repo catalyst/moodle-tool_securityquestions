@@ -67,6 +67,11 @@ class provider implements
              ],
             'privacy:metadata:tool_securityquestions_ans'
         );
+
+        // Add sitewide user preference.
+        $collection->add_user_preference('tool_securityquestions_logintime',
+            'privacy:metadata:preference:tool_securityquestions_logintime');
+
         return $collection;
     }
 
