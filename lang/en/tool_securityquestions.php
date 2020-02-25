@@ -66,7 +66,7 @@ $string['formclearresponsestable'] = 'Clear Responses';
 $string['formclearresponsesdesc'] = 'Enter a username or email to clear responses for user.';
 $string['formnolockedusers'] = 'No locked users found';
 $string['formlockedoutusers'] = 'Locked Out Users';
-$string['formaddquestionbutton'] = 'Add Question';
+$string['formaddquestion'] = 'Add Question';
 $string['formtablequestion'] = 'Question';
 $string['formtabledeprecate'] = 'Deprecated';
 $string['formnoquestions'] = 'No questions set';
@@ -87,6 +87,7 @@ $string['formresponsenotdeleted'] = 'Unable to delete response. Add more respons
 $string['formrecordnewresponse'] = 'Record a new response for question:';
 $string['formquestionnumtext'] = 'Question: {$a}';
 $string['formquestioninfo'] = 'For added security, you cannot see the saved responses. You can only save new responses to the questions, or delete the response.';
+$string['formusernameplaceholder'] = 'Username or Email';
 
 // Setting Strings.
 $string['settingsenablename'] = 'Enable Plugin';
