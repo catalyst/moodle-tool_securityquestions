@@ -716,45 +716,6 @@ function tool_securityquestions_clear_user_responses($user) {
     set_user_preference('tool_securityquestions_logintime', time());
 }
 
-// Template File Functions.
-/**
- * Reads a question template file, and inserts all questions
- *
- * @param string $filepath the path to the question template file
- */
-function tool_securityquestions_read_questions_file($filepath) {
-
-    if (file_exists($filepath)) {
-        try {
-            $questions = fopen($filepath, 'r');
-        } catch (Exception $e) {
-            return false;
-        }
-    }
-
-    if (!empty($questions)) {
-        while (!feof($questions)) {
-            $question = trim(fgets($questions));
-            tool_securityquestions_insert_question($question);
-        }
-    }
-
-    return true;
-}
-
-/**
- * Forces use of a template file if the admin config specifies one
- */
-function tool_securityquestions_use_template_file() {
-    global $CFG;
-    $file = get_config('tool_securityquestions', 'questionfile');
-    if ($file !== '') {
-        // If a filepath is set, use that config file.
-        $path = $CFG->wwwroot.$file;
-        tool_securityquestions_read_questions_file($path);
-    }
-}
-
 /**
  * Generates the select array for use in setting resposes.
  */
