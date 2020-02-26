@@ -49,7 +49,7 @@ $PAGE->set_cacheable(false);
 if ($node = $PAGE->settingsnav->find('usercurrentsettings', null)) {
     $PAGE->navbar->add($node->get_content(), $node->action());
 }
-$PAGE->navbar->add(get_string('setresponsessettingsmenu', 'tool_securityquestions'));
+$PAGE->navbar->add(get_string('setresponsessettingsmenu', 'tool_securityquestions'), $url);
 
 $notifysuccess = false;
 $notifycontent = '';
