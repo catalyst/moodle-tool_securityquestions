@@ -106,7 +106,7 @@ $string['settingsinjectchangepw'] = 'Change password form.';
 $string['settingsinjectsetpw'] = 'Set password form.';
 $string['settingslockoutnum'] = 'Answer attempts before lockout';
 $string['settingslockoutnumdesc'] = 'The number of attempts at answering questions a user is allowed before being locked out of password resetting. Set this control to 0 to disable locking.';
-$string['settingsmandatoryquestions'] = 'Mandatory Security Questions';
+$string['settingsmandatoryquestions'] = 'Mandatory security questions';
 $string['settingsmandatoryquestionsdesc'] = 'Enable this control to make security questions mandatory. If disabled, users will still be prompted to answer questions on login,
                                              but they will be able to navigate away. On next login they will again be prompted.';
 $string['settingsgraceperiod'] = 'Response grace period';
