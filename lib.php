@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die;
 function tool_securityquestions_after_require_login() {
     if (get_config('tool_securityquestions', 'enable_plugin')) {
         require_once(__DIR__.'/locallib.php');
-        require_question_responses();
+        tool_securityquestions_require_question_responses();
     }
 }
 

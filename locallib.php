@@ -407,7 +407,7 @@ function tool_securityquestions_inject_navigation_node($navigation, $user, $user
 /**
  * Forces redirect to the set_responses page if users havent answered enough questions
  */
-function require_question_responses() {
+function tool_securityquestions_require_question_responses() {
     global $USER, $DB, $SESSION, $PAGE, $CFG;
 
     // First check if user has the capability to interact with questions.
