@@ -102,10 +102,5 @@ if ($hassiteconfig) {
         $settings->add(new admin_setting_configtext('tool_securityquestions/lockoutnum',
                     get_string('settingslockoutnum', 'tool_securityquestions'),
                     get_string('settingslockoutnumdesc', 'tool_securityquestions'), 3, PARAM_INT));
-
-        $settings->add(new admin_setting_configfile('tool_securityquestions/questionfile',
-                    get_string('settingsquestionfile', 'tool_securityquestions'),
-                    get_string('settingsquestionfile', 'tool_securityquestions'),
-                    '/admin/tool/securityquestions/questions/example.txt'));
     }
 }
