@@ -102,5 +102,21 @@ if ($hassiteconfig) {
         $settings->add(new admin_setting_configtext('tool_securityquestions/lockoutnum',
                     get_string('settingslockoutnum', 'tool_securityquestions'),
                     get_string('settingslockoutnumdesc', 'tool_securityquestions'), 3, PARAM_INT));
+
+        $settings->add(new admin_setting_heading('tool_securityquestions/tierheader',
+                    get_string('settingstierheader', 'tool_securityquestions'),
+                    get_string('settingstierheaderdesc', 'tool_securityquestions')));
+
+        $settings->add(new admin_setting_configduration('tool_securityquestions/tieroneduration',
+                    get_string('settingstieroneduration', 'tool_securityquestions'),
+                    get_string('settingstieronedurationdesc', 'tool_securityquestions'), 0, MINSECS));
+
+        $settings->add(new admin_setting_configduration('tool_securityquestions/tiertwoduration',
+                    get_string('settingstiertwoduration', 'tool_securityquestions'),
+                    get_string('settingstiertwodurationdesc', 'tool_securityquestions'), 0, MINSECS));
+
+        $settings->add(new admin_setting_configduration('tool_securityquestions/lockoutexpiryduration',
+                    get_string('settingslockoutexpiryduration', 'tool_securityquestions'),
+                    get_string('settingslockoutexpirydurationdesc', 'tool_securityquestions'), 0, WEEKSECS));
     }
 }

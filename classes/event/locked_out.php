@@ -44,13 +44,17 @@ class locked_out extends \core\event\base {
      * Create instance of event.
      *
      * @param int $userid the userid of the User whos account was locked
+     * @param int $lockeduntil the time when a user can attempt security questions again.
      * @return locked_out the locked out event
      */
-    public static function locked_out_event($user) {
+    public static function locked_out_event($user, $lockeduntil) {
 
         $data = array(
             'context' => \context_user::instance($user->id),
-            'other' => array ('userid' => $user->id)
+            'other' => array (
+                'userid' => $user->id,
+                'lockeduntil' => userdate($lockeduntil)
+            )
         );
 
         return self::create($data);
@@ -72,7 +76,8 @@ class locked_out extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The user with ID '{$this->other['userid']}' was locked from resetting their password.";
+        return "The user with ID '{$this->other['userid']}' was locked from resetting their password,
+            and may reattempt security questions at '{$this->other['lockeduntil']}'";
     }
 
     /**

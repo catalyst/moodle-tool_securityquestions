@@ -27,6 +27,7 @@ use core_privacy\local\metadata\collection;
 use core_privacy\local\request\contextlist;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\writer;
+use core_privacy\local\request\userlist;
 use core_privacy\local\request\transform;
 
 defined('MOODLE_INTERNAL') || die();
@@ -53,7 +54,8 @@ class provider implements
              [
                 'userid' => 'privacy:metadata:tool_securityquestions_loc:userid',
                 'counter' => 'privacy:metadata:tool_securityquestions_loc:counter',
-                'locked' => 'privacy:metadata:tool_securityquestions_loc:locked'
+                'tier' => 'privacy:metadata:tool_securityquestions_loc:tier',
+                'timefailed' => 'privacy:metadata:tool_securityquestions_loc:timefailed'
              ],
             'privacy:metadata:tool_securityquestions_loc'
         );
@@ -100,17 +102,17 @@ class provider implements
             $sql = "
             SELECT *
             FROM {tool_securityquestions_ans}";
-            $userlist->add_from_sql('userid', $sql);
+            $userlist->add_from_sql('userid', $sql, array());
 
             $sql = "
             SELECT *
             FROM {tool_securityquestions_loc}";
-            $userlist->add_from_sql('userid', $sql);
+            $userlist->add_from_sql('userid', $sql, array());
 
             $sql = "
             SELECT *
             FROM {tool_securityquestions_res}";
-            $userlist->add_from_sql('userid', $sql);
+            $userlist->add_from_sql('userid', $sql, array());
         }
     }
 
@@ -134,7 +136,7 @@ class provider implements
                     foreach ($ans as $answer) {
                         $parentclass['Answer'][$i]['userid'] = $answer->userid;
                         $parentclass['Answer'][$i]['qid'] = $answer->qid;
-                        $time = \core_privacy\local\request\transform::datetime($answer->timecreated);
+                        $time = transform::datetime($answer->timecreated);
                         $parentclass['Answer'][$i]['timecreated'] = $time;
                         $i++;
                     }
@@ -145,7 +147,8 @@ class provider implements
                     foreach ($loc as $locked) {
                         $parentclass['Locked'][$j]['userid'] = $locked->userid;
                         $parentclass['Locked'][$j]['counter'] = $locked->counter;
-                        $parentclass['Locked'][$j]['locked'] = $locked->locked;
+                        $parentclass['Locked'][$j]['tier'] = $locked->tier;
+                        $parentclass['Locked'][$j]['timefailed'] = $locked->timefailed;
                         $j++;
                     }
                 }

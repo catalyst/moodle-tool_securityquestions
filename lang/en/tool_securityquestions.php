@@ -46,6 +46,7 @@ $string['formresponseempty'] = 'Response cannot be empty.';
 $string['formanswerquestion'] = 'Enter a response to question {$a}:';
 $string['formanswerfailed'] = 'Responses do not match recorded responses.';
 $string['formlockedout'] = 'Account is locked from resetting password. Please contact System Administrators for further assistance.';
+$string['formlockedouttimer'] = 'Account is locked from resetting password. Please try again in {$a}.';
 $string['formresetid'] = 'Enter account ID to be unlocked:';
 $string['formresetnotnumber'] = 'ID must be a number';
 $string['formresetnotfound'] = 'User does not exist';
@@ -88,6 +89,7 @@ $string['formrecordnewresponse'] = 'Record a new response for question:';
 $string['formquestionnumtext'] = 'Question: {$a}';
 $string['formquestioninfo'] = 'For added security, you cannot see the saved responses. You can only save new responses to the questions, or delete the response.';
 $string['formusernameplaceholder'] = 'Username or Email';
+$string['formlockouttier'] = 'Lockout tier';
 
 // Setting Strings.
 $string['settingsenablename'] = 'Enable plugin';
@@ -112,6 +114,16 @@ $string['settingsmandatoryquestionsdesc'] = 'Enable this control to make securit
 $string['settingsgraceperiod'] = 'Response grace period';
 $string['settingsgraceperioddesc'] = 'A period of time during which a user can choose to not set question responses, even when mandatory questions are enabled. After this period users who
                                       have not set reponses will be forced to set responses. Set this control to 0 to disable the grace period.';
+$string['settingstieroneduration'] = 'Lockout tier one duration';
+$string['settingstieronedurationdesc'] = 'Length of time during a tier one lockout where a user cannot reattempt security questions.';
+$string['settingstiertwoduration'] = 'Lockout tier two duration';
+$string['settingstiertwodurationdesc'] = 'Length of time during a tier two lockout where a user cannot reattempt security questions.';
+$string['settingslockoutexpiryduration'] = 'Lockout reset reset time';
+$string['settingslockoutexpirydurationdesc'] = 'Length of time with no failed attempts before lockout is automatically cleared. Set to 0 to keep accounts locked until administrator reset.';
+$string['settingstierheader'] = 'Lockout tier settings';
+$string['settingstierheaderdesc'] = 'These settings allow you to add lockout tiers to Security Questions. Leave these settings as 0 to disable lockout tiers.
+    If these settings are set, when a user triggers a lockout, they will instead be allowed to attempt security questions again after the duration specified for the tier.
+    When a user triggers a lockout, they will move up a lockout tier. Lockouts will automatically be cleared after the duration specified in the lockoutexpiryduration control, if it is not set to 0.';
 
 // Template Strings.
 $string['forcedconfig'] = 'Settings are read only, configuration is forced in template file: ';
@@ -126,6 +138,7 @@ $string['userunlockedeventname'] = 'User unlocked from resetting password by an 
 $string['questionaddedeventname'] = 'Administrator added security question.';
 $string['questiondeprecatedeventname'] = 'Administrator deprecated security question.';
 $string['questiondeletedeventname'] = 'Administrator deleted security question.';
+$string['lockoutexpiredeventname'] = 'User lockout expired.';
 
 // Injected Element Strings.
 $string['injectedquestiontitle'] = 'Security Question {$a->num}: {$a->content}';
@@ -142,7 +155,8 @@ $string['privacy:metadata:tool_securityquestions_res:qid'] = 'The question ID th
 $string['privacy:metadata:tool_securityquestions_loc'] = 'This table stores information about whether a user is locked from resetting their password, as well as the number of failed attempts at entering security questions.';
 $string['privacy:metadata:tool_securityquestions_loc:userid'] = 'The ID of the user to keep track of the locked status.';
 $string['privacy:metadata:tool_securityquestions_loc:counter'] = 'The amount of times that a user has failed security question validation since last password reset.';
-$string['privacy:metadata:tool_securityquestions_loc:locked'] = 'The locked status of a user.';
+$string['privacy:metadata:tool_securityquestions_loc:tier'] = 'The tier of lockout of a user.';
+$string['privacy:metadata:tool_securityquestions_loc:timefailed'] = 'The timestamp of the last triggered lockout tier increase.';
 
 $string['privacy:metadata:tool_securityquestions_ans'] = 'This table stores information about whether about which random questions were picked to present to a user, and when the last random selection was.';
 $string['privacy:metadata:tool_securityquestions_ans:userid'] = 'The ID of the user to keep track of questions to be answered.';
