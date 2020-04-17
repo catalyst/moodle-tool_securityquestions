@@ -22,7 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die;
-require_once(__DIR__.'/classes/event/user_locked.php');
 
 // Deprecation Functions.
 /**
@@ -245,9 +244,28 @@ function tool_securityquestions_validate_injected_questions($data, $user) {
             $lastfield = $name;
         }
 
-        // If locked out, always respond with the lockout message.
+        $tieroneduration = get_config('tool_securityquestions', 'tieroneduration');
+        $tiertwoduration = get_config('tool_securityquestions', 'tiertwoduration');
+
+        // If locked out, respond with a contextual lockout message.
         if (tool_securityquestions_is_locked_out($user)) {
-            $errors[$lastfield] = get_string('formlockedout', 'tool_securityquestions');
+            // Find the lockout tier, and display error message based on tier.
+            $record = $DB->get_record('tool_securityquestions_loc', array('userid' => $user->id));
+            switch ($record->tier) {
+                case 1:
+                    $timestring = format_time($record->timefailed + $tieroneduration - time());
+                    $errors[$lastfield] = get_string('formlockedouttimer', 'tool_securityquestions', $timestring);
+                    break;
+
+                case 2:
+                    $timestring = format_time($record->timefailed + $tiertwoduration - time());;
+                    $errors[$lastfield] = get_string('formlockedouttimer', 'tool_securityquestions', $timestring);
+                    break;
+
+                default:
+                    $errors[$lastfield] = get_string('formlockedout', 'tool_securityquestions');
+                    break;
+            }
         } else if ($errorfound) {
             $errors[$lastfield] = get_string('formanswerfailed', 'tool_securityquestions');
         }
@@ -261,8 +279,26 @@ function tool_securityquestions_validate_injected_questions($data, $user) {
             if (tool_securityquestions_get_lockout_counter($user) >= $lockoutamount && $lockoutamount > 0) {
                 tool_securityquestions_lock_user($user);
 
-                // Output a notification to display to the user.
-                \core\notification::error(get_string('formlockedout', 'tool_securityquestions'));
+                $newtier = $DB->get_field('tool_securityquestions_loc', 'tier', array('userid' => $user->id));
+
+                switch ($newtier) {
+                    case 1:
+                        $time = format_time($tieroneduration);
+                        $errorstring = get_string('formlockedouttimer', 'tool_securityquestions', $time);
+                        break;
+
+                    case 2:
+                        $time = format_time($tiertwoduration);
+                        $errorstring = get_string('formlockedouttimer', 'tool_securityquestions', $time);
+                        break;
+
+                    default:
+                        $errorstring = get_string('formlockedout', 'tool_securityquestions');
+                        break;
+                }
+
+                // Output a notification to display to the user, based on the tier they just entered.
+                \core\notification::error($errorstring);
             }
         }
     }
@@ -600,34 +636,55 @@ function tool_securityquestions_increment_lockout_counter($user) {
     global $DB;
 
     // First ensure the user is initialised in the table.
-    tool_securityquestions_initialise_lockout_counter($user);
+    $lock = tool_securityquestions_get_lock_state($user);
 
-    // If already initialised, increment counter.
-    $count = $DB->get_field('tool_securityquestions_loc', 'counter', array('userid' => $user->id));
+    // Increment counter, and update the field.
+    $count = $lock->counter;
     $DB->set_field('tool_securityquestions_loc', 'counter', ($count + 1), array('userid' => $user->id));
 }
 
 /**
- * Initialises a user in the lockout table
+ * This function ensures the lock record is fresh.
+ * It instantiates the lock record if the user does not have a record,
+ * And resets any expired lock records.
  *
  * @param stdClass $user the user to increment the counter of
- * @return bool returns true if user initialised, false if already present
+ * @return stdClass returns the lock record of the user.
  */
-function tool_securityquestions_initialise_lockout_counter($user) {
+function tool_securityquestions_get_lock_state($user) {
     global $DB;
+    // Params for a clean lock reset.
+    $resetarr = ['tier' => 0, 'counter' => 0, 'timefailed' => 0, 'userid' => $user->id];
 
     // Check if user exists in the lockout table.
     if (!$DB->record_exists('tool_securityquestions_loc', array('userid' => $user->id))) {
         // If not, create entry for user, not locked out, counter 0.
-        $DB->insert_record('tool_securityquestions_loc', array('userid' => $user->id, 'locked' => 0, 'counter' => 0));
-        return true;
+        $id = $DB->insert_record('tool_securityquestions_loc', $resetarr, true);
     } else {
-        return false;
+        // Now check for if user has a lockout that is expired, and reset it.
+        $record = $DB->get_record('tool_securityquestions_loc', array('userid' => $user->id));
+        $id = $record->id;
+        $resetduration = get_config('tool_securityquestions', 'lockoutexpiryduration');
+        // Check if locks should expire, and check if this lock is valid for expiry.
+        if (($record->timefailed < time() - $resetduration) && $record->timefailed != 0 && $resetduration != 0) {
+            // Update the record to a fresh record.
+            $resetarr['id'] = $id;
+            $DB->update_record('tool_securityquestions_loc', $resetarr);
+
+            // Log a new lockout expired event.
+            $event = \tool_securityquestions\event\lockout_expired::lockout_expired_event($user);
+            $event->trigger();
+        }
     }
+
+    // Return the up to date lock record.
+    return $DB->get_record('tool_securityquestions_loc', ['id' => $id]);
 }
 
 /**
- * Checks whether a user is currently locked from resetting password
+ * Checks whether a user is currently locked from resetting password.
+ * This function checks time period of lockout tier, against current time,
+ * to see if more attempts can be made.
  *
  * @param stdClass $user the user to increment the counter of
  * @return bool returns true if user is locked out, false if not locked out
@@ -635,13 +692,26 @@ function tool_securityquestions_initialise_lockout_counter($user) {
 function tool_securityquestions_is_locked_out($user) {
     global $DB;
     // First ensure that the user is initialised in the table.
-    tool_securityquestions_initialise_lockout_counter($user);
+    $lock = tool_securityquestions_get_lock_state($user);
 
-    $lock = $DB->get_field('tool_securityquestions_loc', 'locked', array('userid' => $user->id));
-    if ($lock) {
-        return true;
-    } else {
-        return false;
+    $tierone = get_config('tool_securityquestions', 'tieroneduration');
+    $tiertwo = get_config('tool_securityquestions', 'tiertwoduration');
+
+    // Now check the users tier, and compare times.
+    switch ($lock->tier) {
+        case 0:
+            return false;
+
+        case 1:
+            // If still within lockout duration, true.
+            return (time() - $lock->timefailed < $tierone);
+
+        case 2:
+            // If still within lockout duration, true.
+            return (time() - $lock->timefailed < $tiertwo);
+
+        default:
+            return true;
     }
 }
 
@@ -653,26 +723,78 @@ function tool_securityquestions_is_locked_out($user) {
 function tool_securityquestions_lock_user($user) {
     global $DB;
     // First ensure that the user is initialised in the table (should never be uninitialised here).
-    tool_securityquestions_initialise_lockout_counter($user);
-    $DB->set_field('tool_securityquestions_loc', 'locked', 1, array('userid' => $user->id));
+    $lock = tool_securityquestions_get_lock_state($user);
 
-    // Add event for logging locked user.
-    $event = \tool_securityquestions\event\locked_out::locked_out_event($user);
+    // Set the new tier of lockout, never exceeding 3, skipping 0 time tiers.
+    $tierfound = false;
+    $origtier = $lock->tier;
+    $newtier = $origtier < 3 ? $origtier + 1 : $origtier;
+
+    while (!$tierfound) {
+        switch ($newtier) {
+            case 1:
+                // If duration for tier is 0, jump to next and try again.
+                if (get_config('tool_securityquestions', 'tieroneduration') == 0) {
+                    $newtier++;
+                } else {
+                    $tierfound = true;
+                }
+                break;
+
+            case 2:
+                // If duration for tier is 0, jump to next and try again.
+                if (get_config('tool_securityquestions', 'tiertwoduration') == 0) {
+                    $newtier++;
+                } else {
+                    $tierfound = true;
+                }
+                break;
+
+            default:
+                // Full lockout reached.
+                $tierfound = true;
+                break;
+        }
+    }
+
+    // Set the new tier, and reset the counter for that tier, then update timefailed.
+    $newfields = ['tier' => $newtier, 'counter' => 0, 'timefailed' => time(), 'id' => $lock->id];
+    $DB->update_record('tool_securityquestions_loc', $newfields);
+
+    // Calculate locked until.
+    switch ($newtier) {
+        case 1:
+            $duration = get_config('tool_securityquestions', 'tieroneduration');
+            break;
+
+        case 2:
+            $duration = get_config('tool_securityquestions', 'tiertwoduration');
+            break;
+
+        default:
+            $duration = get_config('tool_securityquestions', 'lockoutexpiryduration');
+            break;
+    }
+    $lockeduntil = time() + $duration;
+
+    // Trigger event with new tier set.
+    $event = \tool_securityquestions\event\locked_out::locked_out_event($user, $lockeduntil);
     $event->trigger();
 }
 
 /**
  * Unlocks a user, and resets the lockout counter
  *
- * @param stdClass $user the user to increment the counter of
+ * @param stdClass $user the user to unlock.
  */
 function tool_securityquestions_unlock_user($unlockuser) {
     global $DB, $USER;
     // First ensure that the user is initialised in the table (should never be uninitialised here).
-    tool_securityquestions_initialise_lockout_counter($unlockuser);
+    $lock = tool_securityquestions_get_lock_state($unlockuser);
+
     // Set lockout to false, and reset counter to 0.
-    $DB->set_field('tool_securityquestions_loc', 'locked', 0, array('userid' => $unlockuser->id));
-    $DB->set_field('tool_securityquestions_loc', 'counter', 0, array('userid' => $unlockuser->id));
+    $newfields = ['tier' => 0, 'counter' => 0, 'timefailed' => 0, 'id' => $lock->id];
+    $DB->update_record('tool_securityquestions_loc', $newfields);
 
     // Fire an unlocked event for the user.
     $event = \tool_securityquestions\event\user_unlocked::user_unlocked_event($USER, $unlockuser);
@@ -686,10 +808,9 @@ function tool_securityquestions_unlock_user($unlockuser) {
  * @return int the current attempt counter
  */
 function tool_securityquestions_get_lockout_counter($user) {
-    global $DB;
-    // First ensure that the user is initialised in the table (should never be uninitialised here).
-    tool_securityquestions_initialise_lockout_counter($user);
-    return $DB->get_field('tool_securityquestions_loc', 'counter', array('userid' => $user->id));
+    // Get lock state and return the counter.
+    $lock = tool_securityquestions_get_lock_state($user);
+    return $lock->counter;
 }
 
 /**
@@ -700,8 +821,8 @@ function tool_securityquestions_get_lockout_counter($user) {
 function tool_securityquestions_reset_lockout_counter($user) {
     global $DB;
     // First ensure that the user is initialised in the table (should never be uninitialised here).
-    tool_securityquestions_initialise_lockout_counter($user);
-    $DB->set_field('tool_securityquestions_loc', 'counter', 0, array('userid' => $user->id));
+    $lock = tool_securityquestions_get_lock_state($user);
+    $DB->set_field('tool_securityquestions_loc', 'counter', 0, array('id' => $lock->id));
 }
 
 /**

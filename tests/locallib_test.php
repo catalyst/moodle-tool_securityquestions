@@ -348,38 +348,47 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertEquals(count(tool_securityquestions_get_active_user_responses($USER)), 2);
     }
 
-    public function test_initialise_lockout_counter() {
+    public function test_get_lock_state() {
         $this->resetAfterTest(true);
-        global $USER;
-        global $DB;
+        global $CFG, $DB, $USER;
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
 
         // Check that user doesnt exist inside of the lockout table to start.
         $this->assertEquals(false, $DB->record_exists('tool_securityquestions_loc', array('userid' => $USER->id)));
 
         // Now initialise the user, and ensure that it adds the user record.
-        tool_securityquestions_initialise_lockout_counter($USER);
+        tool_securityquestions_get_lock_state($USER);
         $this->assertEquals(true, $DB->record_exists('tool_securityquestions_loc', array('userid' => $USER->id)));
 
         // Check that counter starts at 0, and not locked out.
         $record = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
 
         $this->assertEquals(0, $record->counter);
-        $this->assertEquals(0, $record->locked);
+        $this->assertEquals(0, $record->tier);
 
         // Now attempt to initialise again, and ensure no duplicate records.
-        tool_securityquestions_initialise_lockout_counter($USER);
+        tool_securityquestions_get_lock_state($USER);
         $records = $DB->get_records('tool_securityquestions_loc', array('userid' => $USER->id));
         $this->assertEquals(1, count($records));
 
         // Now manually change the status of locked and counter, and ensure not reset by initialise.
         $DB->set_field('tool_securityquestions_loc', 'counter', 2, array('userid' => $USER->id));
-        $DB->set_field('tool_securityquestions_loc', 'locked', 1, array('userid' => $USER->id));
+        $DB->set_field('tool_securityquestions_loc', 'tier', 1, array('userid' => $USER->id));
 
-        tool_securityquestions_initialise_lockout_counter($USER);
+        tool_securityquestions_get_lock_state($USER);
         $record2 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
 
         $this->assertEquals(2, $record2->counter);
-        $this->assertEquals(1, $record2->locked);
+        $this->assertEquals(1, $record2->tier);
+
+        // Now test expiring a lockout.
+        $DB->set_field('tool_securityquestions_loc', 'timefailed', time() - 30, array('userid' => $USER->id));
+        $CFG->forced_plugin_settings['tool_securityquestions']['lockoutexpiryduration'] = 1;
+        tool_securityquestions_get_lock_state($USER);
+        $record3 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
+        $this->assertEquals(0, $record3->counter);
+        $this->assertEquals(0, $record3->tier);
     }
 
     public function test_increment_lockout_counter() {
@@ -435,12 +444,12 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertEquals(0, $record3->counter);
 
         // Check that it doesnt affect whether accounts are locked or not.
-        $this->assertEquals(0, $record3->locked);
-        $DB->set_field('tool_securityquestions_loc', 'locked', 1, array('userid' => $USER->id));
+        $this->assertEquals(0, $record3->tier);
+        $DB->set_field('tool_securityquestions_loc', 'tier', 1, array('userid' => $USER->id));
         tool_securityquestions_reset_lockout_counter($USER);
 
         $record4 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
-        $this->assertEquals(1, $record4->locked);
+        $this->assertEquals(1, $record4->tier);
     }
 
     public function test_get_lockout_counter() {
@@ -480,12 +489,16 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
 
     public function test_lock_user() {
         $this->resetAfterTest(true);
-        global $USER;
-        global $DB;
+        global $CFG, $DB, $USER;
 
         // Create a user and login as user.
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
+
+        // Enable tiered lockouts.
+        $CFG->forced_plugin_settings['tool_securityquestions']['lockoutexpiryduration'] = 1;
+        $CFG->forced_plugin_settings['tool_securityquestions']['tieroneduration'] = 1;
+        $CFG->forced_plugin_settings['tool_securityquestions']['tiertwoduration'] = 1;
 
         // Test that the function initialises Users first.
         $empty = $DB->get_records('tool_securityquestions_loc', array('userid' => $USER->id));
@@ -498,22 +511,45 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
 
         // Test that the user is locked.
         $record = reset($records);
-        $this->assertEquals(1, $record->locked);
+        $this->assertEquals(1, $record->tier);
 
-        // Test nothing happens if account is locked a second time.
+        // Test that account goes up a tier if locked again if account is locked a second time.
         tool_securityquestions_lock_user($USER);
         $record2 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
-        $this->assertEquals(1, $record2->locked);
+        $this->assertEquals(2, $record2->tier);
+
+        // Now go to 3, and test it doesn't go any higher.
+        tool_securityquestions_lock_user($USER);
+        $record3 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
+        $this->assertEquals(3, $record3->tier);
+
+        tool_securityquestions_lock_user($USER);
+        $record4 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
+        $this->assertEquals(3, $record4->tier);
+
+        // Now lets disable tiered lockouts, and test users jump straight to 3 (full lockout).
+        $CFG->forced_plugin_settings['tool_securityquestions']['lockoutexpiryduration'] = 0;
+        $CFG->forced_plugin_settings['tool_securityquestions']['tieroneduration'] = 0;
+        $CFG->forced_plugin_settings['tool_securityquestions']['tiertwoduration'] = 0;
+        $DB->delete_records('tool_securityquestions_loc', array('userid' => $USER->id));
+
+        tool_securityquestions_lock_user($USER);
+        $record5 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
+        $this->assertEquals(3, $record5->tier);
     }
 
     public function test_unlock_user() {
         $this->resetAfterTest(true);
-        global $USER;
-        global $DB;
+        global $CFG, $DB, $USER;
 
         // Create a user and login as user.
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
+
+        // Enable tiered lockouts.
+        $CFG->forced_plugin_settings['tool_securityquestions']['lockoutexpiryduration'] = 1;
+        $CFG->forced_plugin_settings['tool_securityquestions']['tieroneduration'] = 1;
+        $CFG->forced_plugin_settings['tool_securityquestions']['tiertwoduration'] = 1;
 
         // Test that the function initialises Users first.
         $empty = $DB->get_records('tool_securityquestions_loc', array('userid' => $USER->id));
@@ -526,21 +562,58 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
 
         // Test that the user is unlocked.
         $record = reset($records);
-        $this->assertEquals(0, $record->locked);
+        $this->assertEquals(0, $record->tier);
 
         // Lock user then unlock and check functionality.
         tool_securityquestions_lock_user($USER);
         $record2 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
-        $this->assertEquals(1, $record2->locked);
+        $this->assertEquals(1, $record2->tier);
+        $this->assertEquals(time(), $record2->timefailed);
+        // Check counter was reset to 0 on increasing tier.
+        $this->assertEquals(0, $record2->counter);
 
         tool_securityquestions_unlock_user($USER);
         $record3 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
-        $this->assertEquals(0, $record3->locked);
+        $this->assertEquals(0, $record3->tier);
+        $this->assertEquals(0, $record3->timefailed);
+        $this->assertEquals(0, $record3->counter);
 
         // Test that nothing happens attempting to unlock an already unlocked account.
         tool_securityquestions_unlock_user($USER);
         $record4 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
-        $this->assertEquals(0, $record4->locked);
+        $this->assertEquals(0, $record4->tier);
+        $this->assertEquals(0, $record4->timefailed);
+        $this->assertEquals(0, $record4->counter);
+
+        // Now test unlocking a tier 2 and 3 locked account.
+        // Tier 2.
+        tool_securityquestions_lock_user($USER);
+        tool_securityquestions_lock_user($USER);
+        $record5 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
+        $this->assertEquals(2, $record5->tier);
+        $this->assertEquals(time(), $record5->timefailed);
+        $this->assertEquals(0, $record5->counter);
+
+        tool_securityquestions_unlock_user($USER);
+        $record6 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
+        $this->assertEquals(0, $record6->tier);
+        $this->assertEquals(0, $record6->timefailed);
+        $this->assertEquals(0, $record6->counter);
+
+        // Tier 3.
+        tool_securityquestions_lock_user($USER);
+        tool_securityquestions_lock_user($USER);
+        tool_securityquestions_lock_user($USER);
+        $record7 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
+        $this->assertEquals(3, $record7->tier);
+        $this->assertEquals(time(), $record7->timefailed);
+        $this->assertEquals(0, $record7->counter);
+
+        tool_securityquestions_unlock_user($USER);
+        $record8 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
+        $this->assertEquals(0, $record8->tier);
+        $this->assertEquals(0, $record8->timefailed);
+        $this->assertEquals(0, $record8->counter);
     }
 
     public static function hash_response_provider() {

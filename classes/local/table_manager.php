@@ -37,8 +37,10 @@ class table_manager {
      */
     public static function get_lockout_table() {
         global $DB;
+
         // Get records from database for populating table.
-        $lockedusers = $DB->get_records('tool_securityquestions_loc', array('locked' => 1));
+        $sqlfrag = "tier > 0";
+        $lockedusers = $DB->get_records_select('tool_securityquestions_loc', $sqlfrag, array(), 'tier DESC');
 
         // If no users found, return early.
         if (empty($lockedusers)) {
@@ -51,13 +53,21 @@ class table_manager {
             get_string('username'),
             get_string('email'),
             get_string('fullname'),
+            get_string('formlockouttier', 'tool_securityquestions'),
             get_string('actions'),
         );
         $table->attributes['class'] = 'generaltable table table-bordered';
-        $table->colclasses = array('centeralign', 'centeralign', 'centeralign', 'centeralign', 'centeralign');
+        $table->align = array('center', 'left', 'left', 'left', 'center', 'left');
 
         foreach ($lockedusers as $userrecord) {
             $user = $DB->get_record('user', array('id' => $userrecord->userid));
+
+            // Initialise the lock, to check for expired locks.
+            $lock = tool_securityquestions_get_lock_state($user);
+            // If lock was reset to 0, ignore this user.
+            if ($lock->tier == 0) {
+                continue;
+            }
 
             // Setup actions cell.
             $reset = new \moodle_url('/admin/tool/securityquestions/reset_lockout.php',
@@ -73,6 +83,7 @@ class table_manager {
                 $user->username,
                 $user->email,
                 fullname($user),
+                $userrecord->tier,
                 $cell,
             );
         }
