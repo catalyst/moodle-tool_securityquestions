@@ -235,9 +235,19 @@ function tool_securityquestions_validate_injected_questions($data, $user) {
             // Execute DB query with data.
             $setresponse = $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $user->id, 'qid' => $qid));
             // Hash response and compare to the database.
-            $response = tool_securityquestions_hash_response($response, $user);
-            if ($response != $setresponse) {
-                $errorfound = true;
+            $responsehash = tool_securityquestions_hash_response($response, $user);
+            if (!password_verify($response, $setresponse)) {
+                // Hash may be legacy.
+                $legacyresponsehash = tool_securityquestions_hash_response($response, $user, true);
+                if ($setresponse === $legacyresponsehash) {
+                    // Here we need to update the hash in the DB.
+                    $DB->set_field('tool_securityquestions_res', 'response', $responsehash, ['userid' => $user->id, 'qid' => $qid]);
+                } else {
+                    $errorfound = true;
+                }
+            } else {
+                // Response is verified. Store latest hash just to ensure the hash is on latest algo.
+                $DB->set_field('tool_securityquestions_res', 'response', $responsehash, ['userid' => $user->id, 'qid' => $qid]);
             }
 
             // Keep track of list field to display validation error.
@@ -610,20 +620,26 @@ function tool_securityquestions_delete_response($qid) {
 }
 
 /**
- * Hashes and normalises user responses
+ * Hashes and normalises user responses. If legacy mode is true
+ * a SHA1 hash will be returned. This should only be used for comparison
+ * to legacy hashes, which will be upgraded immediately after.
  *
  * @param string $response the string to be hashed and normalised
  * @param stdClass $user the user object we are hashing for
+ * @param bool $legacy whether the returned hash should be a legacy hash.
  * @return string the normalised and hashed string
  */
-function tool_securityquestions_hash_response($response, $user) {
+function tool_securityquestions_hash_response($response, $user, $legacy = false) {
+    $string = mb_strtolower(trim($response));
 
-    // Username is guaranteed to always be consistent. Use this for salting responses.
-    $salt = hash('sha1', $user->username);
-
-    $temp = mb_strtolower(trim($response));
-    return hash('sha1', $temp.$salt);
-
+    if (!$legacy) {
+        // Hashing can be offloaded to the core method for hashing passwords.
+        return hash_internal_user_password($string);
+    } else {
+        // Return the legacy SHA1 hash.
+        $salt = hash('sha1', $user->username);
+        return hash('sha1', $string.$salt);
+    }
 }
 
 // Lockout Interaction Functions.
