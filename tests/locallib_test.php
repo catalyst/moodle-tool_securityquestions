@@ -243,12 +243,12 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $count2 = count($DB->get_records('tool_securityquestions_res', array('userid' => $USER->id)));
         $this->assertEquals(3, $count2);
 
-        $j = 1;
+        $i = 1;
         foreach ($active as $question) {
-            $this->assertEquals(hash('sha1', "response$j". hash('sha1', $user->username)),
-                $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => $question->id)));
-
-            $j++;
+            $hash = $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => $question->id));
+            // Verify that the hash is correctly generated from the response.
+            $this->assertTrue(password_verify("response$i", $hash));
+            $i++;
         }
 
         // Update response to a question, then check it didnt add another table, and that the entry was updated.
@@ -256,8 +256,9 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $count3 = count($DB->get_records('tool_securityquestions_res', array('userid' => $USER->id)));
         $this->assertEquals(3, $count3);
 
-        $this->assertEquals(hash('sha1', 'response4'. hash('sha1', $user->username)),
-            $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => reset($active)->id)));
+        $hash = $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $USER->id, 'qid' => reset($active)->id));
+        // Verify that the hash begins with the correct parameters.
+        $this->assertTrue(password_verify('response4', $hash));
 
         // Check that nothing happens for QID that doesnt exist.
         $this->assertEquals(false, tool_securityquestions_add_response('response5', 10000));
@@ -618,28 +619,29 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
 
     public static function hash_response_provider() {
         return [
-            // Data array [hash, string].
-            ['cfba18edc59451992303231fe0704009952f2c0b', 'string'],
-            ['cfba18edc59451992303231fe0704009952f2c0b', 'STRING'],
-            ['cfba18edc59451992303231fe0704009952f2c0b', ' STRING '],
-            ['cfba18edc59451992303231fe0704009952f2c0b', ' string '],
-            ['6b8b9353fc19cdfa39ac5bc504b40087e2a00054', '      '],
-            ['6872ba2dac81c77d993c8169364d6dab7b3880fb', 'str ing'],
-            ['d355c2b36ddefea2c8adecf61e232eda3869bb5b', 'awdawd'],
-            ['6b8b9353fc19cdfa39ac5bc504b40087e2a00054', ''],
-            ['e90a368f2a0d9e18a1f4416183e708aabb6e81ed', '測試'],
+            // String => normalised string array.
+            ['string', 'string'],
+            ['STRING', 'string'],
+            [' STRING ', 'string'],
+            [' string ', 'string'],
+            ['      ', ''],
+            ['str ing', 'str ing'],
+            ['awdawd', 'awdawd'],
+            ['', ''],
+            ['測試', '測試'],
         ];
     }
 
     /**
      * @dataProvider hash_response_provider
      */
-    public function test_hash_response($hash, $string) {
+    public function test_hash_response($string, $normalisedstring) {
         $this->resetAfterTest(true);
         // Create a user.
         $user = $this->getDataGenerator()->create_user(array('username' => 'testuser'));
 
         $normhash = tool_securityquestions_hash_response($string, $user);
-        $this->assertEquals($normhash, $hash);
+        // Check they are correct with password_verify.
+        $this->assertTrue(password_verify($normalisedstring, $normhash));
     }
 }
