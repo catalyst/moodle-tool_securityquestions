@@ -233,7 +233,9 @@ function tool_securityquestions_validate_injected_questions($data, $user) {
             $qid = $data["$hiddenname"];
 
             // Check reponse for errors.
-            $errorfound = !tool_securityquestions_verify_response($response, $user, $qid);
+            if (!tool_securityquestions_verify_response($response, $user, $qid)) {
+                $errorfound = true;
+            }
 
             // Keep track of list field to display validation error.
             $lastfield = $name;
@@ -300,6 +302,14 @@ function tool_securityquestions_validate_injected_questions($data, $user) {
     return $errors;
 }
 
+/**
+ * This function checks the response for validity, and updates the hash if required.
+ *
+ * @param string $response the response to verify.
+ * @param stdClass $user the user to verify for.
+ * @param int $qid the qid to verify for
+ * @return bool true if verified, else false
+ */
 function tool_securityquestions_verify_response($response, $user, $qid) {
     global $DB;
 
