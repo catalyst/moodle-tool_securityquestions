@@ -232,23 +232,8 @@ function tool_securityquestions_validate_injected_questions($data, $user) {
             $response = $data["$name"];
             $qid = $data["$hiddenname"];
 
-            // Execute DB query with data.
-            $setresponse = $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $user->id, 'qid' => $qid));
-            // Hash response and compare to the database.
-            $responsehash = tool_securityquestions_hash_response($response, $user);
-            if (!password_verify($response, $setresponse)) {
-                // Hash may be legacy.
-                $legacyresponsehash = tool_securityquestions_hash_response($response, $user, true);
-                if ($setresponse === $legacyresponsehash) {
-                    // Here we need to update the hash in the DB.
-                    $DB->set_field('tool_securityquestions_res', 'response', $responsehash, ['userid' => $user->id, 'qid' => $qid]);
-                } else {
-                    $errorfound = true;
-                }
-            } else {
-                // Response is verified. Store latest hash just to ensure the hash is on latest algo.
-                $DB->set_field('tool_securityquestions_res', 'response', $responsehash, ['userid' => $user->id, 'qid' => $qid]);
-            }
+            // Check reponse for errors.
+            $errorfound = !tool_securityquestions_verify_response($response, $user, $qid);
 
             // Keep track of list field to display validation error.
             $lastfield = $name;
@@ -313,6 +298,32 @@ function tool_securityquestions_validate_injected_questions($data, $user) {
         }
     }
     return $errors;
+}
+
+function tool_securityquestions_verify_response($response, $user, $qid) {
+    global $DB;
+
+    // Execute DB query with data.
+    $setresponse = $DB->get_field('tool_securityquestions_res', 'response', array('userid' => $user->id, 'qid' => $qid));
+    // Hash response and compare to the database.
+    $responsehash = tool_securityquestions_hash_response($response, $user);
+    $sanitisedresponse = tool_securityquestions_sanitise_response($response);
+
+    if (!password_verify($sanitisedresponse, $setresponse)) {
+        // Hash may be legacy.
+        $legacyresponsehash = tool_securityquestions_hash_response($response, $user, true);
+        if ($setresponse === $legacyresponsehash) {
+            // Here we need to update the hash in the DB.
+            $DB->set_field('tool_securityquestions_res', 'response', $responsehash, ['userid' => $user->id, 'qid' => $qid]);
+        } else {
+            return false;
+        }
+    } else {
+        // Response is verified. Store latest hash just to ensure the hash is on latest algo.
+        $DB->set_field('tool_securityquestions_res', 'response', $responsehash, ['userid' => $user->id, 'qid' => $qid]);
+    }
+
+    return true;
 }
 
 // Question Setup.
@@ -630,7 +641,7 @@ function tool_securityquestions_delete_response($qid) {
  * @return string the normalised and hashed string
  */
 function tool_securityquestions_hash_response($response, $user, $legacy = false) {
-    $string = mb_strtolower(trim($response));
+    $string = tool_securityquestions_sanitise_response($response);
 
     if (!$legacy) {
         // Hashing can be offloaded to the core method for hashing passwords.
@@ -640,6 +651,16 @@ function tool_securityquestions_hash_response($response, $user, $legacy = false)
         $salt = hash('sha1', $user->username);
         return hash('sha1', $string.$salt);
     }
+}
+
+/**
+ * Small helper function to sanitise strings before hashing/comparison
+ *
+ * @param string $response
+ * @return string the sanitised response
+ */
+function tool_securityquestions_sanitise_response($response) {
+    return mb_strtolower(trim($response));
 }
 
 // Lockout Interaction Functions.

@@ -644,4 +644,44 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         // Check they are correct with password_verify.
         $this->assertTrue(password_verify($normalisedstring, $normhash));
     }
+
+    public static function verify_response_provider() {
+        return [
+            ['string'],
+            ['STRING'],
+            [' STRING '],
+            [' string '],
+            ['      '],
+            ['str ing'],
+            ['awdawd'],
+            [''],
+            ['測試']
+        ];
+    }
+
+    /**
+     * @dataProvider verify_response_provider
+     */
+    public function test_verify_response($string) {
+        global $DB;
+        $this->resetAfterTest(true);
+
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+        tool_securityquestions_insert_question('test');
+        $qid = $DB->get_field_select('tool_securityquestions', 'id', 'id > 0');
+
+        tool_securityquestions_add_response($string, $qid);
+
+        // Now sanitise the string, and store it for comparison.
+        $sanitised = tool_securityquestions_sanitise_response($string);
+        // Also store some bad responses.
+        $bad = 'aBc123 ';
+        $sanitisedbad = tool_securityquestions_sanitise_response($bad);
+
+        $this->assertTrue(tool_securityquestions_verify_response($string, $user, $qid));
+        $this->assertTrue(tool_securityquestions_verify_response($sanitised, $user, $qid));
+        $this->assertFalse(tool_securityquestions_verify_response($bad, $user, $qid));
+        $this->assertFalse(tool_securityquestions_verify_response($sanitisedbad, $user, $qid));
+    }
 }
