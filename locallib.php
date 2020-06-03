@@ -477,6 +477,11 @@ function tool_securityquestions_inject_navigation_node($navigation, $user, $user
 function tool_securityquestions_require_question_responses() {
     global $USER, $DB, $SESSION, $PAGE, $CFG;
 
+    // First check if cached flag for satisfaction is set.
+    if (property_exists($SESSION, 'tool_securityquestions_satisfied') && (!empty($SESSION->tool_securityquestions_satisfied))) {
+        return;
+    }
+
     // First check if user has the capability to interact with questions.
     $usercontext = context_user::instance($USER->id);
     if (!has_capability('tool/securityquestions:questionsaccess', $usercontext, $USER)) {
@@ -539,7 +544,15 @@ function tool_securityquestions_require_question_responses() {
                 }
                 redirect($url);
             }
+        } else {
+            // Cache not required in SESSION.
+            // This means that any actions that would prompt for additional responses,
+            // will only do so in a new session.
+            $SESSION->tool_securityquestions_satisfied = 1;
         }
+    } else {
+        // We should also cache here, and avoid overhead if plugin is not completely setup.
+        $SESSION->tool_securityquestions_satisfied = 1;
     }
 }
 
