@@ -35,7 +35,8 @@ defined('MOODLE_INTERNAL') || die();
 class provider implements
         // This plugin does store personal user data.
         \core_privacy\local\metadata\provider,
-        \core_privacy\local\request\plugin\provider  {
+        \core_privacy\local\request\plugin\provider,
+        \core_privacy\local\request\core_userlist_provider {
 
     public static function get_metadata(collection $collection) : collection {
 
@@ -222,6 +223,15 @@ class provider implements
 
                 $DB->execute($sql, ['userid' => $userid]);
             }
+        }
+    }
+
+    public static function delete_data_for_users(\core_privacy\local\request\approved_userlist $userlist) {
+        $users = $userlist->get_users();
+        foreach ($users as $user) {
+            // Create a contextlist with only system context.
+            $contextlist = new approved_contextlist($user, 'tool_mfa', [\context_system::instance()]);
+            self::delete_data_for_user($contextlist);
         }
     }
 }
