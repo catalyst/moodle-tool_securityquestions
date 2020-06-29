@@ -90,6 +90,7 @@ $string['formquestionnumtext'] = 'Question: {$a}';
 $string['formquestioninfo'] = 'For added security, you cannot see the saved responses. You can only save new responses to the questions, or delete the response.';
 $string['formusernameplaceholder'] = 'Username or Email';
 $string['formlockouttier'] = 'Lockout tier';
+$string['formquestionresponsesreq'] = 'It is required that you answer a minimum of {$a} security questions.';
 
 // Setting Strings.
 $string['settingsenablename'] = 'Enable plugin';
