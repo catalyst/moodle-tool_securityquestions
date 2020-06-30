@@ -163,10 +163,14 @@ if (!get_config('tool_securityquestions', 'mandatoryquestions') && $logintime !=
     }
 }
 
-if ($active > 0) {
+// Notification for general information.
+$minrequired = get_config('tool_securityquestions', 'minuserquestions');
+$generalnotification = get_string('formquestionresponsesreq', 'tool_securityquestions', $minrequired);
+if (count($active) > 0) {
     // Output a notification explaining how questions work when already set.
-    echo $OUTPUT->notification(get_string('formquestioninfo', 'tool_securityquestions'), 'notifymessage');
+    $generalnotification .= '<br>' . get_string('formquestioninfo', 'tool_securityquestions');
 }
+echo $OUTPUT->notification($generalnotification, 'notifymessage');
 
 if ($delete != 0) {
     if ($deletestatus) {
