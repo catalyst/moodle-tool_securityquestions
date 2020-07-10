@@ -223,7 +223,7 @@ function tool_securityquestions_validate_injected_questions($data, $user) {
 
         global $DB;
         $numquestions = get_config('tool_securityquestions', 'answerquestions');
-        $errorfound = false;
+        $errmsg = '';
         // For each question field, check response against database.
         for ($i = 0; $i < $numquestions; $i++) {
             // Get question response for database.
@@ -234,11 +234,8 @@ function tool_securityquestions_validate_injected_questions($data, $user) {
 
             // Check reponse for errors.
             if (!tool_securityquestions_verify_response($response, $user, $qid)) {
-                $errorfound = true;
+                $errmsg = get_string('formanswerfailed', 'tool_securityquestions');
             }
-
-            // Keep track of list field to display validation error.
-            $lastfield = $name;
         }
 
         $tieroneduration = get_config('tool_securityquestions', 'tieroneduration');
@@ -251,51 +248,60 @@ function tool_securityquestions_validate_injected_questions($data, $user) {
             switch ($record->tier) {
                 case 1:
                     $timestring = format_time($record->timefailed + $tieroneduration - time());
-                    $errors[$lastfield] = get_string('formlockedouttimer', 'tool_securityquestions', $timestring);
+                    $errmsg = get_string('formlockedouttimer', 'tool_securityquestions', $timestring);
                     break;
 
                 case 2:
                     $timestring = format_time($record->timefailed + $tiertwoduration - time());;
-                    $errors[$lastfield] = get_string('formlockedouttimer', 'tool_securityquestions', $timestring);
+                    $errmsg = get_string('formlockedouttimer', 'tool_securityquestions', $timestring);
                     break;
 
                 default:
-                    $errors[$lastfield] = get_string('formlockedout', 'tool_securityquestions');
+                    $errmsg = get_string('formlockedout', 'tool_securityquestions');
                     break;
             }
-        } else if ($errorfound) {
-            $errors[$lastfield] = get_string('formanswerfailed', 'tool_securityquestions');
         }
 
-        if ($errorfound && !tool_securityquestions_is_locked_out($user)) {
-            // If an error was found, increment lockout counter.
-            tool_securityquestions_increment_lockout_counter($user);
+        // Now we have decided on message, set for all questions.
+        if (!empty($errmsg)) {
+            for ($i = 0; $i < $numquestions; $i++) {
+                $name = 'question'.$i;
+                $errors[$name] = $errmsg;
+            }
 
-            $lockoutamount = get_config('tool_securityquestions', 'lockoutnum');
-            // If counter is now over the specified count, lock account.
-            if (tool_securityquestions_get_lockout_counter($user) >= $lockoutamount && $lockoutamount > 0) {
-                tool_securityquestions_lock_user($user);
+            if (!tool_securityquestions_is_locked_out($user)) {
+                // If an error was found, increment lockout counter.
+                tool_securityquestions_increment_lockout_counter($user);
 
-                $newtier = $DB->get_field('tool_securityquestions_loc', 'tier', array('userid' => $user->id));
+                $lockoutamount = get_config('tool_securityquestions', 'lockoutnum');
+                // If counter is now over the specified count, lock account.
+                if (tool_securityquestions_get_lockout_counter($user) >= $lockoutamount && $lockoutamount > 0) {
+                    tool_securityquestions_lock_user($user);
 
-                switch ($newtier) {
-                    case 1:
-                        $time = format_time($tieroneduration);
-                        $errorstring = get_string('formlockedouttimer', 'tool_securityquestions', $time);
-                        break;
+                    $newtier = $DB->get_field('tool_securityquestions_loc', 'tier', array('userid' => $user->id));
 
-                    case 2:
-                        $time = format_time($tiertwoduration);
-                        $errorstring = get_string('formlockedouttimer', 'tool_securityquestions', $time);
-                        break;
+                    switch ($newtier) {
+                        case 1:
+                            $time = format_time($tieroneduration);
+                            $errorstring = get_string('formlockedouttimer', 'tool_securityquestions', $time);
+                            break;
 
-                    default:
-                        $errorstring = get_string('formlockedout', 'tool_securityquestions');
-                        break;
+                        case 2:
+                            $time = format_time($tiertwoduration);
+                            $errorstring = get_string('formlockedouttimer', 'tool_securityquestions', $time);
+                            break;
+
+                        default:
+                            $errorstring = get_string('formlockedout', 'tool_securityquestions');
+                            break;
+                    }
+
+                    // Output a notification to display to the user, based on the tier they just entered.
+                    \core\notification::error($errorstring);
+                } else {
+                    // Show a regular error banner.
+                    \core\notification::error(get_string('formanswerfailedbanner', 'tool_securityquestions'));
                 }
-
-                // Output a notification to display to the user, based on the tier they just entered.
-                \core\notification::error($errorstring);
             }
         }
     }
