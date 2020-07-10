@@ -58,4 +58,6 @@ function xmldb_tool_securityquestions_upgrade($oldversion) {
         // Securityquestions savepoint reached.
         upgrade_plugin_savepoint(true, 2020041700, 'tool', 'securityquestions');
     }
+
+    return true;
 }
