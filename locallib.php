@@ -689,7 +689,13 @@ function tool_securityquestions_hash_response($response, $user, $legacy = false)
  * @return string the sanitised response
  */
 function tool_securityquestions_sanitise_response($response) {
-    return mb_strtolower(trim($response));
+    // Save the previous encoding state, then set to what is needed.
+    $currencoding = mb_internal_encoding();
+    mb_internal_encoding('UTF-8');
+    $formatted = mb_strtolower(trim($response));
+    // Now set encoding back to whatever was in place.
+    mb_internal_encoding($currencoding);
+    return $formatted;
 }
 
 // Lockout Interaction Functions.
