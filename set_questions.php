@@ -42,14 +42,18 @@ $notifydeletecontent = '';
 
 // Deprecate question from action if set.
 $deprecate = optional_param('deprecate', 0, PARAM_INT);
+
+$seturl = $CFG->wwwroot . '/admin/tool/securityquestions/set_questions.php';
+
 if ($deprecate != 0 && confirm_sesskey()) {
     if (tool_securityquestions_deprecate_question($deprecate)) {
-        $notifydep = true;
         $notifydepcontent = $deprecate;
-        $notifydeptype = 'notifysuccess';
+        $string = get_string('formquestiondeprecated', 'tool_securityquestions', $notifydepcontent);
+        redirect($seturl, $string, null, \core\output\notification::NOTIFY_SUCCESS);
     } else {
-        $notifydep = true;
         $notifydepcontent = $deprecate;
+        $string = get_string('formquestionnotdeprecated', 'tool_securityquestions', $notifydepcontent);
+        redirect($seturl, $string, null, \core\output\notification::NOTIFY_ERROR);
     }
 }
 
@@ -59,12 +63,13 @@ if ($delete != 0 && confirm_sesskey()) {
     $success = tool_securityquestions_delete_question($delete);
     // Setup notification for success or failure.
     if ($success) {
-        $notifydelete = true;
         $notifydeletecontent = $delete;
-        $notifydeletetype = 'notifysuccess';
+        $string = get_string('formquestiondeleted', 'tool_securityquestions', $notifydeletecontent);
+        redirect($seturl, $string, null, \core\output\notification::NOTIFY_ERROR);
     } else {
-        $notifydelete = true;
         $notifydeletecontent = $delete;
+        $string = get_string('formquestionnotdeleted', 'tool_securityquestions', $notifydeletecontent);
+        redirect($seturl, $string, null, \core\output\notification::NOTIFY_SUCCESS);
     }
 }
 
@@ -108,23 +113,6 @@ $form->display();
 // Echo notifications for actions.
 if ($notifyadd == true) {
     echo $OUTPUT->notification(get_string('formquestionadded', 'tool_securityquestions', $notifyaddcontent), 'notifysuccess');
-}
-if ($notifydep == true) {
-    if ($notifydeptype == 'notifysuccess') {
-        $string = get_string('formquestiondeprecated', 'tool_securityquestions', $notifydepcontent);
-    } else if ($notifydeptype == 'notifyerror') {
-        $string = get_string('formquestionnotdeprecated', 'tool_securityquestions', $notifydepcontent);
-    }
-    echo $OUTPUT->notification($string, $notifydeptype);
-}
-
-if ($notifydelete == true) {
-    if ($notifydeletetype == 'notifysuccess') {
-        $string = get_string('formquestiondeleted', 'tool_securityquestions', $notifydeletecontent);
-    } else if ($notifydeletetype == 'notifyerror') {
-        $string = get_string('formquestionnotdeleted', 'tool_securityquestions', $notifydeletecontent);
-    }
-    echo $OUTPUT->notification($string, $notifydeletetype);
 }
 
 echo '<br>';
