@@ -42,34 +42,10 @@ class tool_securityquestions_observer {
     public static function user_deleted(\core\event\user_deleted $event) {
         global $DB;
 
-        // First, find any users that are deleted in the user table.
-        $delusers = $DB->get_records('user', array ('deleted' => 1));
-        foreach ($delusers as $deluser) {
-            // Remove entries from locked table.
-            $DB->delete_records('tool_securityquestions_loc', array('userid' => $deluser->id));
-
-            // Remove entries from the response table.
-            $DB->delete_records('tool_securityquestions_res', array('userid' => $deluser->id));
-
-            // Remove entries from the answer table.
-            $DB->delete_records('tool_securityquestions_ans', array('userid' => $deluser->id));
-        }
-
-        // Now purge records of any missing user.
-        // tool_securityquestions_loc contains unique userid records.
-        $sql = "SELECT userid FROM {tool_securityquestions_loc} WHERE userid NOT IN (SELECT id FROM {user})";
-        $missingusers = $DB->get_records_sql($sql);
-
-        foreach ($missingusers as $missinguser) {
-            // Remove entries from locked table.
-            $DB->delete_records('tool_securityquestions_loc', array('userid' => $missinguser->userid));
-
-            // Remove entries from the response table.
-            $DB->delete_records('tool_securityquestions_res', array('userid' => $missinguser->userid));
-
-            // Remove entries from the answer table.
-            $DB->delete_records('tool_securityquestions_ans', array('userid' => $missinguser->userid));
-        }
+        // Purge records from all security questions tables based on userid.
+        $DB->delete_records('tool_securityquestions_loc', ['userid' => $event->objectid]);
+        $DB->delete_records('tool_securityquestions_ans', ['userid' => $event->objectid]);
+        $DB->delete_records('tool_securityquestions_res', ['userid' => $event->objectid]);
 
         return true;
     }
