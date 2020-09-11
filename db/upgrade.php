@@ -59,5 +59,32 @@ function xmldb_tool_securityquestions_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2020041700, 'tool', 'securityquestions');
     }
 
+    if ($oldversion < 2020091100) {
+
+        // Define key qid (foreign) to be added to tool_securityquestions_ans.
+        $table = new xmldb_table('tool_securityquestions_ans');
+        $key = new xmldb_key('qid', XMLDB_KEY_FOREIGN, ['qid'], 'tool_securityquestions', ['id']);
+
+        // Launch add key qid.
+        $dbman->add_key($table, $key);
+
+        // Define key userid (foreign) to be added to tool_securityquestions_ans.
+        $table = new xmldb_table('tool_securityquestions_ans');
+        $key = new xmldb_key('userid', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
+
+        // Launch add key userid.
+        $dbman->add_key($table, $key);
+
+        // Define key userid (foreign) to be added to tool_securityquestions_loc.
+        $table = new xmldb_table('tool_securityquestions_loc');
+        $key = new xmldb_key('userid', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
+
+        // Launch add key userid.
+        $dbman->add_key($table, $key);
+
+        // Securityquestions savepoint reached.
+        upgrade_plugin_savepoint(true, 2020091100, 'tool', 'securityquestions');
+    }
+
     return true;
 }
