@@ -202,10 +202,10 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertEquals($questions, tool_securityquestions_pick_questions($USER));
 
         // Set period of questions to 5 seconds.
-        set_config('questionduration', 5, 'tool_securityquestions');
+        set_config('questionduration', 1, 'tool_securityquestions');
 
         // Wait 5 seconds to ensure fresh question choice.
-        sleep(5);
+        sleep(2);
         $questions2 = tool_securityquestions_pick_questions($USER);
         $questions3 = tool_securityquestions_pick_questions($USER);
         $this->assertEquals($questions2, $questions3);
@@ -569,7 +569,7 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         tool_securityquestions_lock_user($USER);
         $record2 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
         $this->assertEquals(1, $record2->tier);
-        $this->assertEquals(time(), $record2->timefailed);
+        $this->assertGreaterThanOrEqual(time(), $record2->timefailed);
         // Check counter was reset to 0 on increasing tier.
         $this->assertEquals(0, $record2->counter);
 
@@ -592,7 +592,7 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         tool_securityquestions_lock_user($USER);
         $record5 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
         $this->assertEquals(2, $record5->tier);
-        $this->assertEquals(time(), $record5->timefailed);
+        $this->assertGreaterThanOrEqual(time(), $record5->timefailed);
         $this->assertEquals(0, $record5->counter);
 
         tool_securityquestions_unlock_user($USER);
@@ -607,7 +607,7 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         tool_securityquestions_lock_user($USER);
         $record7 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
         $this->assertEquals(3, $record7->tier);
-        $this->assertEquals(time(), $record7->timefailed);
+        $this->assertGreaterThanOrEqual(time(), $record7->timefailed);
         $this->assertEquals(0, $record7->counter);
 
         tool_securityquestions_unlock_user($USER);
