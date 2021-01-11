@@ -177,7 +177,28 @@ function tool_securityquestions_inject_security_questions($mform, $user) {
         global $DB;
 
         $numquestions = get_config('tool_securityquestions', 'answerquestions');
+
+        $nonce = optional_param('nonce', 0, PARAM_INT);
+
+        // If there is submitted form data, and we pick new questions, and they dont line up with
+        // The submitted data, validation will fail. In this case, we need to write the prev
+        // values into the form for validation to check against the correct questions.
+        $submitted = ($nonce > 0);
+
+        if ($submitted) {
+            $prevvalues = tool_securityquestions_pick_questions($user, true);
+        }
         $inputarr = tool_securityquestions_pick_questions($user);
+
+        if ($submitted && $prevvalues !== $inputarr) {
+            // There has been a rollover. Write the previous values into a
+            // user preference to use in validation. This avoids submission replay attacks.
+            set_user_preference('tool_securityquestions_submitted_vals', serialize($prevvalues));
+        }
+
+        // Add a nonce for tracking if form was submitted, so validation is correct.
+        $mform->addElement('hidden', 'nonce', time());
+        $mform->setType('nonce', PARAM_INT);
 
         for ($i = 0; $i < $numquestions; $i++) {
             // Get qid from inputarr.
@@ -224,13 +245,19 @@ function tool_securityquestions_validate_injected_questions($data, $user) {
         global $DB;
         $numquestions = get_config('tool_securityquestions', 'answerquestions');
         $errmsg = '';
+        // Check if there were questions already set in user preferences to validate against.
+        // due to a rollover of the selected questions.
+        $submittedser = get_user_preferences('tool_securityquestions_submitted_vals', null);
+        if (!empty($submittedser)) {
+            $submitted = unserialize($submittedser);
+        }
         // For each question field, check response against database.
         for ($i = 0; $i < $numquestions; $i++) {
             // Get question response for database.
             $name = 'question'.$i;
             $hiddenname = 'hiddenq'.$i;
             $response = $data["$name"];
-            $qid = $data["$hiddenname"];
+            $qid = !empty($submittedser) ? $qid = $submitted[$i] : $data["$hiddenname"];
 
             // Check reponse for errors.
             if (!tool_securityquestions_verify_response($response, $user, $qid)) {
@@ -305,6 +332,10 @@ function tool_securityquestions_validate_injected_questions($data, $user) {
             }
         }
     }
+
+    // Clear any set submission question values.
+    unset_user_preference('tool_securityquestions_submitted_vals');
+
     return $errors;
 }
 
@@ -347,9 +378,10 @@ function tool_securityquestions_verify_response($response, $user, $qid) {
  * Picks questions for a user to respond to
  *
  * @param stdClass $user the user to pick questions for
+ * @param bool $noreplace If questions are timed out, dont replace them. Used in validating of expired questions.
  * @return array $inputarr an array of question ID's to inject into a form
  */
-function tool_securityquestions_pick_questions($user) {
+function tool_securityquestions_pick_questions($user, $noreplace = false) {
     global $DB;
     global $CFG;
 
@@ -364,7 +396,9 @@ function tool_securityquestions_pick_questions($user) {
         // Check if timecreated is <5 mins ago.
         $period = get_config('tool_securityquestions', 'questionduration');
         $currenttime = time();
-        if ($question->timecreated >= ($currenttime - $period)) {
+        if ($noreplace) {
+            array_push($temparray, $question);
+        } else if ($question->timecreated >= ($currenttime - $period)) {
             array_push($temparray, $question);
         }
     }
