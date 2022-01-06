@@ -569,7 +569,7 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         tool_securityquestions_lock_user($USER);
         $record2 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
         $this->assertEquals(1, $record2->tier);
-        $this->assertGreaterThanOrEqual(time(), $record2->timefailed);
+        $this->assertGreaterThanOrEqual(time() - MINSECS, $record2->timefailed);
         // Check counter was reset to 0 on increasing tier.
         $this->assertEquals(0, $record2->counter);
 
@@ -592,7 +592,7 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         tool_securityquestions_lock_user($USER);
         $record5 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
         $this->assertEquals(2, $record5->tier);
-        $this->assertGreaterThanOrEqual(time(), $record5->timefailed);
+        $this->assertGreaterThanOrEqual(time() - MINSECS, $record5->timefailed);
         $this->assertEquals(0, $record5->counter);
 
         tool_securityquestions_unlock_user($USER);
@@ -607,7 +607,7 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         tool_securityquestions_lock_user($USER);
         $record7 = $DB->get_record('tool_securityquestions_loc', array('userid' => $USER->id));
         $this->assertEquals(3, $record7->tier);
-        $this->assertGreaterThanOrEqual(time(), $record7->timefailed);
+        $this->assertGreaterThanOrEqual(time() - MINSECS, $record7->timefailed);
         $this->assertEquals(0, $record7->counter);
 
         tool_securityquestions_unlock_user($USER);
