@@ -51,6 +51,7 @@ function tool_securityquestions_validate_extend_set_password_form($data, $user) 
         $errors = tool_securityquestions_validate_injected_questions($data, $user);
         return $errors;
     }
+    return [];
 }
 
 function tool_securityquestions_post_set_password_requests($data, $user) {
