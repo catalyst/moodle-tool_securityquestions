@@ -24,28 +24,53 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-function tool_securityquestions_after_require_login() {
+/**
+ * After require login functionality.
+ * @return void
+ */
+function tool_securityquestions_after_require_login(): void {
     if (get_config('tool_securityquestions', 'enable_plugin')) {
         require_once(__DIR__.'/locallib.php');
         tool_securityquestions_require_question_responses();
     }
 }
 
-function tool_securityquestions_extend_navigation_user_settings($navigation, $user, $usercontext, $course, $coursecontext) {
+/**
+ * Extend the navigation.
+ * @param navigation $navigation
+ * @param stdClass $user
+ * @param context $usercontext
+ * @param course $course
+ * @param context $coursecontext
+ * @return void
+ */
+function tool_securityquestions_extend_navigation_user_settings($navigation, $user, $usercontext, $course, $coursecontext): void {
     if (get_config('tool_securityquestions', 'enable_plugin')) {
         require_once(__DIR__.'/locallib.php');
         tool_securityquestions_inject_navigation_node($navigation, $user, $usercontext, $course, $coursecontext);
     }
 }
 
-function tool_securityquestions_extend_set_password_form($mform, $user) {
+/**
+ * Extend the password form.
+ * @param mform $mform
+ * @param stdClass $user
+ * @return void
+ */
+function tool_securityquestions_extend_set_password_form($mform, $user): void {
     if (get_config('tool_securityquestions', 'enable_plugin')) {
         require_once(__DIR__.'/locallib.php');
         tool_securityquestions_inject_security_questions($mform, $user);
     }
 }
 
-function tool_securityquestions_validate_extend_set_password_form($data, $user) {
+/**
+ * Validate the password form.
+ * @param array $data
+ * @param stdClass $user
+ * @return array
+ */
+function tool_securityquestions_validate_extend_set_password_form($data, $user): array {
     if (get_config('tool_securityquestions', 'enable_plugin')) {
         require_once(__DIR__.'/locallib.php');
         $errors = tool_securityquestions_validate_injected_questions($data, $user);
@@ -54,7 +79,13 @@ function tool_securityquestions_validate_extend_set_password_form($data, $user) 
     return [];
 }
 
-function tool_securityquestions_post_set_password_requests($data, $user) {
+/**
+ * Reset the lock counter.
+ * @param array $data
+ * @param stdClass $user
+ * @return void
+ */
+function tool_securityquestions_post_set_password_requests($data, $user): void {
     if (get_config('tool_securityquestions', 'enable_plugin')) {
         // If password reset is successful, reset counter to 0.
         require_once(__DIR__.'/locallib.php');

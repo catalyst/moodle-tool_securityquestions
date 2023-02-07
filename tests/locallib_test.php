@@ -24,8 +24,19 @@
 defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__.'/../locallib.php');
 
+/**
+ * Test class for functions inside locallib.php
+ *
+ * @package    tool_securityquestions
+ * @copyright  2019 Peter Burnett <peterburnett@catalyst-au.net>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class tool_securityquestions_locallib_testcase extends advanced_testcase {
 
+    /**
+     * Insert question test
+     * @return void
+     */
     public function test_insert_question() {
         $this->resetAfterTest(true);
         global $DB;
@@ -54,6 +65,10 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         // TODO TEST FOR EMPTY QUESTIONS SUCH AS '     '.
     }
 
+    /**
+     * Test active questions
+     * @return void
+     */
     public function test_get_active_questions() {
         $this->resetAfterTest(true);
         global $DB;
@@ -88,10 +103,13 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertEquals('active3', reset($active3)->content);
     }
 
+    /**
+     * Test if a user can deprecate a question
+     * @return void
+     */
     public function test_can_deprecate_question() {
         $this->resetAfterTest(true);
         global $DB;
-        global $CFG;
 
         // Log in a generated user.
         $user = $this->getDataGenerator()->create_user();
@@ -133,12 +151,14 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertEquals(false, tool_securityquestions_can_deprecate_question(reset($records)->id));
     }
 
+    /**
+     * Test deprecation of questions
+     * @return void
+     */
     public function test_deprecate_question() {
         // This function will not be tested as heavily as can_deprecate_question,
         // as the functionality is largely based on can_deprecate_question.
         $this->resetAfterTest(true);
-        global $DB;
-        global $CFG;
 
         // Log in a generated user.
         $user = $this->getDataGenerator()->create_user();
@@ -166,10 +186,13 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertEquals(0, count($active3));
     }
 
+    /**
+     * Test picking questions
+     * @return void
+     */
     public function test_pick_questions() {
         $this->resetAfterTest(true);
         global $DB;
-        global $CFG;
         global $USER;
 
         // Log in a generated user.
@@ -211,10 +234,13 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertEquals($questions2, $questions3);
     }
 
+    /**
+     * Test adding a response
+     * @return void
+     */
     public function test_add_response() {
         $this->resetAfterTest(true);
         global $DB;
-        global $CFG;
         global $USER;
 
         // Log in a generated user.
@@ -266,10 +292,13 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertEquals(3, $count4);
     }
 
+    /**
+     * Test validating injected questions
+     * @return void
+     */
     public function test_validate_injected_questions() {
         $this->resetAfterTest(true);
         global $USER;
-        global $DB;
 
         // Create a user and login as user.
         $user = $this->getDataGenerator()->create_user();
@@ -307,10 +336,13 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertNotEquals(array(), $errors2);
     }
 
+    /**
+     * Test getting an active users response
+     * @return void
+     */
     public function test_get_active_user_responses() {
         $this->resetAfterTest(true);
         global $USER;
-        global $DB;
 
         // Create a user and login as user.
         $user = $this->getDataGenerator()->create_user();
@@ -349,6 +381,10 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertEquals(count(tool_securityquestions_get_active_user_responses($USER)), 2);
     }
 
+    /**
+     * Test getting the locked state of a user
+     * @return void
+     */
     public function test_get_lock_state() {
         $this->resetAfterTest(true);
         global $CFG, $DB, $USER;
@@ -392,6 +428,10 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertEquals(0, $record3->tier);
     }
 
+    /**
+     * Test incrementing the lockout counter
+     * @return void
+     */
     public function test_increment_lockout_counter() {
         $this->resetAfterTest(true);
         global $USER;
@@ -416,6 +456,10 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertEquals(2, $record2->counter);
     }
 
+    /**
+     * Test resetting the lock out counter
+     * @return void
+     */
     public function test_reset_lockout_counter() {
         $this->resetAfterTest(true);
         global $USER;
@@ -453,6 +497,10 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertEquals(1, $record4->tier);
     }
 
+    /**
+     * Test getting the lockout counter
+     * @return void
+     */
     public function test_get_lockout_counter() {
         $this->resetAfterTest(true);
         global $USER;
@@ -488,6 +536,10 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertEquals($record2->counter, $count2);
     }
 
+    /**
+     * Test locking a user
+     * @return void
+     */
     public function test_lock_user() {
         $this->resetAfterTest(true);
         global $CFG, $DB, $USER;
@@ -539,6 +591,10 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertEquals(3, $record5->tier);
     }
 
+    /**
+     * Test unlocking a user
+     * @return void
+     */
     public function test_unlock_user() {
         $this->resetAfterTest(true);
         global $CFG, $DB, $USER;
@@ -617,6 +673,10 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertEquals(0, $record8->counter);
     }
 
+    /**
+     * Hash response data provider
+     * @return string[][]
+     */
     public static function hash_response_provider() {
         return [
             // String => normalised string array.
@@ -633,6 +693,9 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
     }
 
     /**
+     * Test a hash response
+     * @param string $string
+     * @param string $normalisedstring
      * @dataProvider hash_response_provider
      */
     public function test_hash_response($string, $normalisedstring) {
@@ -645,6 +708,10 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
         $this->assertTrue(password_verify($normalisedstring, $normhash));
     }
 
+    /**
+     * Verify a response provider
+     * @return string[][]
+     */
     public static function verify_response_provider() {
         return [
             ['string'],
@@ -660,6 +727,8 @@ class tool_securityquestions_locallib_testcase extends advanced_testcase {
     }
 
     /**
+     * Test verifying a response
+     * @param string $string
      * @dataProvider verify_response_provider
      */
     public function test_verify_response($string) {

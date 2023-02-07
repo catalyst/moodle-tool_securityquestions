@@ -17,7 +17,7 @@
 /**
  * Page for setting questions to be used on the site
  *
- * @package    tool_securityquestion
+ * @package    tool_securityquestions
  * @copyright  2019 Peter Burnett <peterburnett@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

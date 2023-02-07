@@ -28,8 +28,19 @@ defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->libdir/formslib.php");
 require_once(__DIR__.'/../../locallib.php');
 
+/**
+ * Security questions response form for users
+ *
+ * @package     tool_securityquestions
+ * @copyright   Peter Burnett <peterburnett@catalyst-au.net>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class set_responses extends \moodleform {
 
+    /**
+     * Form definition
+     * @return void
+     */
     public function definition() {
         global $SESSION, $USER, $DB;
         $mform = $this->_form;
@@ -114,6 +125,12 @@ class set_responses extends \moodleform {
         $mform->closeHeaderBefore('buttonar');
     }
 
+    /**
+     * Form validation
+     * @param array $data
+     * @param array $files
+     * @return array
+     */
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
         global $USER;

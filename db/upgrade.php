@@ -25,6 +25,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Upgrade the plugin.
+ * @param string $oldversion
+ * @return bool
+ */
 function xmldb_tool_securityquestions_upgrade($oldversion) {
     global $DB;
 
