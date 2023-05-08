@@ -32,12 +32,20 @@ use core_privacy\local\request\transform;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Class for implementing the privacy provider
+ */
 class provider implements
         // This plugin does store personal user data.
         \core_privacy\local\metadata\provider,
         \core_privacy\local\request\plugin\provider,
         \core_privacy\local\request\core_userlist_provider {
 
+    /**
+     * Get the metadata
+     * @param collection $collection
+     * @return collection
+     */
     public static function get_metadata(collection $collection) : collection {
 
         $collection->add_database_table(
@@ -117,6 +125,11 @@ class provider implements
         }
     }
 
+    /**
+     * Export user data
+     * @param approved_contextlist $contextlist
+     * @return void
+     */
     public static function export_user_data(approved_contextlist $contextlist) {
         global $DB;
         $userid = $contextlist->get_user()->id;
@@ -171,6 +184,11 @@ class provider implements
         }
     }
 
+    /**
+     * Delete data for users in context
+     * @param \context $context
+     * @return void
+     */
     public static function delete_data_for_all_users_in_context(\context $context) {
         global $DB;
 
@@ -193,6 +211,11 @@ class provider implements
         }
     }
 
+    /**
+     * Delete data for a user
+     * @param approved_contextlist $contextlist
+     * @return void
+     */
     public static function delete_data_for_user(approved_contextlist $contextlist) {
         global $DB;
         $userid = $contextlist->get_user()->id;
@@ -226,6 +249,11 @@ class provider implements
         }
     }
 
+    /**
+     * Delete data for selected users
+     * @param \core_privacy\local\request\approved_userlist $userlist
+     * @return void
+     */
     public static function delete_data_for_users(\core_privacy\local\request\approved_userlist $userlist) {
         $users = $userlist->get_users();
         foreach ($users as $user) {

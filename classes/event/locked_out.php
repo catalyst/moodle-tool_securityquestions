@@ -38,12 +38,11 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2019 Peter Burnett <peterburnett@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 class locked_out extends \core\event\base {
     /**
      * Create instance of event.
      *
-     * @param int $userid the userid of the User whos account was locked
+     * @param int $user the userid of the User whos account was locked
      * @param int $lockeduntil the time when a user can attempt security questions again.
      * @return locked_out the locked out event
      */

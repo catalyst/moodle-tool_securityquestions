@@ -1,6 +1,4 @@
-<a href="https://travis-ci.org/catalyst/moodle-tool_securityquestions">
-<img src="https://travis-ci.org/catalyst/moodle-tool_securityquestions.svg?branch=master">
-</a>
+![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/catalyst/moodle-tool_securityquestions/ci.yml?branch=master)
 
 # Security Questions 2FA
 

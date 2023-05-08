@@ -131,6 +131,11 @@ function tool_securityquestions_undeprecate_question($qid) {
     }
 }
 
+/**
+ * Delete a question.
+ * @param int $qid
+ * @return bool
+ */
 function tool_securityquestions_delete_question($qid) {
     global $DB, $USER;
     // This function does not have to check for minimum questions, as question must be deprecated before use.
@@ -225,7 +230,6 @@ function tool_securityquestions_inject_security_questions($mform, $user) {
  * Validates injected form elements for security questions to check for correct responses
  *
  * @param array $data The form data submitted by the user
- * @param array $errors The array of error messages for form elements
  * @param stdClass $user the user to validate responses against
  * @return array $errors The array of error messages with any additional messages added
  */
@@ -891,7 +895,7 @@ function tool_securityquestions_lock_user($user) {
 /**
  * Unlocks a user, and resets the lockout counter
  *
- * @param stdClass $user the user to unlock.
+ * @param stdClass $unlockuser the user to unlock.
  */
 function tool_securityquestions_unlock_user($unlockuser) {
     global $DB, $USER;

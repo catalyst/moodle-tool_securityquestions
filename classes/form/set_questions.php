@@ -27,8 +27,20 @@ namespace tool_securityquestions\form;
 defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->libdir/formslib.php");
 
+/**
+ * Form for setting questions to be used on the site
+ *
+ * @package     tool_securityquestions
+ * @copyright   Peter Burnett <peterburnett@catalyst-au.net>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class set_questions extends \moodleform {
 
+    /**
+     * Form definition
+     * @return void
+     * @throws \coding_exception
+     */
     public function definition() {
         $mform = $this->_form;
 

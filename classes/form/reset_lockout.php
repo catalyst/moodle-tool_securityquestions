@@ -27,8 +27,19 @@ namespace tool_securityquestions\form;
 defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->libdir/formslib.php");
 
+/**
+ * Form for resetting users that are locked out from resetting password
+ *
+ * @package     tool_securityquestions
+ * @copyright   Peter Burnett <peterburnett@catalyst-au.net>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class reset_lockout extends \moodleform {
 
+    /**
+     * Form definition
+     * @return void
+     */
     public function definition() {
         $mform = $this->_form;
 
@@ -43,6 +54,12 @@ class reset_lockout extends \moodleform {
         $this->add_action_buttons(true, get_string('formresetbutton', 'tool_securityquestions'));
     }
 
+    /**
+     * Form validation
+     * @param array $data
+     * @param array $files
+     * @return array
+     */
     public function validation($data, $files) {
         global $DB;
         $errors = parent::validation($data, $files);

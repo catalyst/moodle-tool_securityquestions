@@ -38,7 +38,6 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2019 Peter Burnett <peterburnett@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 class user_unlocked extends \core\event\base {
     /**
      * Create instance of event.

@@ -23,6 +23,7 @@
  */
 
 // Settings menu strings.
+$string['minimumquestions'] = 'At least 2 questions should be answered';
 $string['pluginname'] = 'Security Questions';
 $string['setquestionspagename'] = 'Modify security questions';
 $string['securityquestionssettings'] = 'Security questions settings';
