@@ -22,7 +22,6 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_securityquestions\privacy;
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\contextlist;
 use core_privacy\local\request\approved_contextlist;
@@ -219,32 +218,13 @@ class provider implements
     public static function delete_data_for_user(approved_contextlist $contextlist) {
         global $DB;
         $userid = $contextlist->get_user()->id;
-
         foreach ($contextlist as $context) {
 
             // If not in user context, exit loop.
             if ($context->contextlevel == CONTEXT_SYSTEM) {
-
-                $sql = "
-                DELETE
-                FROM {tool_securityquestions_ans} l
-                WHERE l.userid = :userid";
-
-                $DB->execute($sql, ['userid' => $userid]);
-
-                $sql = "
-                DELETE
-                FROM {tool_securityquestions_loc} l
-                WHERE l.userid = :userid";
-
-                $DB->execute($sql, ['userid' => $userid]);
-
-                $sql = "
-                DELETE
-                FROM {tool_securityquestions_res} l
-                WHERE l.userid = :userid";
-
-                $DB->execute($sql, ['userid' => $userid]);
+                $DB->delete_records('tool_securityquestions_res', ['userid' => $userid]);
+                $DB->delete_records('tool_securityquestions_ans', ['userid' => $userid]);
+                $DB->delete_records('tool_securityquestions_loc', ['userid' => $userid]);
             }
         }
     }
