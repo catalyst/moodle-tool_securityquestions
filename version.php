@@ -29,4 +29,4 @@ $plugin->release   = 2024031500; // Match release exactly to version.
 $plugin->requires  = 2022112800;
 $plugin->component = 'tool_securityquestions';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->supported = [401, 403];
+$plugin->supported = [401, 405];

@@ -86,7 +86,7 @@ Branches
 
 | Branch             | Moodle version    | PHP Version |
 | ------------------ | ----------------- | ----------- |
-| MOODLE_41_STABLE   | Moodle 4.1+       | Php 7.4+    |
+| MOODLE_401_STABLE  | Moodle 4.1+       | Php 7.4+    |
 | master             | Moodle 3.8 - 4.1  | Php 7.1     |
 
 The master branch will work natively with Moodle from version 3.8 onwards, but has soft support for earlier versions with backports for hooks. If a previous version is used, the commit from MDL-66173 can be backported to a previous installation, and the plugin will be functional.
