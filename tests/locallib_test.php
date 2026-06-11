@@ -21,6 +21,8 @@
  * @copyright  2019 Peter Burnett <peterburnett@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_securityquestions;
+
 defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__.'/../locallib.php');
 
@@ -31,7 +33,7 @@ require_once(__DIR__.'/../locallib.php');
  * @copyright  2019 Peter Burnett <peterburnett@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class locallib_test extends advanced_testcase {
+class locallib_test extends \advanced_testcase {
 
     /**
      * Insert question test
