@@ -42,36 +42,10 @@ $notifydeletecontent = '';
 
 // Deprecate question from action if set.
 $deprecate = optional_param('deprecate', 0, PARAM_INT);
+$confirm = optional_param('confirm', false, PARAM_BOOL);
+$delete = optional_param('delete', 0, PARAM_INT);
 
 $seturl = $CFG->wwwroot . '/admin/tool/securityquestions/set_questions.php';
-
-if ($deprecate != 0 && confirm_sesskey()) {
-    if (tool_securityquestions_deprecate_question($deprecate)) {
-        $notifydepcontent = $deprecate;
-        $string = get_string('formquestiondeprecated', 'tool_securityquestions', $notifydepcontent);
-        redirect($seturl, $string, null, \core\output\notification::NOTIFY_SUCCESS);
-    } else {
-        $notifydepcontent = $deprecate;
-        $string = get_string('formquestionnotdeprecated', 'tool_securityquestions', $notifydepcontent);
-        redirect($seturl, $string, null, \core\output\notification::NOTIFY_ERROR);
-    }
-}
-
-// Delete question from action if set.
-$delete = optional_param('delete', 0, PARAM_INT);
-if ($delete != 0 && confirm_sesskey()) {
-    $success = tool_securityquestions_delete_question($delete);
-    // Setup notification for success or failure.
-    if ($success) {
-        $notifydeletecontent = $delete;
-        $string = get_string('formquestiondeleted', 'tool_securityquestions', $notifydeletecontent);
-        redirect($seturl, $string, null, \core\output\notification::NOTIFY_ERROR);
-    } else {
-        $notifydeletecontent = $delete;
-        $string = get_string('formquestionnotdeleted', 'tool_securityquestions', $notifydeletecontent);
-        redirect($seturl, $string, null, \core\output\notification::NOTIFY_SUCCESS);
-    }
-}
 
 $qcount = count(tool_securityquestions_get_active_questions());
 if (get_config('tool_securityquestions', 'minquestions') - $qcount <= 0) {
@@ -107,6 +81,57 @@ if ($form->is_cancelled()) {
 // Build the page output.
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('setsecurityquestionspagestring', 'tool_securityquestions'));
+
+if ($deprecate) {
+    if ($confirm) {
+        require_sesskey();
+        $result = tool_securityquestions_deprecate_question($deprecate);
+        if ($result) {
+            echo $OUTPUT->notification(
+                get_string('formquestiondeprecated', 'tool_securityquestions', $deprecate),
+                \core\output\notification::NOTIFY_SUCCESS
+            );
+        } else {
+            echo $OUTPUT->notification(
+                get_string('formquestionnotdeprecated', 'tool_securityquestions', $deprecate),
+                \core\output\notification::NOTIFY_ERROR
+            );
+        }
+    } else {
+        echo $OUTPUT->confirm(
+            get_string('formconfirmdeprecate', 'tool_securityquestions'),
+            new moodle_url($PAGE->url, ['deprecate' => $deprecate, 'confirm' => 1]),
+            new moodle_url($PAGE->url)
+        );
+        echo $OUTPUT->footer();
+        exit;
+    }
+} else if ($delete) {
+    if ($confirm) {
+        require_sesskey();
+        $result = tool_securityquestions_delete_question($delete);
+        if ($result) {
+            echo $OUTPUT->notification(
+                get_string('formquestiondeleted', 'tool_securityquestions', $delete),
+                \core\output\notification::NOTIFY_SUCCESS
+            );
+        } else {
+            echo $OUTPUT->notification(
+                get_string('formquestionnotdeleted', 'tool_securityquestions', $delete),
+                \core\output\notification::NOTIFY_ERROR
+            );
+        }
+    } else {
+        echo $OUTPUT->confirm(
+            get_string('formconfirmdelete', 'tool_securityquestions'),
+            new moodle_url($PAGE->url, ['delete' => $delete, 'confirm' => 1]),
+            new moodle_url($PAGE->url)
+        );
+        echo $OUTPUT->footer();
+        exit;
+    }
+}
+
 echo '<br>';
 $form->display();
 

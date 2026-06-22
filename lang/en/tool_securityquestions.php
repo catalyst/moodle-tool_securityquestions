@@ -93,6 +93,10 @@ $string['formquestioninfo'] = 'For added security, you cannot see the saved resp
 $string['formusernameplaceholder'] = 'Username or Email';
 $string['formlockouttier'] = 'Lockout tier';
 $string['formquestionresponsesreq'] = 'It is required that you answer a minimum of {$a} security questions.';
+$string['formconfirmclearresponses'] = 'Are you sure you want to clear the responses for this user?';
+$string['formconfirmreset'] = 'Are you sure you want to reset the lockout for this user?';
+$string['formconfirmdelete'] = 'Are you sure you want to delete this question?';
+$string['formconfirmdeprecate'] = 'Are you sure you want to deprecate this question?';
 
 // Setting Strings.
 $string['settingsenablename'] = 'Enable plugin';

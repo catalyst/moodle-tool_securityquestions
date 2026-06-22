@@ -71,18 +71,18 @@ class table_manager {
 
             // Setup actions cell.
             $reset = new \moodle_url('/admin/tool/securityquestions/reset_lockout.php',
-                array('reset' => $user->id, 'sesskey' => sesskey()));
+                array('reset' => $user->id));
             $clearres = new \moodle_url('/admin/tool/securityquestions/reset_lockout.php',
-                array('clear' => $user->id, 'sesskey' => sesskey()));
+                array('clear' => $user->id));
 
             $cell = \html_writer::link($reset, get_string('formresetlockout', 'tool_securityquestions')).'<br>'.
                     \html_writer::link($clearres, get_string('formclearresponsestable', 'tool_securityquestions'));
 
             $table->data[] = array(
                 $user->id,
-                $user->username,
-                $user->email,
-                fullname($user),
+                s($user->username),
+                s($user->email),
+                s(fullname($user)),
                 $userrecord->tier,
                 $cell,
             );
@@ -127,11 +127,11 @@ class table_manager {
             // Setup action cell.
             if ($count == 0 && $question->deprecated == 1) {
                 $url = new \moodle_url('/admin/tool/securityquestions/set_questions.php',
-                    array('delete' => $question->id, 'sesskey' => sesskey()));
+                    array('delete' => $question->id));
                 $link = \html_writer::link($url, get_string('delete'));
             } else {
                 $url = new \moodle_url('/admin/tool/securityquestions/set_questions.php',
-                    array('deprecate' => $question->id, 'sesskey' => sesskey()));
+                    array('deprecate' => $question->id));
                 $link = \html_writer::link($url, get_string('formdeprecate', 'tool_securityquestions'));
             }
 
