@@ -31,31 +31,11 @@ defined('MOODLE_INTERNAL') || die();
 admin_externalpage_setup('tool_securityquestions_reset_lockout');
 $resetid = optional_param('reset', 0, PARAM_INT);
 $clearid = optional_param('clear', 0, PARAM_INT);
+$confirm = optional_param('confirm', false, PARAM_BOOL);
 $prevurl = ($CFG->wwwroot.'/admin/category.php?category=securityquestions');
 
 $notifyresetsuccess = false;
 $notifyclearsuccess = false;
-
-if ($resetid != 0 && confirm_sesskey()) {
-    // Execute reset of user lockout before regenerating page.
-    $exists = $DB->record_exists('user', array('id' => $resetid));
-    if ($exists) {
-        $user = $DB->get_record('user', array('id' => $resetid));
-        tool_securityquestions_reset_lockout_counter($user);
-        tool_securityquestions_unlock_user($user);
-        $notifyresetsuccess = true;
-    }
-}
-
-if ($clearid != 0 && confirm_sesskey()) {
-    // Execute clear of user responses before regenerating page.
-    $exists = $DB->record_exists('user', array('id' => $clearid));
-    if ($exists) {
-        $user = $DB->get_record('user', array('id' => $clearid));
-        tool_securityquestions_clear_user_responses($user);
-        $notifyclearsuccess = true;
-    }
-}
 
 $form = new \tool_securityquestions\form\reset_lockout();
 if ($form->is_cancelled()) {
@@ -84,6 +64,50 @@ if ($form->is_cancelled()) {
 // Build the page output.
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('resetuserpagename', 'tool_securityquestions'));
+
+// Confirm clearing of responses.
+if ($clearid) {
+    // Confirmed.
+    if ($confirm) {
+        require_sesskey();
+        // Execute clear of user responses before regenerating page.
+        $exists = $DB->record_exists('user', array('id' => $clearid));
+        if ($exists) {
+            $user = $DB->get_record('user', array('id' => $clearid));
+            tool_securityquestions_clear_user_responses($user);
+            $notifyclearsuccess = true;
+        }
+    } else {
+        echo $OUTPUT->confirm(
+            get_string('formconfirmclearresponses', 'tool_securityquestions'),
+            new moodle_url($PAGE->url, ['clear' => $clearid, 'confirm' => 1]),
+            new moodle_url($PAGE->url)
+        );
+        echo $OUTPUT->footer();
+        exit;
+    }
+} else if ($resetid) {
+    if ($confirm) {
+        require_sesskey();
+        // Execute reset of user lockout before regenerating page.
+        $exists = $DB->record_exists('user', array('id' => $resetid));
+        if ($exists) {
+            $user = $DB->get_record('user', array('id' => $resetid));
+            tool_securityquestions_reset_lockout_counter($user);
+            tool_securityquestions_unlock_user($user);
+            $notifyresetsuccess = true;
+        }
+    } else {
+        echo $OUTPUT->confirm(
+            get_string('formconfirmreset', 'tool_securityquestions'),
+            new moodle_url($PAGE->url, ['reset' => $resetid, 'confirm' => 1]),
+            new moodle_url($PAGE->url)
+        );
+        echo $OUTPUT->footer();
+        exit;
+    }
+}
+
 echo '<br>';
 $form->display();
 
