@@ -22,15 +22,21 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\setting\heading;
+use core\setting\page\externalpage;
+use core\setting\part\category;
+use core\setting\part\page;
+use core\setting\type\checkbox;
+use core\setting\type\duration;
+use core\setting\type\text;
+
 defined('MOODLE_INTERNAL') || die;
 
-require_once($CFG->dirroot.'/admin/tool/securityquestions/classes/tool_securityquestions_admin_setting_configtext.php');
-
+require_once($CFG->dirroot . '/admin/tool/securityquestions/classes/tool_securityquestions_admin_setting_configtext.php');
 
 global $CFG;
 
 if ($hassiteconfig) {
-
     // First, check values for items are set to sane amounts, if not, fix.
     // Min Questions > Min user questions > Min user responses.
     if (get_config('tool_securityquestions', 'minuserquestions') > get_config('tool_securityquestions', 'minquestions')) {
@@ -42,23 +48,26 @@ if ($hassiteconfig) {
     }
 
     // Create validator category for page and external page.
-    $ADMIN->add('tools', new admin_category('securityquestions', get_string('pluginname', 'tool_securityquestions')));
+    $ADMIN->add('tools', new category('securityquestions', get_string('pluginname', 'tool_securityquestions')));
 
     // Add External admin page for setting security questions.
-    $ADMIN->add('securityquestions', new admin_externalpage('tool_securityquestions_setform',
+    $ADMIN->add('securityquestions', new externalpage(
+        'tool_securityquestions_setform',
         get_string('setquestionspagename', 'tool_securityquestions'),
-        new moodle_url('/admin/tool/securityquestions/set_questions.php')));
+        new moodle_url('/admin/tool/securityquestions/set_questions.php')
+    ));
 
     // Add External admin page for resetting lockedout users.
-    $ADMIN->add('securityquestions', new admin_externalpage('tool_securityquestions_reset_lockout',
+    $ADMIN->add('securityquestions', new externalpage(
+        'tool_securityquestions_reset_lockout',
         get_string('resetuserpagename', 'tool_securityquestions'),
-        new moodle_url('/admin/tool/securityquestions/reset_lockout.php')));
+        new moodle_url('/admin/tool/securityquestions/reset_lockout.php')
+    ));
 
-    $settings = new admin_settingpage('securitysettings', get_string('securityquestionssettings', 'tool_securityquestions'));
+    $settings = new page('securitysettings', get_string('securityquestionssettings', 'tool_securityquestions'));
     $ADMIN->add('securityquestions', $settings);
 
     if (!during_initial_install()) {
-
         // Alert if using config template.
         $name = get_config('tool_securityquestions', 'chosen_template');
         if (trim($name) != '') {
@@ -70,55 +79,99 @@ if ($hassiteconfig) {
 
             // Add the control.
             $templatedesc = $OUTPUT->notification($text, 'notifymessage');
-            $settings->add(new admin_setting_heading('tool_securityquestions/template_heading', '', $templatedesc));
+            $settings->add(new heading('tool_securityquestions/template_heading', '', $templatedesc));
         }
 
-        $settings->add(new admin_setting_configcheckbox('tool_securityquestions/enable_plugin',
-                    get_string('settingsenablename', 'tool_securityquestions'),
-                    get_string('settingsenabledesc', 'tool_securityquestions'), 0));
+        $settings->add(new checkbox(
+            'tool_securityquestions/enable_plugin',
+            get_string('settingsenablename', 'tool_securityquestions'),
+            get_string('settingsenabledesc', 'tool_securityquestions'),
+            0
+        ));
 
-        $settings->add(new admin_setting_configcheckbox('tool_securityquestions/mandatory_questions',
-                    get_string('settingsmandatoryquestions', 'tool_securityquestions'),
-                    get_string('settingsmandatoryquestionsdesc', 'tool_securityquestions'), 1));
+        $settings->add(new checkbox(
+            'tool_securityquestions/mandatory_questions',
+            get_string('settingsmandatoryquestions', 'tool_securityquestions'),
+            get_string('settingsmandatoryquestionsdesc', 'tool_securityquestions'),
+            1
+        ));
 
-        $settings->add(new admin_setting_configduration('tool_securityquestions/graceperiod',
-                    get_string('settingsgraceperiod', 'tool_securityquestions'),
-                    get_string('settingsgraceperioddesc', 'tool_securityquestions'), 48 * HOURSECS, HOURSECS));
+        $settings->add(new duration(
+            'tool_securityquestions/graceperiod',
+            get_string('settingsgraceperiod', 'tool_securityquestions'),
+            get_string('settingsgraceperioddesc', 'tool_securityquestions'),
+            48 * HOURSECS,
+            HOURSECS
+        ));
 
-        $settings->add(new admin_setting_configtext('tool_securityquestions/minquestions',
-                    get_string('settingsminquestions', 'tool_securityquestions'),
-                    get_string('settingsminquestionsdesc', 'tool_securityquestions'), 10, PARAM_INT));
+        $settings->add(new text(
+            'tool_securityquestions/minquestions',
+            get_string('settingsminquestions', 'tool_securityquestions'),
+            get_string('settingsminquestionsdesc', 'tool_securityquestions'),
+            10,
+            PARAM_INT
+        ));
 
-        $settings->add(new admin_setting_configtext('tool_securityquestions/minuserquestions',
-                    get_string('settingsminuserquestions', 'tool_securityquestions'),
-                    get_string('settingsminuserquestionsdesc', 'tool_securityquestions'), 3, PARAM_INT));
+        $settings->add(new text(
+            'tool_securityquestions/minuserquestions',
+            get_string('settingsminuserquestions', 'tool_securityquestions'),
+            get_string('settingsminuserquestionsdesc', 'tool_securityquestions'),
+            3,
+            PARAM_INT
+        ));
 
-        $settings->add(new tool_securityquestions_admin_setting_configtext('tool_securityquestions/answerquestions',
-                    get_string('settingsanswerquestions', 'tool_securityquestions'),
-                    get_string('settingsanswerquestionsdesc', 'tool_securityquestions'), 2, PARAM_INT));
+        $settings->add(new tool_securityquestions_admin_setting_configtext(
+            'tool_securityquestions/answerquestions',
+            get_string('settingsanswerquestions', 'tool_securityquestions'),
+            get_string('settingsanswerquestionsdesc', 'tool_securityquestions'),
+            2,
+            PARAM_INT
+        ));
 
-        $settings->add(new admin_setting_configduration('tool_securityquestions/questionduration',
-                    get_string('settingsquestionduration', 'tool_securityquestions'),
-                    get_string('settingsquestiondurationdesc', 'tool_securityquestions'), 5 * MINSECS, MINSECS));
+        $settings->add(new duration(
+            'tool_securityquestions/questionduration',
+            get_string('settingsquestionduration', 'tool_securityquestions'),
+            get_string('settingsquestiondurationdesc', 'tool_securityquestions'),
+            5 * MINSECS,
+            MINSECS
+        ));
 
-        $settings->add(new admin_setting_configtext('tool_securityquestions/lockoutnum',
-                    get_string('settingslockoutnum', 'tool_securityquestions'),
-                    get_string('settingslockoutnumdesc', 'tool_securityquestions'), 3, PARAM_INT));
+        $settings->add(new text(
+            'tool_securityquestions/lockoutnum',
+            get_string('settingslockoutnum', 'tool_securityquestions'),
+            get_string('settingslockoutnumdesc', 'tool_securityquestions'),
+            3,
+            PARAM_INT
+        ));
 
-        $settings->add(new admin_setting_heading('tool_securityquestions/tierheader',
-                    get_string('settingstierheader', 'tool_securityquestions'),
-                    get_string('settingstierheaderdesc', 'tool_securityquestions')));
+        $settings->add(new heading(
+            'tool_securityquestions/tierheader',
+            get_string('settingstierheader', 'tool_securityquestions'),
+            get_string('settingstierheaderdesc', 'tool_securityquestions')
+        ));
 
-        $settings->add(new admin_setting_configduration('tool_securityquestions/tieroneduration',
-                    get_string('settingstieroneduration', 'tool_securityquestions'),
-                    get_string('settingstieronedurationdesc', 'tool_securityquestions'), 0, MINSECS));
+        $settings->add(new duration(
+            'tool_securityquestions/tieroneduration',
+            get_string('settingstieroneduration', 'tool_securityquestions'),
+            get_string('settingstieronedurationdesc', 'tool_securityquestions'),
+            0,
+            MINSECS
+        ));
 
-        $settings->add(new admin_setting_configduration('tool_securityquestions/tiertwoduration',
-                    get_string('settingstiertwoduration', 'tool_securityquestions'),
-                    get_string('settingstiertwodurationdesc', 'tool_securityquestions'), 0, MINSECS));
+        $settings->add(new duration(
+            'tool_securityquestions/tiertwoduration',
+            get_string('settingstiertwoduration', 'tool_securityquestions'),
+            get_string('settingstiertwodurationdesc', 'tool_securityquestions'),
+            0,
+            MINSECS
+        ));
 
-        $settings->add(new admin_setting_configduration('tool_securityquestions/lockoutexpiryduration',
-                    get_string('settingslockoutexpiryduration', 'tool_securityquestions'),
-                    get_string('settingslockoutexpirydurationdesc', 'tool_securityquestions'), 0, WEEKSECS));
+        $settings->add(new duration(
+            'tool_securityquestions/lockoutexpiryduration',
+            get_string('settingslockoutexpiryduration', 'tool_securityquestions'),
+            get_string('settingslockoutexpirydurationdesc', 'tool_securityquestions'),
+            0,
+            WEEKSECS
+        ));
     }
 }

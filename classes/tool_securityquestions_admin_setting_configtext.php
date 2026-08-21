@@ -23,8 +23,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Extra validation for tool_securityquestions/answerquestions.
  *
@@ -33,8 +31,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright Catalyst IT
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_securityquestions_admin_setting_configtext extends admin_setting_configtext {
-
+class tool_securityquestions_admin_setting_configtext extends \core\setting\type\text {
     /**
      * We need to overwrite the validate function to make sure the minimum
      * number of questions answered is 2.
