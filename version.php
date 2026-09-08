@@ -24,9 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2024031501;
-$plugin->release   = 2024031500; // Match release exactly to version.
+$plugin->version   = 2024031502;
+$plugin->release   = 2024031502; // Match release exactly to version.
 $plugin->requires  = 2022112800;
 $plugin->component = 'tool_securityquestions';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->supported = [401, 405];
+$plugin->supported = [401, 503];
